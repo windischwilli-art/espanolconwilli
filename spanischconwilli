@@ -1509,16 +1509,12 @@ function showScreen(id) {
 /* ---------------------------------------------------------
    Unlock-Logik
 --------------------------------------------------------- */
+// Freischalt-Logik deaktiviert: alle Niveaus und Kapitel sind von Anfang an zugänglich.
 function isLevelUnlocked(levelIdx) {
-  if (levelIdx === 0) return true;
-  const prev = LEVELS[levelIdx - 1];
-  return prev.chapters.every(id => state.progress[id].done);
+  return true;
 }
 function isChapterUnlocked(level, chapterIdxInLevel, levelIdx) {
-  if (!isLevelUnlocked(levelIdx)) return false;
-  if (chapterIdxInLevel === 0) return true;
-  const prevId = level.chapters[chapterIdxInLevel - 1];
-  return state.progress[prevId].done;
+  return true;
 }
 
 /* ---------------------------------------------------------

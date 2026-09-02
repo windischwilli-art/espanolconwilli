@@ -93,7 +93,8 @@
     padding: 4px; border-radius: 14px;
   }
   .mode-btn {
-    flex: 1; text-align: center; padding: 9px; border: none; background: transparent;
+    flex: 1; display: inline-flex; align-items: center; justify-content: center; text-align: center; padding: 9px;
+    border: none; background: transparent;
     border-radius: 10px; font-family: 'Work Sans', sans-serif; font-weight: 600; font-size: 13.5px;
     color: var(--cream-dim); cursor: pointer; transition: background 0.15s ease, color 0.15s ease;
   }
@@ -195,6 +196,8 @@
   .btn-primary:active { transform: translateY(2px); box-shadow: 0 3px 0 0 var(--coral-dark); }
   .btn-primary.mint { background: var(--mint); box-shadow: 0 5px 0 0 var(--mint-dark); color: var(--ink); }
   .btn-primary.mint:active { box-shadow: 0 3px 0 0 var(--mint-dark); }
+  .btn-primary.gold { background: var(--gold); box-shadow: 0 5px 0 0 var(--gold-dark); color: var(--ink); }
+  .btn-primary.gold:active { box-shadow: 0 3px 0 0 var(--gold-dark); }
   .btn-secondary {
     width: 100%; max-width: 340px; margin: 0 auto; display: flex; align-items: center; justify-content: center; gap: 8px;
     padding: 14px; border: 1.5px solid var(--line); border-radius: 16px; background: transparent; color: var(--cream-dim);
@@ -235,6 +238,45 @@
   }
 
   button:focus-visible, .node-btn:focus-visible { outline: 2px solid var(--gold); outline-offset: 2px; }
+
+  /* --- Certificate screen --- */
+  .cert-area { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 20px 22px 28px; }
+  .cert-card {
+    width: 100%; max-width: 360px; background: var(--panel); border-radius: 22px; padding: 30px 26px;
+    text-align: center; position: relative; overflow: hidden;
+    box-shadow: 0 14px 34px rgba(178,110,60,0.2);
+    animation: popIn 0.32s cubic-bezier(.2,.9,.3,1.2);
+  }
+  .cert-card::before, .cert-card::after {
+    content: ""; position: absolute; inset: 10px; border: 1.5px solid var(--cert-accent, var(--gold));
+    border-radius: 14px; opacity: 0.35; pointer-events: none;
+  }
+  .cert-card::after { inset: 14px; opacity: 0.2; }
+  .cert-seal { width: 60px; height: 60px; margin: 0 auto 14px; stroke: var(--cert-accent, var(--gold)); }
+  .cert-eyebrow { font-size: 11px; letter-spacing: 0.26em; text-transform: uppercase; color: var(--cert-accent, var(--gold)); font-weight: 700; margin: 0 0 6px; }
+  .cert-name { font-family: 'Fraunces', serif; font-size: 25px; font-weight: 800; margin: 0 0 8px; line-height: 1.25; }
+  .cert-badge {
+    display: inline-block; padding: 5px 14px; border-radius: 999px; font-size: 13px; font-weight: 700;
+    background: var(--cert-accent, var(--gold)); color: var(--ink); margin-bottom: 14px;
+  }
+  .cert-text { font-size: 13.5px; line-height: 1.6; color: var(--cream-dim); margin: 0 0 18px; }
+  .cert-divider { height: 1px; background: var(--line); margin: 0 0 14px; }
+  .cert-footer { display: flex; justify-content: space-between; align-items: center; font-size: 11px; color: var(--cream-dim); }
+  .cert-footer .brand { font-family: 'Fraunces', serif; font-weight: 700; color: var(--ink); font-size: 12.5px; }
+  .cert-actions { width: 100%; max-width: 360px; margin-top: 22px; display: flex; flex-direction: column; gap: 12px; }
+
+  /* --- Certificate gallery --- */
+  .certlist-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; padding: 4px 24px 28px; }
+  .certlist-card {
+    border-radius: 16px; padding: 14px 12px; text-align: center; border: 1.5px solid var(--line);
+    background: var(--panel); cursor: pointer; transition: transform 0.15s ease;
+  }
+  .certlist-card:hover:not(:disabled) { transform: translateY(-2px); }
+  .certlist-card:disabled { cursor: not-allowed; opacity: 0.5; }
+  .certlist-card .seal-mini { width: 34px; height: 34px; margin: 0 auto 8px; }
+  .certlist-card .cefr { font-family: 'Fraunces', serif; font-weight: 800; font-size: 17px; margin: 0; }
+  .certlist-card .track { font-size: 11px; color: var(--cream-dim); margin: 3px 0 0; }
+  .certlist-section-title { padding: 18px 24px 6px; font-size: 12px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--cream-dim); font-weight: 700; }
 
   ::-webkit-scrollbar { width: 6px; }
   ::-webkit-scrollbar-thumb { background: var(--panel-light); border-radius: 999px; }
@@ -292,6 +334,9 @@
     <div class="mode-toggle">
       <button class="mode-btn active" data-mode="vocab" onclick="setMode('vocab')">Vokabeln</button>
       <button class="mode-btn" data-mode="grammar" onclick="setMode('grammar')">Grammatik</button>
+      <button class="mode-btn" onclick="goToCertList()" title="Meine Zertifikate" style="flex:0 0 auto; padding:9px 12px;">
+        <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="5"/><path d="M8.5 12.5 7 22l5-3 5 3-1.5-9.5"/></svg>
+      </button>
     </div>
     <div class="levels-header">
       <p class="eyebrow" id="levels-eyebrow">El Camino del Español</p>
@@ -407,6 +452,48 @@
       <div class="result-stars" id="result-stars"></div>
       <div class="result-actions" id="result-actions"></div>
     </div>
+  </section>
+
+  <!-- ================= CERTIFICATE SCREEN ================= -->
+  <section class="screen" id="screen-certificate">
+    <div class="topbar">
+      <button class="back-btn" onclick="goToCertList()">&larr; Zertifikate</button>
+      <div></div>
+    </div>
+    <div class="cert-area">
+      <div class="cert-card" id="cert-card">
+        <svg class="cert-seal" id="cert-seal" viewBox="0 0 24 24" fill="none" stroke-width="1.6"></svg>
+        <p class="cert-eyebrow" id="cert-eyebrow">Zertifikat</p>
+        <h2 class="cert-name font-display" id="cert-title"></h2>
+        <span class="cert-badge" id="cert-badge"></span>
+        <p class="cert-text" id="cert-text"></p>
+        <div class="cert-divider"></div>
+        <div class="cert-footer">
+          <span class="brand">El Camino del Español</span>
+          <span id="cert-date"></span>
+        </div>
+      </div>
+      <div class="cert-actions">
+        <button class="btn-primary mint" onclick="goToLevels()">Fertig</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= CERTIFICATE GALLERY ================= -->
+  <section class="screen" id="screen-certlist">
+    <div class="topbar">
+      <button class="back-btn" onclick="goToLevels()">&larr; Zurück</button>
+      <div></div>
+    </div>
+    <div class="levels-header">
+      <p class="eyebrow">Deine Erfolge</p>
+      <h1 class="big-title font-display">Meine Zertifikate</h1>
+      <p class="sub-text">Schließe alle Kapitel eines Niveaus ab, um das passende Zertifikat freizuschalten.</p>
+    </div>
+    <p class="certlist-section-title">Vokabeln</p>
+    <div class="certlist-grid" id="certlist-vocab"></div>
+    <p class="certlist-section-title">Grammatik</p>
+    <div class="certlist-grid" id="certlist-grammar"></div>
   </section>
 
 </div>
@@ -2371,6 +2458,10 @@ function renderResult() {
         Weiter auf der Route
         <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="#2B2118" stroke-width="2.4"><path d="M5 12h14M13 5l7 7-7 7"/></svg>
       </button>
+      ${levelJustCompleted ? `<button class="btn-primary gold" onclick="showCertificate('${state.mode}','${level.id}')">
+        <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="#2B2118" stroke-width="2.2"><circle cx="12" cy="8" r="5"/><path d="M8.5 12.5 7 22l5-3 5 3-1.5-9.5"/></svg>
+        Zertifikat ansehen
+      </button>` : ''}
       ${unlockedNextLevel ? `<button class="btn-secondary" onclick="goToLevels()">Niveaus ansehen</button>` : ''}`;
   }
 }
@@ -2391,6 +2482,92 @@ function retryGrammarChapter() {
   renderQuiz();
   showScreen('screen-quiz');
 }
+
+/* ---------------------------------------------------------
+   Zertifikate
+--------------------------------------------------------- */
+function cefrLabel(level) { return level.tag.split(' · ')[0]; }
+
+function isLevelFullyDone(mode, levelId) {
+  const levels = mode === 'grammar' ? GRAMMAR_LEVELS : LEVELS;
+  const progress = mode === 'grammar' ? state.gProgress : state.progress;
+  const level = levels.find(l => l.id === levelId);
+  return level.chapters.every(id => progress[id].done);
+}
+
+const SEAL_PATH = '<circle cx="12" cy="8" r="5"/><path d="M8.5 12.5 7 22l5-3 5 3-1.5-9.5"/><path d="m9.5 8 1.8 1.8L14.5 6"/>';
+
+function formatToday() {
+  const d = new Date();
+  return d.toLocaleDateString('de-DE', { day: '2-digit', month: 'long', year: 'numeric' });
+}
+
+function showCertificate(mode, levelId) {
+  const levels = mode === 'grammar' ? GRAMMAR_LEVELS : LEVELS;
+  const level = levels.find(l => l.id === levelId);
+  const accent = ACCENT_VARS[level.accent];
+  const cefr = cefrLabel(level);
+
+  const card = document.getElementById('cert-card');
+  card.style.setProperty('--cert-accent', accent.main);
+
+  const seal = document.getElementById('cert-seal');
+  seal.innerHTML = SEAL_PATH;
+
+  document.getElementById('cert-eyebrow').textContent = mode === 'grammar' ? 'Grammatik-Zertifikat' : 'Sprachzertifikat';
+  document.getElementById('cert-title').textContent = `Niveau ${cefr}`;
+  document.getElementById('cert-badge').textContent = level.name;
+  document.getElementById('cert-badge').style.background = accent.main;
+
+  const count = mode === 'grammar'
+    ? level.chapters.reduce((s, id) => s + GRAMMAR_CH_BY_ID[id].practice.length, 0)
+    : level.chapters.reduce((s, id) => s + CH_BY_ID[id].words.length, 0);
+  const skill = mode === 'grammar' ? 'Grammatikübungen' : 'Vokabeln';
+
+  document.getElementById('cert-text').textContent =
+    `hat alle Kapitel des Niveaus „${level.name}" (${cefr}) erfolgreich abgeschlossen und dabei ${count} ${skill} gemeistert.`;
+  document.getElementById('cert-date').textContent = formatToday();
+
+  showScreen('screen-certificate');
+}
+
+function renderCertList() {
+  const vocabGrid = document.getElementById('certlist-vocab');
+  const grammarGrid = document.getElementById('certlist-grammar');
+  vocabGrid.innerHTML = '';
+  grammarGrid.innerHTML = '';
+
+  LEVELS.forEach(level => {
+    const earned = isLevelFullyDone('vocab', level.id);
+    const accent = ACCENT_VARS[level.accent];
+    const btn = document.createElement('button');
+    btn.className = 'certlist-card';
+    btn.disabled = !earned;
+    btn.onclick = () => earned && showCertificate('vocab', level.id);
+    btn.innerHTML = `
+      <svg class="seal-mini" viewBox="0 0 24 24" fill="none" stroke="${earned ? accent.main : 'var(--cream-dim)'}" stroke-width="1.6">${earned ? SEAL_PATH : LOCK_SVG}</svg>
+      <p class="cefr">${cefrLabel(level)}</p>
+      <p class="track">${level.name}</p>
+    `;
+    vocabGrid.appendChild(btn);
+  });
+
+  GRAMMAR_LEVELS.forEach(level => {
+    const earned = isLevelFullyDone('grammar', level.id);
+    const accent = ACCENT_VARS[level.accent];
+    const btn = document.createElement('button');
+    btn.className = 'certlist-card';
+    btn.disabled = !earned;
+    btn.onclick = () => earned && showCertificate('grammar', level.id);
+    btn.innerHTML = `
+      <svg class="seal-mini" viewBox="0 0 24 24" fill="none" stroke="${earned ? accent.main : 'var(--cream-dim)'}" stroke-width="1.6">${earned ? SEAL_PATH : LOCK_SVG}</svg>
+      <p class="cefr">${cefrLabel(level)}</p>
+      <p class="track">${level.name}</p>
+    `;
+    grammarGrid.appendChild(btn);
+  });
+}
+function goToCertList() { renderCertList(); showScreen('screen-certlist'); }
 
 /* ---------------------------------------------------------
    Init

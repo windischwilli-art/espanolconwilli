@@ -8,28 +8,29 @@
   @import url('https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600..800&family=Work+Sans:wght@400;500;600;700&display=swap');
 
   :root {
-    --ink: #0F2E2C;
-    --panel: #153E3B;
-    --panel-light: #1D4B47;
-    --cream: #FBF3E6;
-    --cream-dim: #CFE3DD;
+    --ink: #2B2118;
+    --panel: #FFFFFF;
+    --panel-light: #F3EBDC;
+    --cream: #2B2118;
+    --cream-dim: #8C7A64;
     --coral: #FF6B54;
     --coral-dark: #E5573F;
-    --gold: #F2B705;
-    --gold-dark: #C99500;
-    --mint: #5FD1A0;
-    --mint-dark: #3FAE82;
-    --plum: #B48EE0;
-    --plum-dark: #8F68C2;
-    --red: #FF5C5C;
-    --line: rgba(251,243,230,0.14);
+    --gold: #F2A705;
+    --gold-dark: #C98600;
+    --mint: #2FBA88;
+    --mint-dark: #24996E;
+    --plum: #A873E0;
+    --plum-dark: #8952C2;
+    --red: #F04949;
+    --line: rgba(43,33,24,0.10);
+    --bg: #FFF6EA;
   }
 
   * { box-sizing: border-box; }
 
   body {
     margin: 0;
-    background: #081E1D;
+    background: linear-gradient(160deg, #FFE9D2 0%, #FFF6EA 45%, #FFEFE0 100%);
     font-family: 'Work Sans', sans-serif;
     color: var(--cream);
     display: flex;
@@ -44,10 +45,10 @@
     width: 100%;
     max-width: 480px;
     min-height: 680px;
-    background: var(--ink);
+    background: var(--bg);
     border-radius: 28px;
     overflow: hidden;
-    box-shadow: 0 20px 60px rgba(0,0,0,0.4);
+    box-shadow: 0 20px 50px rgba(178,110,60,0.22), 0 4px 14px rgba(178,110,60,0.12);
     display: flex;
     flex-direction: column;
     position: relative;
@@ -84,7 +85,10 @@
   .progress-fill { height: 100%; border-radius: 999px; background: var(--coral); transition: width 0.3s ease; }
   .progress-fill.mint { background: var(--mint); }
 
-  .levels-header { padding: 32px 24px 4px; }
+  .hero-banner { width: 100%; height: 150px; overflow: hidden; position: relative; }
+  .hero-banner svg { width: 100%; height: 100%; display: block; }
+
+  .levels-header { padding: 22px 24px 4px; }
   .eyebrow { font-size: 12px; letter-spacing: 0.22em; text-transform: uppercase; color: var(--coral); margin: 0 0 6px; font-weight: 600; }
   .big-title { font-size: 26px; font-weight: 700; margin: 0; }
   .sub-text { font-size: 14px; color: var(--cream-dim); margin: 8px 0 0; }
@@ -93,12 +97,16 @@
   .level-card {
     display: flex; align-items: center; gap: 14px; padding: 16px 18px; border-radius: 20px;
     border: 1.5px solid var(--line); background: var(--panel); cursor: pointer; text-align: left; width: 100%;
-    transition: transform 0.15s ease; animation: popIn 0.3s cubic-bezier(.2,.9,.3,1.2);
+    box-shadow: 0 3px 10px rgba(178,110,60,0.08);
+    transition: transform 0.15s ease, box-shadow 0.15s ease; animation: popIn 0.3s cubic-bezier(.2,.9,.3,1.2);
   }
-  .level-card:hover:not(:disabled) { transform: translateY(-2px); }
+  .level-card:hover:not(:disabled) { transform: translateY(-2px); box-shadow: 0 8px 18px rgba(178,110,60,0.14); }
   .level-card:active:not(:disabled) { transform: scale(0.98); }
   .level-card:disabled { cursor: not-allowed; opacity: 0.55; }
-  .level-icon { width: 50px; height: 50px; border-radius: 14px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+  .level-icon {
+    width: 56px; height: 56px; border-radius: 16px; display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0; box-shadow: 0 4px 10px rgba(0,0,0,0.14);
+  }
   .level-info { flex: 1; min-width: 0; }
   .level-name { font-family: 'Fraunces', serif; font-weight: 700; font-size: 17px; margin: 0; }
   .level-tag { font-size: 11.5px; color: var(--cream-dim); margin: 2px 0 8px; }
@@ -107,7 +115,10 @@
   .level-count { font-size: 11px; color: var(--cream-dim); margin: 6px 0 0; font-variant-numeric: tabular-nums; }
   .level-chevron { flex-shrink: 0; }
 
-  .path-header { padding: 26px 24px 0; }
+  .path-banner { width: 100%; height: 92px; overflow: hidden; }
+  .path-banner svg { width: 100%; height: 100%; display: block; }
+
+  .path-header { padding: 20px 24px 0; }
   .path-title { font-size: 22px; font-weight: 700; margin: 0; }
   .path-sub { font-size: 13.5px; color: var(--cream-dim); margin: 6px 0 0; }
 
@@ -214,6 +225,49 @@
 
   <!-- ================= LEVELS SCREEN ================= -->
   <section class="screen active" id="screen-levels">
+    <div class="hero-banner">
+      <svg viewBox="0 0 480 190" preserveAspectRatio="xMidYMax slice" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <linearGradient id="heroSky" x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0%" stop-color="#FF9B6A"/>
+            <stop offset="45%" stop-color="#FF6B54"/>
+            <stop offset="100%" stop-color="#A873E0"/>
+          </linearGradient>
+        </defs>
+        <rect width="480" height="190" fill="url(#heroSky)"/>
+        <circle cx="80" cy="55" r="34" fill="#FFE08A" opacity="0.95"/>
+        <circle cx="80" cy="55" r="34" fill="none" stroke="#FFF6EA" stroke-width="2" opacity="0.5"/>
+        <circle cx="410" cy="34" r="6" fill="#FFF6EA" opacity="0.6"/>
+        <circle cx="378" cy="60" r="4" fill="#FFF6EA" opacity="0.5"/>
+        <circle cx="440" cy="70" r="3.5" fill="#FFF6EA" opacity="0.5"/>
+        <circle cx="34" cy="120" r="5" fill="#FFF6EA" opacity="0.4"/>
+        <!-- Torbogen (Puerta de Alcalá-artig) -->
+        <g fill="#FFF6EA" opacity="0.96">
+          <path d="M150 190V96a40 40 0 0 1 80 0v94h-18V96a22 22 0 0 0-44 0v94Z"/>
+          <path d="M258 190V96a40 40 0 0 1 80 0v94h-18V96a22 22 0 0 0-44 0v94Z"/>
+        </g>
+        <!-- Skyline-Silhouette -->
+        <g fill="#3B2A1D" opacity="0.85">
+          <rect x="0" y="150" width="480" height="40"/>
+          <rect x="18" y="126" width="26" height="24"/>
+          <rect x="56" y="112" width="20" height="38"/>
+          <rect x="360" y="118" width="24" height="32"/>
+          <rect x="396" y="100" width="18" height="50"/>
+          <rect x="424" y="128" width="22" height="22"/>
+          <polygon points="65,112 66,100 67,112"/>
+        </g>
+        <!-- Konfetti -->
+        <g fill="#FFE08A">
+          <circle cx="210" cy="40" r="4"/>
+          <circle cx="300" cy="26" r="3"/>
+          <circle cx="130" cy="30" r="3"/>
+        </g>
+        <g fill="#5FE0B0">
+          <circle cx="240" cy="60" r="3.5"/>
+          <circle cx="340" cy="44" r="3"/>
+        </g>
+      </svg>
+    </div>
     <div class="levels-header">
       <p class="eyebrow">El Camino del Español</p>
       <h1 class="big-title font-display">Wähle dein Niveau</h1>
@@ -228,6 +282,7 @@
       <button class="back-btn" onclick="goToLevels()">&larr; Niveaus</button>
       <div></div>
     </div>
+    <div class="path-banner" id="path-banner"></div>
     <div class="path-header">
       <p class="eyebrow" id="path-eyebrow"></p>
       <h1 class="path-title font-display" id="path-title"></h1>
@@ -254,7 +309,7 @@
         <p class="eyebrow" id="card-eyebrow"></p>
         <div class="card-word-row">
           <h2 class="card-word font-display" id="card-word"></h2>
-          <svg viewBox="0 0 24 24" fill="none" stroke="#CFE3DD" stroke-width="2" width="20" height="20"><path d="M11 5 6 9H2v6h4l5 4V5Z"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"/></svg>
+          <svg viewBox="0 0 24 24" fill="none" stroke="#9C8B72" stroke-width="2" width="20" height="20"><path d="M11 5 6 9H2v6h4l5 4V5Z"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"/></svg>
         </div>
         <p class="card-de" id="card-de"></p>
       </div>
@@ -262,7 +317,7 @@
     <div class="cta-wrap">
       <button class="btn-primary" id="card-next-btn" onclick="nextCard()">
         <span id="card-next-label">Weiter</span>
-        <svg viewBox="0 0 24 24" fill="none" stroke="#0F2E2C" stroke-width="2.4" width="18" height="18"><path d="M5 12h14M13 5l7 7-7 7"/></svg>
+        <svg viewBox="0 0 24 24" fill="none" stroke="#2B2118" stroke-width="2.4" width="18" height="18"><path d="M5 12h14M13 5l7 7-7 7"/></svg>
       </button>
     </div>
   </section>
@@ -312,7 +367,7 @@
 --------------------------------------------------------- */
 const CHAPTERS = [
   {
-    id: "saludos", title: "Saludos y Cortesía", subtitle: "Begrüßung & Höflichkeit", stop: "Madrid",
+    id: "saludos-1", title: "Saludos y Cortesía", subtitle: "Begrüßung & Höflichkeit (Teil 1)", stop: "Madrid",
     icon: "<path d=\"M18 11V6a2 2 0 0 0-2-2v0a2 2 0 0 0-2 2v0\"/><path d=\"M14 10V4a2 2 0 0 0-2-2v0a2 2 0 0 0-2 2v2\"/><path d=\"M10 10.5V6a2 2 0 0 0-2-2v0a2 2 0 0 0-2 2v8\"/><path d=\"M18 8a2 2 0 1 1 4 0v6a8 8 0 0 1-8 8h-2c-2.8 0-4.5-.86-5.99-2.34l-3.6-3.6a2 2 0 0 1 2.83-2.82L7 15\"/>",
     words: [
       { es: "hola", de: "hallo" },
@@ -340,6 +395,12 @@ const CHAPTERS = [
       { es: "hasta mañana", de: "bis morgen" },
       { es: "hasta pronto", de: "bis bald" },
       { es: "bienvenido/a", de: "willkommen" },
+    ]
+  },
+  {
+    id: "saludos-2", title: "Saludos y Cortesía", subtitle: "Begrüßung & Höflichkeit (Teil 2)", stop: "Murcia",
+    icon: "<path d=\"M18 11V6a2 2 0 0 0-2-2v0a2 2 0 0 0-2 2v0\"/><path d=\"M14 10V4a2 2 0 0 0-2-2v0a2 2 0 0 0-2 2v2\"/><path d=\"M10 10.5V6a2 2 0 0 0-2-2v0a2 2 0 0 0-2 2v8\"/><path d=\"M18 8a2 2 0 1 1 4 0v6a8 8 0 0 1-8 8h-2c-2.8 0-4.5-.86-5.99-2.34l-3.6-3.6a2 2 0 0 1 2.83-2.82L7 15\"/>",
+    words: [
       { es: "con permiso", de: "entschuldigen Sie" },
       { es: "claro", de: "klar" },
       { es: "por supuesto", de: "natürlich" },
@@ -368,7 +429,7 @@ const CHAPTERS = [
     ]
   },
   {
-    id: "familia", title: "La Familia", subtitle: "Familie", stop: "Sevilla",
+    id: "familia-1", title: "La Familia", subtitle: "Familie (Teil 1)", stop: "Sevilla",
     icon: "<path d=\"M17 21v-2a4 4 0 0 0-4-4H7a4 4 0 0 0-4 4v2\"/><circle cx=\"9\" cy=\"7\" r=\"4\"/><path d=\"M23 21v-2a4 4 0 0 0-3-3.87\"/><path d=\"M16 3.13a4 4 0 0 1 0 7.75\"/>",
     words: [
       { es: "la madre", de: "die Mutter" },
@@ -396,6 +457,12 @@ const CHAPTERS = [
       { es: "el marido", de: "der Ehemann" },
       { es: "la mujer", de: "die Frau" },
       { es: "el novio", de: "der Freund" },
+    ]
+  },
+  {
+    id: "familia-2", title: "La Familia", subtitle: "Familie (Teil 2)", stop: "Palma de Mallorca",
+    icon: "<path d=\"M17 21v-2a4 4 0 0 0-4-4H7a4 4 0 0 0-4 4v2\"/><circle cx=\"9\" cy=\"7\" r=\"4\"/><path d=\"M23 21v-2a4 4 0 0 0-3-3.87\"/><path d=\"M16 3.13a4 4 0 0 1 0 7.75\"/>",
+    words: [
       { es: "la novia", de: "die Freundin" },
       { es: "el suegro", de: "der Schwiegervater" },
       { es: "la suegra", de: "die Schwiegermutter" },
@@ -424,7 +491,7 @@ const CHAPTERS = [
     ]
   },
   {
-    id: "numeros", title: "Los Números", subtitle: "Zahlen 1–50", stop: "Valencia",
+    id: "numeros-1", title: "Los Números", subtitle: "Zahlen 1–50 (Teil 1)", stop: "Valencia",
     icon: "<path d=\"M4 9h16M4 15h16M10 3 8 21M16 3l-2 18\"/>",
     words: [
       { es: "uno", de: "eins" },
@@ -452,6 +519,12 @@ const CHAPTERS = [
       { es: "veintitrés", de: "dreiundzwanzig" },
       { es: "veinticuatro", de: "vierundzwanzig" },
       { es: "veinticinco", de: "fünfundzwanzig" },
+    ]
+  },
+  {
+    id: "numeros-2", title: "Los Números", subtitle: "Zahlen 1–50 (Teil 2)", stop: "Las Palmas",
+    icon: "<path d=\"M4 9h16M4 15h16M10 3 8 21M16 3l-2 18\"/>",
+    words: [
       { es: "veintiséis", de: "sechsundzwanzig" },
       { es: "veintisiete", de: "siebenundzwanzig" },
       { es: "veintiocho", de: "achtundzwanzig" },
@@ -480,7 +553,7 @@ const CHAPTERS = [
     ]
   },
   {
-    id: "colores", title: "Colores y Formas", subtitle: "Farben & Formen", stop: "Granada",
+    id: "colores-1", title: "Colores y Formas", subtitle: "Farben & Formen (Teil 1)", stop: "Granada",
     icon: "<path d=\"M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10c.9 0 1.5-.7 1.5-1.5 0-.4-.1-.7-.4-1a2 2 0 0 1 1.4-3.5H16a4 4 0 0 0 4-4c0-5.5-4-8-8-8z\"/><circle cx=\"7.5\" cy=\"10.5\" r=\".8\"/><circle cx=\"12\" cy=\"7\" r=\".8\"/><circle cx=\"16.5\" cy=\"10.5\" r=\".8\"/>",
     words: [
       { es: "rojo", de: "rot" },
@@ -508,6 +581,12 @@ const CHAPTERS = [
       { es: "el triángulo", de: "das Dreieck" },
       { es: "el rectángulo", de: "das Rechteck" },
       { es: "el óvalo", de: "das Oval" },
+    ]
+  },
+  {
+    id: "colores-2", title: "Colores y Formas", subtitle: "Farben & Formen (Teil 2)", stop: "Vigo",
+    icon: "<path d=\"M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10c.9 0 1.5-.7 1.5-1.5 0-.4-.1-.7-.4-1a2 2 0 0 1 1.4-3.5H16a4 4 0 0 0 4-4c0-5.5-4-8-8-8z\"/><circle cx=\"7.5\" cy=\"10.5\" r=\".8\"/><circle cx=\"12\" cy=\"7\" r=\".8\"/><circle cx=\"16.5\" cy=\"10.5\" r=\".8\"/>",
+    words: [
       { es: "la línea", de: "die Linie" },
       { es: "el punto", de: "der Punkt" },
       { es: "la estrella", de: "der Stern" },
@@ -536,7 +615,7 @@ const CHAPTERS = [
     ]
   },
   {
-    id: "comida", title: "La Comida y Bebida", subtitle: "Essen & Trinken", stop: "Bilbao",
+    id: "comida-1", title: "La Comida y Bebida", subtitle: "Essen & Trinken (Teil 1)", stop: "Bilbao",
     icon: "<path d=\"M3 2v7c0 1.1.9 2 2 2h0a2 2 0 0 0 2-2V2\"/><path d=\"M7 2v20\"/><path d=\"M21 15V2a5 5 0 0 0-5 5v6c0 1.1.9 2 2 2h3Zm0 0v7\"/>",
     words: [
       { es: "el pan", de: "das Brot" },
@@ -564,6 +643,12 @@ const CHAPTERS = [
       { es: "el huevo", de: "das Ei" },
       { es: "la verdura", de: "das Gemüse" },
       { es: "la ensalada", de: "der Salat" },
+    ]
+  },
+  {
+    id: "comida-2", title: "La Comida y Bebida", subtitle: "Essen & Trinken (Teil 2)", stop: "Gijón",
+    icon: "<path d=\"M3 2v7c0 1.1.9 2 2 2h0a2 2 0 0 0 2-2V2\"/><path d=\"M7 2v20\"/><path d=\"M21 15V2a5 5 0 0 0-5 5v6c0 1.1.9 2 2 2h3Zm0 0v7\"/>",
+    words: [
       { es: "la sopa", de: "die Suppe" },
       { es: "la patata", de: "die Kartoffel" },
       { es: "la cebolla", de: "die Zwiebel" },
@@ -592,7 +677,7 @@ const CHAPTERS = [
     ]
   },
   {
-    id: "casa", title: "La Casa", subtitle: "Haus & Wohnung", stop: "San Sebastián",
+    id: "casa-1", title: "La Casa", subtitle: "Haus & Wohnung (Teil 1)", stop: "San Sebastián",
     icon: "<path d=\"M3 11 12 3l9 8\"/><path d=\"M5 10v10h14V10\"/><path d=\"M9 20v-6h6v6\"/>",
     words: [
       { es: "la casa", de: "das Haus" },
@@ -620,6 +705,12 @@ const CHAPTERS = [
       { es: "el sofá", de: "das Sofa" },
       { es: "la cama", de: "das Bett" },
       { es: "el armario", de: "der Schrank" },
+    ]
+  },
+  {
+    id: "casa-2", title: "La Casa", subtitle: "Haus & Wohnung (Teil 2)", stop: "A Coruña",
+    icon: "<path d=\"M3 11 12 3l9 8\"/><path d=\"M5 10v10h14V10\"/><path d=\"M9 20v-6h6v6\"/>",
+    words: [
       { es: "la estantería", de: "das Regal" },
       { es: "la lámpara", de: "die Lampe" },
       { es: "el espejo", de: "der Spiegel" },
@@ -648,7 +739,7 @@ const CHAPTERS = [
     ]
   },
   {
-    id: "ropa", title: "La Ropa", subtitle: "Kleidung", stop: "Toledo",
+    id: "ropa-1", title: "La Ropa", subtitle: "Kleidung (Teil 1)", stop: "Toledo",
     icon: "<path d=\"M16 3 12 6 8 3 3 7l3 3v11h12V10l3-3Z\"/>",
     words: [
       { es: "la camisa", de: "das Hemd" },
@@ -676,6 +767,12 @@ const CHAPTERS = [
       { es: "el pijama", de: "der Schlafanzug" },
       { es: "la ropa interior", de: "die Unterwäsche" },
       { es: "el bañador", de: "die Badebekleidung" },
+    ]
+  },
+  {
+    id: "ropa-2", title: "La Ropa", subtitle: "Kleidung (Teil 2)", stop: "Vitoria-Gasteiz",
+    icon: "<path d=\"M16 3 12 6 8 3 3 7l3 3v11h12V10l3-3Z\"/>",
+    words: [
       { es: "las gafas", de: "die Brille" },
       { es: "las gafas de sol", de: "die Sonnenbrille" },
       { es: "el reloj", de: "die Uhr" },
@@ -704,7 +801,7 @@ const CHAPTERS = [
     ]
   },
   {
-    id: "cuerpo", title: "El Cuerpo y la Salud", subtitle: "Körper & Gesundheit", stop: "Santiago de Compostela",
+    id: "cuerpo-1", title: "El Cuerpo y la Salud", subtitle: "Körper & Gesundheit (Teil 1)", stop: "Santiago de Compostela",
     icon: "<path d=\"M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.6l-1-1a5.5 5.5 0 0 0-7.8 7.8l1 1L12 21l7.8-7.6 1-1a5.5 5.5 0 0 0 0-7.8Z\"/><path d=\"M6 12h2l1.5-3 2 5 1.5-3H18\"/>",
     words: [
       { es: "la cabeza", de: "der Kopf" },
@@ -732,6 +829,12 @@ const CHAPTERS = [
       { es: "el músculo", de: "der Muskel" },
       { es: "la sangre", de: "das Blut" },
       { es: "el médico", de: "der Arzt" },
+    ]
+  },
+  {
+    id: "cuerpo-2", title: "El Cuerpo y la Salud", subtitle: "Körper & Gesundheit (Teil 2)", stop: "Elche",
+    icon: "<path d=\"M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.6l-1-1a5.5 5.5 0 0 0-7.8 7.8l1 1L12 21l7.8-7.6 1-1a5.5 5.5 0 0 0 0-7.8Z\"/><path d=\"M6 12h2l1.5-3 2 5 1.5-3H18\"/>",
+    words: [
       { es: "la enfermera", de: "die Krankenschwester" },
       { es: "el hospital", de: "das Krankenhaus" },
       { es: "la farmacia", de: "die Apotheke" },
@@ -760,7 +863,7 @@ const CHAPTERS = [
     ]
   },
   {
-    id: "viaje", title: "De Viaje", subtitle: "Reisen", stop: "Málaga",
+    id: "viaje-1", title: "De Viaje", subtitle: "Reisen (Teil 1)", stop: "Málaga",
     icon: "<path d=\"M17.8 19.2 16 11l3.5-3.5C21 6 21.5 4 21 3c-1-.5-3 0-4.5 1.5L13 8 4.8 6.2c-.5-.1-1 .1-1.3.4l-.7.7a1 1 0 0 0 .3 1.6l5.9 2.5-2 2.5H3v2l3 1 1 3h2l.6-4 2.5-2 2.5 5.9a1 1 0 0 0 1.6.3l.7-.7c.3-.3.5-.8.4-1.3z\"/>",
     words: [
       { es: "el aeropuerto", de: "der Flughafen" },
@@ -788,6 +891,12 @@ const CHAPTERS = [
       { es: "el retraso", de: "die Verspätung" },
       { es: "la conexión", de: "der Umstieg" },
       { es: "la aduana", de: "der Zoll" },
+    ]
+  },
+  {
+    id: "viaje-2", title: "De Viaje", subtitle: "Reisen (Teil 2)", stop: "Tarragona",
+    icon: "<path d=\"M17.8 19.2 16 11l3.5-3.5C21 6 21.5 4 21 3c-1-.5-3 0-4.5 1.5L13 8 4.8 6.2c-.5-.1-1 .1-1.3.4l-.7.7a1 1 0 0 0 .3 1.6l5.9 2.5-2 2.5H3v2l3 1 1 3h2l.6-4 2.5-2 2.5 5.9a1 1 0 0 0 1.6.3l.7-.7c.3-.3.5-.8.4-1.3z\"/>",
+    words: [
       { es: "la frontera", de: "die Grenze" },
       { es: "el mapa", de: "die Karte" },
       { es: "la guía turística", de: "der Reiseführer" },
@@ -816,7 +925,7 @@ const CHAPTERS = [
     ]
   },
   {
-    id: "ciudad", title: "En la Ciudad", subtitle: "Stadt & Wegbeschreibung", stop: "Zaragoza",
+    id: "ciudad-1", title: "En la Ciudad", subtitle: "Stadt & Wegbeschreibung (Teil 1)", stop: "Zaragoza",
     icon: "<path d=\"M3 21h18M5 21V7l7-4 7 4v14M9 9h1m4 0h1m-6 4h1m4 0h1m-6 4h1m4 0h1\"/>",
     words: [
       { es: "la calle", de: "die Straße" },
@@ -844,6 +953,12 @@ const CHAPTERS = [
       { es: "la cafetería", de: "das Café" },
       { es: "el semáforo", de: "die Ampel" },
       { es: "la esquina", de: "die Ecke" },
+    ]
+  },
+  {
+    id: "ciudad-2", title: "En la Ciudad", subtitle: "Stadt & Wegbeschreibung (Teil 2)", stop: "Girona",
+    icon: "<path d=\"M3 21h18M5 21V7l7-4 7 4v14M9 9h1m4 0h1m-6 4h1m4 0h1m-6 4h1m4 0h1\"/>",
+    words: [
       { es: "el cruce", de: "die Kreuzung" },
       { es: "la acera", de: "der Bürgersteig" },
       { es: "el puente", de: "die Brücke" },
@@ -872,7 +987,7 @@ const CHAPTERS = [
     ]
   },
   {
-    id: "tiempo", title: "El Tiempo y las Estaciones", subtitle: "Wetter & Jahreszeiten", stop: "Córdoba",
+    id: "tiempo-1", title: "El Tiempo y las Estaciones", subtitle: "Wetter & Jahreszeiten (Teil 1)", stop: "Córdoba",
     icon: "<circle cx=\"12\" cy=\"12\" r=\"4\"/><path d=\"M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4\"/>",
     words: [
       { es: "hace sol", de: "die Sonne scheint" },
@@ -900,6 +1015,12 @@ const CHAPTERS = [
       { es: "la primavera", de: "der Frühling" },
       { es: "el verano", de: "der Sommer" },
       { es: "el otoño", de: "der Herbst" },
+    ]
+  },
+  {
+    id: "tiempo-2", title: "El Tiempo y las Estaciones", subtitle: "Wetter & Jahreszeiten (Teil 2)", stop: "Huesca",
+    icon: "<circle cx=\"12\" cy=\"12\" r=\"4\"/><path d=\"M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4\"/>",
+    words: [
       { es: "el invierno", de: "der Winter" },
       { es: "húmedo", de: "feucht" },
       { es: "seco", de: "trocken" },
@@ -928,7 +1049,7 @@ const CHAPTERS = [
     ]
   },
   {
-    id: "animales", title: "Los Animales", subtitle: "Tiere", stop: "Salamanca",
+    id: "animales-1", title: "Los Animales", subtitle: "Tiere (Teil 1)", stop: "Salamanca",
     icon: "<path d=\"M12 14c-3 0-6 2-6 5a2 2 0 0 0 2 2c1.2 0 2-1 4-1s2.8 1 4 1a2 2 0 0 0 2-2c0-3-3-5-6-5Z\"/><circle cx=\"6\" cy=\"10\" r=\"1.6\"/><circle cx=\"10\" cy=\"7\" r=\"1.6\"/><circle cx=\"14\" cy=\"7\" r=\"1.6\"/><circle cx=\"18\" cy=\"10\" r=\"1.6\"/>",
     words: [
       { es: "el perro", de: "der Hund" },
@@ -956,6 +1077,12 @@ const CHAPTERS = [
       { es: "el loro", de: "der Papagei" },
       { es: "el pingüino", de: "der Pinguin" },
       { es: "el pez", de: "der Fisch" },
+    ]
+  },
+  {
+    id: "animales-2", title: "Los Animales", subtitle: "Tiere (Teil 2)", stop: "Cuenca",
+    icon: "<path d=\"M12 14c-3 0-6 2-6 5a2 2 0 0 0 2 2c1.2 0 2-1 4-1s2.8 1 4 1a2 2 0 0 0 2-2c0-3-3-5-6-5Z\"/><circle cx=\"6\" cy=\"10\" r=\"1.6\"/><circle cx=\"10\" cy=\"7\" r=\"1.6\"/><circle cx=\"14\" cy=\"7\" r=\"1.6\"/><circle cx=\"18\" cy=\"10\" r=\"1.6\"/>",
+    words: [
       { es: "el tiburón", de: "der Hai" },
       { es: "la ballena", de: "der Wal" },
       { es: "el delfín", de: "der Delfin" },
@@ -984,7 +1111,7 @@ const CHAPTERS = [
     ]
   },
   {
-    id: "naturaleza", title: "La Naturaleza", subtitle: "Natur & Umwelt", stop: "Valladolid",
+    id: "naturaleza-1", title: "La Naturaleza", subtitle: "Natur & Umwelt (Teil 1)", stop: "Valladolid",
     icon: "<path d=\"M11 20A7 7 0 0 1 4 13c0-8 9-11 16-11 0 7-3 16-11 16-1.5 0-2.8-.3-4-1Z\"/><path d=\"M4 13c4-1 8-3 11-7\"/>",
     words: [
       { es: "el árbol", de: "der Baum" },
@@ -1012,6 +1139,12 @@ const CHAPTERS = [
       { es: "la estrella", de: "der Stern" },
       { es: "la luna", de: "der Mond" },
       { es: "el sol", de: "die Sonne" },
+    ]
+  },
+  {
+    id: "naturaleza-2", title: "La Naturaleza", subtitle: "Natur & Umwelt (Teil 2)", stop: "Ávila",
+    icon: "<path d=\"M11 20A7 7 0 0 1 4 13c0-8 9-11 16-11 0 7-3 16-11 16-1.5 0-2.8-.3-4-1Z\"/><path d=\"M4 13c4-1 8-3 11-7\"/>",
+    words: [
       { es: "el universo", de: "das Universum" },
       { es: "el volcán", de: "der Vulkan" },
       { es: "la cueva", de: "die Höhle" },
@@ -1040,7 +1173,7 @@ const CHAPTERS = [
     ]
   },
   {
-    id: "trabajo", title: "El Trabajo y la Oficina", subtitle: "Arbeit & Büro", stop: "Alicante",
+    id: "trabajo-1", title: "El Trabajo y la Oficina", subtitle: "Arbeit & Büro (Teil 1)", stop: "Alicante",
     icon: "<rect x=\"2\" y=\"7\" width=\"20\" height=\"14\" rx=\"2\"/><path d=\"M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16\"/>",
     words: [
       { es: "la oficina", de: "das Büro" },
@@ -1068,6 +1201,12 @@ const CHAPTERS = [
       { es: "el presupuesto", de: "das Budget" },
       { es: "la entrevista", de: "das Vorstellungsgespräch" },
       { es: "el currículum", de: "der Lebenslauf" },
+    ]
+  },
+  {
+    id: "trabajo-2", title: "El Trabajo y la Oficina", subtitle: "Arbeit & Büro (Teil 2)", stop: "Segovia",
+    icon: "<rect x=\"2\" y=\"7\" width=\"20\" height=\"14\" rx=\"2\"/><path d=\"M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16\"/>",
+    words: [
       { es: "la carrera", de: "die Karriere" },
       { es: "el puesto", de: "die Stelle" },
       { es: "el horario", de: "der Zeitplan" },
@@ -1096,7 +1235,7 @@ const CHAPTERS = [
     ]
   },
   {
-    id: "escuela", title: "La Escuela y los Estudios", subtitle: "Schule & Studium", stop: "Cádiz",
+    id: "escuela-1", title: "La Escuela y los Estudios", subtitle: "Schule & Studium (Teil 1)", stop: "Cádiz",
     icon: "<path d=\"M22 10 12 5 2 10l10 5 10-5Z\"/><path d=\"M6 12v5c0 1.7 2.7 3 6 3s6-1.3 6-3v-5\"/>",
     words: [
       { es: "la escuela", de: "die Schule" },
@@ -1124,6 +1263,12 @@ const CHAPTERS = [
       { es: "la historia", de: "die Geschichte" },
       { es: "la geografía", de: "die Geografie" },
       { es: "la ciencia", de: "die Wissenschaft" },
+    ]
+  },
+  {
+    id: "escuela-2", title: "La Escuela y los Estudios", subtitle: "Schule & Studium (Teil 2)", stop: "Burgos",
+    icon: "<path d=\"M22 10 12 5 2 10l10 5 10-5Z\"/><path d=\"M6 12v5c0 1.7 2.7 3 6 3s6-1.3 6-3v-5\"/>",
+    words: [
       { es: "la biología", de: "die Biologie" },
       { es: "la química", de: "die Chemie" },
       { es: "la física", de: "die Physik" },
@@ -1152,7 +1297,7 @@ const CHAPTERS = [
     ]
   },
   {
-    id: "sentimientos", title: "Sentimientos", subtitle: "Gefühle", stop: "León",
+    id: "sentimientos-1", title: "Sentimientos", subtitle: "Gefühle (Teil 1)", stop: "León",
     icon: "<path d=\"M12 21c-4.4-3.3-9-6.9-9-11.2C3 6.5 5.4 4 8.5 4c1.7 0 3.1.9 3.5 2.2C12.4 4.9 13.8 4 15.5 4 18.6 4 21 6.5 21 9.8c0 4.3-4.6 7.9-9 11.2Z\"/>",
     words: [
       { es: "feliz", de: "glücklich" },
@@ -1180,6 +1325,12 @@ const CHAPTERS = [
       { es: "inseguro/a", de: "unsicher" },
       { es: "relajado/a", de: "entspannt" },
       { es: "estresado/a", de: "gestresst" },
+    ]
+  },
+  {
+    id: "sentimientos-2", title: "Sentimientos", subtitle: "Gefühle (Teil 2)", stop: "Logroño",
+    icon: "<path d=\"M12 21c-4.4-3.3-9-6.9-9-11.2C3 6.5 5.4 4 8.5 4c1.7 0 3.1.9 3.5 2.2C12.4 4.9 13.8 4 15.5 4 18.6 4 21 6.5 21 9.8c0 4.3-4.6 7.9-9 11.2Z\"/>",
+    words: [
       { es: "solo/a", de: "einsam" },
       { es: "enamorado/a", de: "verliebt" },
       { es: "satisfecho/a", de: "zufrieden" },
@@ -1208,7 +1359,7 @@ const CHAPTERS = [
     ]
   },
   {
-    id: "tecnologia", title: "La Tecnología", subtitle: "Technologie", stop: "Pamplona",
+    id: "tecnologia-1", title: "La Tecnología", subtitle: "Technologie (Teil 1)", stop: "Pamplona",
     icon: "<rect x=\"6\" y=\"6\" width=\"12\" height=\"12\" rx=\"2\"/><path d=\"M9 2v3M15 2v3M9 19v3M15 19v3M2 9h3M2 15h3M19 9h3M19 15h3\"/>",
     words: [
       { es: "el ordenador", de: "der Computer" },
@@ -1236,6 +1387,12 @@ const CHAPTERS = [
       { es: "el wifi", de: "das WLAN" },
       { es: "la conexión", de: "die Verbindung" },
       { es: "el correo electrónico", de: "die E-Mail" },
+    ]
+  },
+  {
+    id: "tecnologia-2", title: "La Tecnología", subtitle: "Technologie (Teil 2)", stop: "Almería",
+    icon: "<rect x=\"6\" y=\"6\" width=\"12\" height=\"12\" rx=\"2\"/><path d=\"M9 2v3M15 2v3M9 19v3M15 19v3M2 9h3M2 15h3M19 9h3M19 15h3\"/>",
+    words: [
       { es: "la red social", de: "das soziale Netzwerk" },
       { es: "el mensaje", de: "die Nachricht" },
       { es: "el enlace", de: "der Link" },
@@ -1264,7 +1421,7 @@ const CHAPTERS = [
     ]
   },
   {
-    id: "deporte", title: "El Deporte", subtitle: "Sport", stop: "Oviedo",
+    id: "deporte-1", title: "El Deporte", subtitle: "Sport (Teil 1)", stop: "Oviedo",
     icon: "<path d=\"M8 21h8M12 17v4M7 4h10v5a5 5 0 0 1-10 0V4Z\"/><path d=\"M7 5H4a2 2 0 0 0 2 4M17 5h3a2 2 0 0 1-2 4\"/>",
     words: [
       { es: "el fútbol", de: "der Fußball" },
@@ -1292,6 +1449,12 @@ const CHAPTERS = [
       { es: "el partido", de: "das Spiel" },
       { es: "el campeonato", de: "die Meisterschaft" },
       { es: "la competición", de: "der Wettbewerb" },
+    ]
+  },
+  {
+    id: "deporte-2", title: "El Deporte", subtitle: "Sport (Teil 2)", stop: "Jaén",
+    icon: "<path d=\"M8 21h8M12 17v4M7 4h10v5a5 5 0 0 1-10 0V4Z\"/><path d=\"M7 5H4a2 2 0 0 0 2 4M17 5h3a2 2 0 0 1-2 4\"/>",
+    words: [
       { es: "la medalla", de: "die Medaille" },
       { es: "el trofeo", de: "die Trophäe" },
       { es: "el récord", de: "der Rekord" },
@@ -1320,7 +1483,7 @@ const CHAPTERS = [
     ]
   },
   {
-    id: "verbos", title: "Verbos Comunes", subtitle: "Häufige Verben", stop: "Santander",
+    id: "verbos-1", title: "Verbos Comunes", subtitle: "Häufige Verben (Teil 1)", stop: "Santander",
     icon: "<path d=\"M13 2 4 14h6l-1 8 9-12h-6z\"/>",
     words: [
       { es: "ser", de: "sein" },
@@ -1348,6 +1511,12 @@ const CHAPTERS = [
       { es: "mirar", de: "schauen" },
       { es: "buscar", de: "suchen" },
       { es: "encontrar", de: "finden" },
+    ]
+  },
+  {
+    id: "verbos-2", title: "Verbos Comunes", subtitle: "Häufige Verben (Teil 2)", stop: "Badajoz",
+    icon: "<path d=\"M13 2 4 14h6l-1 8 9-12h-6z\"/>",
+    words: [
       { es: "empezar", de: "anfangen" },
       { es: "terminar", de: "beenden" },
       { es: "abrir", de: "öffnen" },
@@ -1376,7 +1545,7 @@ const CHAPTERS = [
     ]
   },
   {
-    id: "adjetivos", title: "Adjetivos y Expresiones", subtitle: "Adjektive & Redewendungen", stop: "Barcelona",
+    id: "adjetivos-1", title: "Adjetivos y Expresiones", subtitle: "Adjektive & Redewendungen (Teil 1)", stop: "Barcelona",
     icon: "<path d=\"M20.6 12.4 12.4 20.6a2 2 0 0 1-2.8 0l-7.2-7.2a2 2 0 0 1 0-2.8L10.6 2.4A2 2 0 0 1 12 2H19a2 2 0 0 1 2 2v7a2 2 0 0 1-.4 1.4Z\"/><circle cx=\"15.5\" cy=\"8.5\" r=\"1.2\"/>",
     words: [
       { es: "bueno", de: "gut" },
@@ -1404,6 +1573,12 @@ const CHAPTERS = [
       { es: "delgado", de: "dünn" },
       { es: "guapo", de: "hübsch" },
       { es: "feo", de: "hässlich" },
+    ]
+  },
+  {
+    id: "adjetivos-2", title: "Adjetivos y Expresiones", subtitle: "Adjektive & Redewendungen (Teil 2)", stop: "Ronda",
+    icon: "<path d=\"M20.6 12.4 12.4 20.6a2 2 0 0 1-2.8 0l-7.2-7.2a2 2 0 0 1 0-2.8L10.6 2.4A2 2 0 0 1 12 2H19a2 2 0 0 1 2 2v7a2 2 0 0 1-.4 1.4Z\"/><circle cx=\"15.5\" cy=\"8.5\" r=\"1.2\"/>",
+    words: [
       { es: "inteligente", de: "intelligent" },
       { es: "tonto", de: "dumm" },
       { es: "amable", de: "freundlich" },
@@ -1443,22 +1618,22 @@ const LEVELS = [
   {
     id: "beginner", name: "Anfänger", tag: "A1 · Grundlagen", accent: "coral",
     icon: '<path d="M12 2v4M12 18v4M4.9 4.9l2.8 2.8M16.3 16.3l2.8 2.8M2 12h4M18 12h4M4.9 19.1l2.8-2.8M16.3 7.7l2.8-2.8"/><circle cx="12" cy="12" r="3"/>',
-    chapters: ["saludos", "familia", "numeros", "colores", "comida"],
+    chapters: ["saludos-1","saludos-2","familia-1","familia-2","numeros-1","numeros-2","colores-1","colores-2","comida-1","comida-2"],
   },
   {
     id: "intermediate", name: "Fortgeschritten", tag: "A2–B1 · Alltag", accent: "gold",
     icon: '<circle cx="12" cy="12" r="10"/><path d="m16.2 7.8-2.2 6.2-6.2 2.2 2.2-6.2z"/>',
-    chapters: ["casa", "ropa", "cuerpo", "viaje", "ciudad"],
+    chapters: ["casa-1","casa-2","ropa-1","ropa-2","cuerpo-1","cuerpo-2","viaje-1","viaje-2","ciudad-1","ciudad-2"],
   },
   {
     id: "advanced", name: "Erfahren", tag: "B1–B2 · Vertiefung", accent: "mint",
     icon: '<path d="M2 6a2 2 0 0 1 2-2h6v16H4a2 2 0 0 1-2-2Z"/><path d="M22 6a2 2 0 0 0-2-2h-6v16h6a2 2 0 0 0 2-2Z"/>',
-    chapters: ["tiempo", "animales", "naturaleza", "trabajo", "escuela"],
+    chapters: ["tiempo-1","tiempo-2","animales-1","animales-2","naturaleza-1","naturaleza-2","trabajo-1","trabajo-2","escuela-1","escuela-2"],
   },
   {
     id: "master", name: "Profi", tag: "B2–C1 · Meisterschaft", accent: "plum",
     icon: '<path d="M2 18h20l-2-9-5 4-3-7-3 7-5-4Z"/>',
-    chapters: ["sentimientos", "tecnologia", "deporte", "verbos", "adjetivos"],
+    chapters: ["sentimientos-1","sentimientos-2","tecnologia-1","tecnologia-2","deporte-1","deporte-2","verbos-1","verbos-2","adjetivos-1","adjetivos-2"],
   },
 ];
 const LEVEL_BY_ID = Object.fromEntries(LEVELS.map(l => [l.id, l]));
@@ -1535,14 +1710,12 @@ function renderLevels() {
     card.onclick = () => unlocked && goToPath(level.id);
     card.style.animationDelay = `${idx * 0.05}s`;
 
-    const iconSvg = unlocked
-      ? `<svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="${accent.main}" stroke-width="2">${level.icon}</svg>`
-      : `<svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="var(--cream-dim)" stroke-width="2">${LOCK_SVG}</svg>`;
+    const iconSvg = `<svg viewBox="0 0 24 24" width="27" height="27" fill="none" stroke="#FFFFFF" stroke-width="2.1">${level.icon}</svg>`;
 
     const wordCount = level.chapters.reduce((sum, id) => sum + CH_BY_ID[id].words.length, 0);
 
     card.innerHTML = `
-      <div class="level-icon" style="background:${unlocked ? 'rgba(255,255,255,0.06)' : 'var(--panel-light)'}">${iconSvg}</div>
+      <div class="level-icon" style="background:linear-gradient(135deg, ${accent.main}, ${accent.dark})">${iconSvg}</div>
       <div class="level-info">
         <p class="level-name">${level.name}</p>
         <p class="level-tag">${level.tag}${unlocked ? '' : ' · gesperrt'} · ${wordCount} Vokabeln</p>
@@ -1566,6 +1739,33 @@ const OFFSETS = [0, 56, -20, 60, -8];
 function renderPath() {
   const level = LEVEL_BY_ID[state.levelId];
   const levelIdx = LEVELS.findIndex(l => l.id === level.id);
+  const accent = ACCENT_VARS[level.accent];
+
+  document.getElementById('path-banner').innerHTML = `
+    <svg viewBox="0 0 480 92" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <linearGradient id="pathSky-${level.id}" x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0%" stop-color="${accent.main}"/>
+          <stop offset="100%" stop-color="${accent.dark}"/>
+        </linearGradient>
+      </defs>
+      <rect width="480" height="92" fill="url(#pathSky-${level.id})"/>
+      <circle cx="430" cy="24" r="18" fill="#FFF6EA" opacity="0.22"/>
+      <circle cx="40" cy="18" r="5" fill="#FFF6EA" opacity="0.35"/>
+      <circle cx="70" cy="30" r="3" fill="#FFF6EA" opacity="0.3"/>
+      <g fill="#FFF6EA" opacity="0.9">
+        <rect x="0" y="66" width="480" height="26"/>
+        <rect x="24" y="48" width="22" height="20"/>
+        <rect x="64" y="38" width="16" height="30"/>
+        <rect x="120" y="52" width="24" height="16"/>
+        <rect x="300" y="44" width="20" height="24"/>
+        <rect x="340" y="30" width="16" height="38"/>
+        <rect x="380" y="50" width="26" height="18"/>
+        <rect x="430" y="40" width="18" height="28"/>
+        <path d="M64 38h16v-9l-8-7-8 7Z"/>
+      </g>
+    </svg>
+  `;
 
   document.getElementById('path-eyebrow').textContent = `${level.name} · ${level.tag}`;
   document.getElementById('path-title').textContent = 'Deine Route durchs Spanische';
@@ -1585,8 +1785,8 @@ function renderPath() {
 
     const btnClass = unlocked ? (st.done ? 'node-btn done' : 'node-btn unlocked') : 'node-btn';
     const iconSvg = unlocked
-      ? `<svg viewBox="0 0 24 24" fill="none" stroke="#0F2E2C" stroke-width="2.2" width="28" height="28">${ch.icon}</svg>`
-      : `<svg viewBox="0 0 24 24" fill="none" stroke="#CFE3DD" stroke-width="2" width="24" height="24">${LOCK_SVG}</svg>`;
+      ? `<svg viewBox="0 0 24 24" fill="none" stroke="#2B2118" stroke-width="2.2" width="28" height="28">${ch.icon}</svg>`
+      : `<svg viewBox="0 0 24 24" fill="none" stroke="#9C8B72" stroke-width="2" width="24" height="24">${LOCK_SVG}</svg>`;
 
     const starsHtml = st.done
       ? `<div class="node-stars">${[0,1,2].map(s => STAR_SVG(s < st.stars)).join('')}</div>`
@@ -1764,7 +1964,7 @@ function renderResult() {
     starsEl.innerHTML = '';
     actions.innerHTML = `
       <button class="btn-primary" onclick="retryChapter()">
-        <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="#0F2E2C" stroke-width="2.4"><path d="M1 4v6h6M23 20v-6h-6"/><path d="M20.5 9A9 9 0 0 0 5 5.3L1 10m22 4-4 4.7A9 9 0 0 1 3.5 15"/></svg>
+        <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="#2B2118" stroke-width="2.4"><path d="M1 4v6h6M23 20v-6h-6"/><path d="M20.5 9A9 9 0 0 0 5 5.3L1 10m22 4-4 4.7A9 9 0 0 1 3.5 15"/></svg>
         Nochmal versuchen
       </button>`;
   } else {
@@ -1785,7 +1985,7 @@ function renderResult() {
     actions.innerHTML = `
       <button class="btn-primary mint" onclick="goToPath('${level.id}')">
         Weiter auf der Route
-        <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="#0F2E2C" stroke-width="2.4"><path d="M5 12h14M13 5l7 7-7 7"/></svg>
+        <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="#2B2118" stroke-width="2.4"><path d="M5 12h14M13 5l7 7-7 7"/></svg>
       </button>
       ${unlockedNextLevel ? `<button class="btn-secondary" onclick="goToLevels()">Niveaus ansehen</button>` : ''}`;
   }

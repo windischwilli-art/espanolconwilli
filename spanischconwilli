@@ -1,1 +1,989 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>El Camino del Español</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600..800&family=Work+Sans:wght@400;500;600;700&display=swap');
 
+  :root {
+    --ink: #0F2E2C;
+    --panel: #153E3B;
+    --panel-light: #1D4B47;
+    --cream: #FBF3E6;
+    --cream-dim: #CFE3DD;
+    --coral: #FF6B54;
+    --coral-dark: #E5573F;
+    --gold: #F2B705;
+    --gold-dark: #C99500;
+    --mint: #5FD1A0;
+    --mint-dark: #3FAE82;
+    --red: #FF5C5C;
+    --line: rgba(251,243,230,0.14);
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    background: #081E1D;
+    font-family: 'Work Sans', sans-serif;
+    color: var(--cream);
+    display: flex;
+    justify-content: center;
+    padding: 24px 12px;
+    min-height: 100vh;
+  }
+
+  .font-display { font-family: 'Fraunces', serif; }
+
+  #app {
+    width: 100%;
+    max-width: 480px;
+    min-height: 680px;
+    background: var(--ink);
+    border-radius: 28px;
+    overflow: hidden;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.4);
+    display: flex;
+    flex-direction: column;
+    position: relative;
+  }
+
+  .screen { display: none; flex-direction: column; flex: 1; }
+  .screen.active { display: flex; }
+
+  /* --- TopBar --- */
+  .topbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 16px 20px;
+    border-bottom: 1px solid var(--line);
+  }
+  .back-btn {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    background: none;
+    border: none;
+    color: var(--cream-dim);
+    font-family: 'Work Sans', sans-serif;
+    font-size: 14px;
+    cursor: pointer;
+    padding: 0;
+  }
+  .stats { display: flex; align-items: center; gap: 16px; }
+  .stat { display: flex; align-items: center; gap: 5px; font-weight: 600; font-size: 14px; font-variant-numeric: tabular-nums; }
+  .hearts { display: flex; gap: 3px; }
+
+  /* --- Progress bar --- */
+  .progress-wrap { padding: 12px 20px 0; }
+  .progress-track {
+    height: 8px;
+    border-radius: 999px;
+    background: var(--panel-light);
+    overflow: hidden;
+  }
+  .progress-fill {
+    height: 100%;
+    border-radius: 999px;
+    background: var(--coral);
+    transition: width 0.3s ease;
+  }
+  .progress-fill.mint { background: var(--mint); }
+
+  /* --- Levels screen --- */
+  .levels-header { padding: 32px 24px 4px; }
+  .eyebrow {
+    font-size: 12px;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--coral);
+    margin: 0 0 6px;
+    font-weight: 600;
+  }
+  .big-title { font-size: 28px; font-weight: 700; margin: 0; }
+  .sub-text { font-size: 14px; color: var(--cream-dim); margin: 8px 0 0; }
+
+  .level-list {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    padding: 24px 24px 32px;
+  }
+  .level-card {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 18px 20px;
+    border-radius: 20px;
+    border: 1.5px solid var(--line);
+    background: var(--panel);
+    cursor: pointer;
+    text-align: left;
+    width: 100%;
+    transition: transform 0.15s ease, border-color 0.15s ease;
+    animation: popIn 0.3s cubic-bezier(.2,.9,.3,1.2);
+  }
+  .level-card:hover:not(:disabled) { transform: translateY(-2px); }
+  .level-card:active:not(:disabled) { transform: scale(0.98); }
+  .level-card:disabled { cursor: not-allowed; opacity: 0.55; }
+  .level-icon {
+    width: 54px; height: 54px;
+    border-radius: 16px;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+  }
+  .level-info { flex: 1; min-width: 0; }
+  .level-name { font-family: 'Fraunces', serif; font-weight: 700; font-size: 18px; margin: 0; }
+  .level-tag { font-size: 12px; color: var(--cream-dim); margin: 2px 0 8px; }
+  .level-track { height: 6px; border-radius: 999px; background: var(--panel-light); overflow: hidden; }
+  .level-track-fill { height: 100%; border-radius: 999px; }
+  .level-count { font-size: 11px; color: var(--cream-dim); margin: 6px 0 0; font-variant-numeric: tabular-nums; }
+  .level-chevron { flex-shrink: 0; }
+
+  /* --- Path screen --- */
+  .path-header { padding: 28px 24px 0; }
+  .path-title { font-size: 24px; font-weight: 700; margin: 0; }
+  .path-sub { font-size: 14px; color: var(--cream-dim); margin: 8px 0 0; }
+
+  .path-body {
+    position: relative;
+    max-width: 340px;
+    margin: 36px auto 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 56px;
+    padding-bottom: 20px;
+  }
+  .path-line {
+    position: absolute;
+    left: 50%;
+    top: 0;
+    bottom: 0;
+    width: 3px;
+    transform: translateX(-50%);
+    background-image: linear-gradient(var(--line) 40%, transparent 0%);
+    background-position: center;
+    background-size: 3px 16px;
+    background-repeat: repeat-y;
+    z-index: 0;
+  }
+
+  .chapter-node { position: relative; display: flex; flex-direction: column; align-items: center; z-index: 1; animation: popIn 0.3s cubic-bezier(.2,.9,.3,1.2); }
+  .node-btn {
+    width: 76px;
+    height: 76px;
+    border-radius: 50%;
+    border: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    background: var(--panel-light);
+    transition: transform 0.15s ease;
+  }
+  .node-btn:hover:not(:disabled) { transform: scale(1.06); }
+  .node-btn:active:not(:disabled) { transform: scale(0.95); }
+  .node-btn.unlocked { background: var(--coral); box-shadow: 0 6px 0 0 var(--coral-dark); }
+  .node-btn.done { background: var(--mint); box-shadow: 0 6px 0 0 var(--mint-dark); }
+  .node-btn:disabled { cursor: not-allowed; }
+  .node-btn svg { width: 30px; height: 30px; }
+
+  .node-stars {
+    position: absolute;
+    bottom: -8px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    gap: 2px;
+    background: var(--ink);
+    padding: 2px 6px;
+    border-radius: 999px;
+  }
+  .node-label { text-align: center; margin-top: 14px; }
+  .node-label .name { font-family: 'Fraunces', serif; font-weight: 700; font-size: 16px; margin: 0; }
+  .node-label .meta { font-size: 12px; color: var(--cream-dim); margin: 2px 0 0; }
+  .node-label .name.locked { color: var(--cream-dim); }
+
+  /* --- Flashcard screen --- */
+  .card-area { flex: 1; display: flex; align-items: center; justify-content: center; padding: 24px 32px; }
+  .flashcard {
+    width: 100%;
+    max-width: 340px;
+    background: var(--panel);
+    border: 1px solid var(--line);
+    border-radius: 24px;
+    padding: 32px;
+    text-align: center;
+    animation: popIn 0.28s cubic-bezier(.2,.9,.3,1.2);
+  }
+  .flashcard .eyebrow { margin-bottom: 16px; }
+  .card-word-row { display: flex; align-items: center; justify-content: center; gap: 8px; margin-bottom: 12px; }
+  .card-word { font-family: 'Fraunces', serif; font-size: 34px; font-weight: 700; margin: 0; }
+  .card-de { font-size: 18px; color: var(--gold); margin: 0 0 22px; }
+  .card-ex {
+    font-size: 14px;
+    font-style: italic;
+    color: var(--cream-dim);
+    border-top: 1px solid var(--line);
+    padding-top: 16px;
+    margin: 0;
+  }
+  .cta-wrap { padding: 8px 24px 32px; }
+  .btn-primary {
+    width: 100%;
+    max-width: 340px;
+    margin: 0 auto;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 16px;
+    border: none;
+    border-radius: 16px;
+    background: var(--coral);
+    color: var(--ink);
+    font-family: 'Work Sans', sans-serif;
+    font-weight: 600;
+    font-size: 16px;
+    box-shadow: 0 5px 0 0 var(--coral-dark);
+    cursor: pointer;
+    transition: transform 0.1s ease;
+  }
+  .btn-primary:active { transform: translateY(2px); box-shadow: 0 3px 0 0 var(--coral-dark); }
+  .btn-primary.mint { background: var(--mint); box-shadow: 0 5px 0 0 var(--mint-dark); color: var(--ink); }
+  .btn-primary.mint:active { box-shadow: 0 3px 0 0 var(--mint-dark); }
+  .btn-secondary {
+    width: 100%;
+    max-width: 340px;
+    margin: 0 auto;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 14px;
+    border: 1.5px solid var(--line);
+    border-radius: 16px;
+    background: transparent;
+    color: var(--cream-dim);
+    font-family: 'Work Sans', sans-serif;
+    font-weight: 600;
+    font-size: 15px;
+    cursor: pointer;
+  }
+
+  /* --- Quiz screen --- */
+  .quiz-area { flex: 1; display: flex; flex-direction: column; justify-content: center; padding: 24px 24px 32px; }
+  .quiz-prompt { text-align: center; font-size: 14px; color: var(--cream-dim); margin: 0 0 8px; }
+  .quiz-word { font-family: 'Fraunces', serif; font-size: 34px; font-weight: 700; text-align: center; margin: 0 0 28px; animation: popIn 0.28s cubic-bezier(.2,.9,.3,1.2); }
+  .options { display: flex; flex-direction: column; gap: 12px; max-width: 340px; margin: 0 auto; width: 100%; }
+  .option-btn {
+    text-align: left;
+    padding: 16px 20px;
+    border-radius: 16px;
+    border: 1.5px solid var(--line);
+    background: var(--panel);
+    color: var(--cream);
+    font-family: 'Work Sans', sans-serif;
+    font-size: 15px;
+    cursor: pointer;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    transition: background 0.15s ease, border-color 0.15s ease;
+  }
+  .option-btn:disabled { cursor: default; }
+  .option-btn.correct { background: rgba(95,209,160,0.18); border-color: var(--mint); }
+  .option-btn.wrong { background: rgba(255,92,92,0.18); border-color: var(--red); animation: shake 0.4s; }
+  .option-btn svg { width: 18px; height: 18px; }
+
+  /* --- Result screen --- */
+  .result-area {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 32px;
+    text-align: center;
+  }
+  .result-icon {
+    width: 96px; height: 96px;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    margin-bottom: 24px;
+    animation: popIn 0.3s cubic-bezier(.2,.9,.3,1.2);
+  }
+  .result-icon.win { background: rgba(242,183,5,0.15); }
+  .result-icon.fail { background: rgba(255,92,92,0.15); }
+  .result-title { font-family: 'Fraunces', serif; font-size: 28px; font-weight: 700; margin: 0 0 8px; }
+  .result-text { font-size: 14px; color: var(--cream-dim); margin: 0 0 24px; max-width: 300px; }
+  .result-stars { display: flex; gap: 8px; margin-bottom: 32px; }
+  .result-actions { width: 100%; max-width: 260px; display: flex; flex-direction: column; gap: 12px; }
+
+  @keyframes popIn { 0% { transform: scale(0.85); opacity: 0; } 100% { transform: scale(1); opacity: 1; } }
+  @keyframes shake { 10%,90%{transform:translateX(-1px)} 20%,80%{transform:translateX(2px)} 30%,50%,70%{transform:translateX(-4px)} 40%,60%{transform:translateX(4px)} }
+  @media (prefers-reduced-motion: reduce) {
+    .chapter-node, .flashcard, .quiz-word, .result-icon, .level-card { animation: none; }
+    .option-btn.wrong { animation: none; }
+  }
+
+  button:focus-visible, .node-btn:focus-visible {
+    outline: 2px solid var(--gold);
+    outline-offset: 2px;
+  }
+</style>
+</head>
+<body>
+
+<div id="app">
+
+  <!-- ================= LEVELS SCREEN ================= -->
+  <section class="screen active" id="screen-levels">
+    <div class="levels-header">
+      <p class="eyebrow">El Camino del Español</p>
+      <h1 class="big-title font-display">Wähle dein Niveau</h1>
+      <p class="sub-text">Von den ersten Wörtern bis zum sicheren Alltagsspanisch — Schritt für Schritt durch Spanien.</p>
+    </div>
+    <div class="level-list" id="level-list"></div>
+  </section>
+
+  <!-- ================= PATH SCREEN ================= -->
+  <section class="screen" id="screen-path">
+    <div class="topbar">
+      <button class="back-btn" onclick="goToLevels()">&larr; Niveaus</button>
+      <div></div>
+    </div>
+    <div class="path-header">
+      <p class="eyebrow" id="path-eyebrow"></p>
+      <h1 class="path-title font-display" id="path-title"></h1>
+      <p class="path-sub" id="path-sub"></p>
+    </div>
+    <div class="path-body" id="path-body">
+      <div class="path-line"></div>
+    </div>
+  </section>
+
+  <!-- ================= FLASHCARD SCREEN ================= -->
+  <section class="screen" id="screen-cards">
+    <div class="topbar">
+      <button class="back-btn" onclick="goToPath(state.levelId)">&larr; Ruta</button>
+      <div></div>
+    </div>
+    <div class="progress-wrap">
+      <div class="progress-track"><div class="progress-fill" id="card-progress"></div></div>
+    </div>
+    <div class="card-area">
+      <div class="flashcard" id="flashcard">
+        <p class="eyebrow" id="card-eyebrow"></p>
+        <div class="card-word-row">
+          <h2 class="card-word font-display" id="card-word"></h2>
+          <svg viewBox="0 0 24 24" fill="none" stroke="#CFE3DD" stroke-width="2" width="20" height="20"><path d="M11 5 6 9H2v6h4l5 4V5Z"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"/></svg>
+        </div>
+        <p class="card-de" id="card-de"></p>
+        <p class="card-ex" id="card-ex"></p>
+      </div>
+    </div>
+    <div class="cta-wrap">
+      <button class="btn-primary" id="card-next-btn" onclick="nextCard()">
+        <span id="card-next-label">Weiter</span>
+        <svg viewBox="0 0 24 24" fill="none" stroke="#0F2E2C" stroke-width="2.4" width="18" height="18"><path d="M5 12h14M13 5l7 7-7 7"/></svg>
+      </button>
+    </div>
+  </section>
+
+  <!-- ================= QUIZ SCREEN ================= -->
+  <section class="screen" id="screen-quiz">
+    <div class="topbar">
+      <button class="back-btn" onclick="goToPath(state.levelId)">&larr; Ruta</button>
+      <div class="stats">
+        <div class="stat" style="color: var(--gold)">
+          <svg viewBox="0 0 24 24" width="17" height="17" fill="#F2B705"><path d="M12 2l2.9 6.6L22 9.3l-5 4.8 1.3 7-6.3-3.6L5.7 21l1.3-7-5-4.8 7.1-0.7L12 2z"/></svg>
+          <span id="quiz-xp">0 XP</span>
+        </div>
+        <div class="stat" style="color: var(--coral)">
+          <svg viewBox="0 0 24 24" width="17" height="17" fill="#FF6B54"><path d="M12 2c1 4-3 5-3 9a3 3 0 0 0 6 0c0-1-.5-2-1-2 2 1 3 3 3 5a5 5 0 0 1-10 0c0-5 5-6 5-12z"/></svg>
+          <span id="quiz-streak">0</span>
+        </div>
+        <div class="hearts" id="quiz-hearts"></div>
+      </div>
+    </div>
+    <div class="progress-wrap">
+      <div class="progress-track"><div class="progress-fill mint" id="quiz-progress"></div></div>
+    </div>
+    <div class="quiz-area">
+      <p class="quiz-prompt">Was bedeutet dieses Wort?</p>
+      <h2 class="quiz-word font-display" id="quiz-word"></h2>
+      <div class="options" id="quiz-options"></div>
+    </div>
+  </section>
+
+  <!-- ================= RESULT SCREEN ================= -->
+  <section class="screen" id="screen-result">
+    <div class="result-area">
+      <div class="result-icon" id="result-icon"></div>
+      <h2 class="result-title" id="result-title"></h2>
+      <p class="result-text" id="result-text"></p>
+      <div class="result-stars" id="result-stars"></div>
+      <div class="result-actions" id="result-actions"></div>
+    </div>
+  </section>
+
+</div>
+
+<script>
+/* ---------------------------------------------------------
+   Vokabel-Daten: 9 Kapitel in 3 Niveaustufen
+--------------------------------------------------------- */
+const CHAPTERS = [
+  // ---------- ANFÄNGER ----------
+  {
+    id: "hola", title: "Hola", subtitle: "Begrüßungen", stop: "Madrid",
+    icon: '<path d="M18 11V6a2 2 0 0 0-2-2v0a2 2 0 0 0-2 2v0"/><path d="M14 10V4a2 2 0 0 0-2-2v0a2 2 0 0 0-2 2v2"/><path d="M10 10.5V6a2 2 0 0 0-2-2v0a2 2 0 0 0-2 2v8"/><path d="M18 8a2 2 0 1 1 4 0v6a8 8 0 0 1-8 8h-2c-2.8 0-4.5-.86-5.99-2.34l-3.6-3.6a2 2 0 0 1 2.83-2.82L7 15"/>',
+    words: [
+      { es: "hola", de: "hallo", ex: "¡Hola! ¿Qué tal?" },
+      { es: "adiós", de: "tschüss / auf Wiedersehen", ex: "Adiós, hasta luego." },
+      { es: "buenos días", de: "guten Morgen", ex: "Buenos días, señora." },
+      { es: "buenas noches", de: "gute Nacht", ex: "Buenas noches, dulces sueños." },
+      { es: "por favor", de: "bitte", ex: "Un café, por favor." },
+      { es: "gracias", de: "danke", ex: "Muchas gracias por todo." },
+      { es: "de nada", de: "gern geschehen", ex: "— Gracias. — De nada." },
+      { es: "¿cómo estás?", de: "wie geht's?", ex: "¿Cómo estás hoy?" },
+      { es: "bien", de: "gut", ex: "Estoy muy bien, gracias." },
+      { es: "por supuesto", de: "klar / natürlich", ex: "¿Vienes? ¡Por supuesto!" },
+    ],
+  },
+  {
+    id: "familia", title: "La Familia", subtitle: "Familie", stop: "Sevilla",
+    icon: '<path d="M17 21v-2a4 4 0 0 0-4-4H7a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/>',
+    words: [
+      { es: "la madre", de: "die Mutter", ex: "Mi madre cocina muy bien." },
+      { es: "el padre", de: "der Vater", ex: "Mi padre trabaja mucho." },
+      { es: "el hermano", de: "der Bruder", ex: "Tengo un hermano mayor." },
+      { es: "la hermana", de: "die Schwester", ex: "Mi hermana vive en Lima." },
+      { es: "el abuelo", de: "der Großvater", ex: "El abuelo cuenta historias." },
+      { es: "la abuela", de: "die Großmutter", ex: "La abuela hace pan casero." },
+      { es: "el hijo", de: "der Sohn", ex: "Su hijo tiene diez años." },
+      { es: "la hija", de: "die Tochter", ex: "Su hija estudia medicina." },
+      { es: "el tío", de: "der Onkel", ex: "El tío llega mañana." },
+      { es: "la tía", de: "die Tante", ex: "La tía vive cerca de aquí." },
+    ],
+  },
+  {
+    id: "comida", title: "La Comida", subtitle: "Essen & Trinken", stop: "Valencia",
+    icon: '<path d="M3 2v7c0 1.1.9 2 2 2h0a2 2 0 0 0 2-2V2"/><path d="M7 2v20"/><path d="M21 15V2a5 5 0 0 0-5 5v6c0 1.1.9 2 2 2h3Zm0 0v7"/>',
+    words: [
+      { es: "el pan", de: "das Brot", ex: "Compro pan fresco cada día." },
+      { es: "el agua", de: "das Wasser", ex: "Necesito un vaso de agua." },
+      { es: "el café", de: "der Kaffee", ex: "Un café con leche, por favor." },
+      { es: "la manzana", de: "der Apfel", ex: "La manzana está muy dulce." },
+      { es: "el pollo", de: "das Hähnchen", ex: "El pollo con arroz es rico." },
+      { es: "el arroz", de: "der Reis", ex: "Cocino arroz para la cena." },
+      { es: "el queso", de: "der Käse", ex: "Me encanta el queso manchego." },
+      { es: "el huevo", de: "das Ei", ex: "Un huevo frito, por favor." },
+      { es: "la leche", de: "die Milch", ex: "¿Tienes leche fría?" },
+      { es: "la verdura", de: "das Gemüse", ex: "Como verdura todos los días." },
+    ],
+  },
+
+  // ---------- FORTGESCHRITTEN ----------
+  {
+    id: "viaje", title: "De Viaje", subtitle: "Reisen", stop: "Granada",
+    icon: '<path d="M17.8 19.2 16 11l3.5-3.5C21 6 21.5 4 21 3c-1-.5-3 0-4.5 1.5L13 8 4.8 6.2c-.5-.1-1 .1-1.3.4l-.7.7a1 1 0 0 0 .3 1.6l5.9 2.5-2 2.5H3v2l3 1 1 3h2l.6-4 2.5-2 2.5 5.9a1 1 0 0 0 1.6.3l.7-.7c.3-.3.5-.8.4-1.3z"/>',
+    words: [
+      { es: "el aeropuerto", de: "der Flughafen", ex: "Llegamos al aeropuerto a tiempo." },
+      { es: "el tren", de: "der Zug", ex: "El tren sale a las nueve." },
+      { es: "el hotel", de: "das Hotel", ex: "Nuestro hotel está en el centro." },
+      { es: "la playa", de: "der Strand", ex: "Vamos a la playa mañana." },
+      { es: "el mapa", de: "die Karte", ex: "Necesito un mapa de la ciudad." },
+      { es: "la maleta", de: "der Koffer", ex: "Mi maleta es muy pesada." },
+      { es: "el pasaporte", de: "der Reisepass", ex: "No olvides tu pasaporte." },
+      { es: "el billete", de: "das Ticket", ex: "Compré un billete de ida y vuelta." },
+      { es: "la calle", de: "die Straße", ex: "La tienda está en esta calle." },
+      { es: "la ciudad", de: "die Stadt", ex: "Es una ciudad muy bonita." },
+    ],
+  },
+  {
+    id: "numeros", title: "Números y Colores", subtitle: "Zahlen & Farben", stop: "Barcelona",
+    icon: '<circle cx="13.5" cy="6.5" r=".5"/><circle cx="17.5" cy="10.5" r=".5"/><circle cx="8.5" cy="7.5" r=".5"/><circle cx="6.5" cy="12.5" r=".5"/><path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10c.9 0 1.5-.7 1.5-1.5 0-.4-.1-.7-.4-1a2 2 0 0 1 1.4-3.5H16a4 4 0 0 0 4-4c0-5.5-4-8-8-8z"/>',
+    words: [
+      { es: "uno", de: "eins", ex: "Solo tengo uno." },
+      { es: "dos", de: "zwei", ex: "Quiero dos billetes." },
+      { es: "tres", de: "drei", ex: "Son las tres." },
+      { es: "rojo", de: "rot", ex: "El coche rojo es rápido." },
+      { es: "azul", de: "blau", ex: "El cielo está azul." },
+      { es: "verde", de: "grün", ex: "Me gusta el verde." },
+      { es: "amarillo", de: "gelb", ex: "El sol es amarillo." },
+      { es: "negro", de: "schwarz", ex: "Lleva un abrigo negro." },
+      { es: "blanco", de: "weiß", ex: "La casa es blanca." },
+      { es: "grande", de: "groß", ex: "Es una casa muy grande." },
+    ],
+  },
+  {
+    id: "ciudad", title: "En la Ciudad", subtitle: "Wegbeschreibung", stop: "Bilbao",
+    icon: '<path d="M3 21h18M5 21V7l7-4 7 4v14M9 9h1m4 0h1m-6 4h1m4 0h1m-6 4h1m4 0h1"/>',
+    words: [
+      { es: "la estación", de: "der Bahnhof", ex: "La estación está muy cerca." },
+      { es: "el banco", de: "die Bank", ex: "Necesito ir al banco." },
+      { es: "el museo", de: "das Museum", ex: "El museo abre a las diez." },
+      { es: "la farmacia", de: "die Apotheke", ex: "¿Dónde está la farmacia?" },
+      { es: "el supermercado", de: "der Supermarkt", ex: "Voy al supermercado a comprar." },
+      { es: "la esquina", de: "die Ecke", ex: "Está en la esquina." },
+      { es: "el semáforo", de: "die Ampel", ex: "Cruza en el semáforo." },
+      { es: "a la izquierda", de: "nach links", ex: "Gira a la izquierda." },
+      { es: "a la derecha", de: "nach rechts", ex: "Sigue a la derecha." },
+      { es: "todo recto", de: "geradeaus", ex: "Sigue todo recto." },
+    ],
+  },
+
+  // ---------- PROFI ----------
+  {
+    id: "trabajo", title: "El Trabajo", subtitle: "Arbeit & Büro", stop: "San Sebastián",
+    icon: '<rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/>',
+    words: [
+      { es: "la oficina", de: "das Büro", ex: "Trabajo en la oficina hasta las seis." },
+      { es: "el jefe", de: "der Chef", ex: "El jefe tiene una reunión hoy." },
+      { es: "la reunión", de: "das Meeting", ex: "La reunión empieza a las nueve." },
+      { es: "el ordenador", de: "der Computer", ex: "Mi ordenador es muy lento." },
+      { es: "el correo electrónico", de: "die E-Mail", ex: "Te envío un correo electrónico." },
+      { es: "el proyecto", de: "das Projekt", ex: "El proyecto termina esta semana." },
+      { es: "el cliente", de: "der Kunde", ex: "El cliente llama mañana." },
+      { es: "el sueldo", de: "das Gehalt", ex: "El sueldo llega a fin de mes." },
+      { es: "la empresa", de: "die Firma", ex: "La empresa crece cada año." },
+      { es: "la entrevista", de: "das Vorstellungsgespräch", ex: "Tengo una entrevista de trabajo." },
+    ],
+  },
+  {
+    id: "tiempo", title: "El Tiempo", subtitle: "Wetter & Jahreszeiten", stop: "Toledo",
+    icon: '<circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/>',
+    words: [
+      { es: "hace sol", de: "die Sonne scheint", ex: "Hoy hace sol." },
+      { es: "llueve", de: "es regnet", ex: "Llueve mucho en otoño." },
+      { es: "hace frío", de: "es ist kalt", ex: "En enero hace mucho frío." },
+      { es: "hace calor", de: "es ist heiß", ex: "En verano hace calor." },
+      { es: "la primavera", de: "der Frühling", ex: "Me gusta la primavera." },
+      { es: "el verano", de: "der Sommer", ex: "El verano es mi estación favorita." },
+      { es: "el otoño", de: "der Herbst", ex: "Las hojas caen en otoño." },
+      { es: "el invierno", de: "der Winter", ex: "En invierno nieva mucho." },
+      { es: "hoy", de: "heute", ex: "Hoy tengo mucho trabajo." },
+      { es: "mañana", de: "morgen", ex: "Mañana voy a la playa." },
+    ],
+  },
+  {
+    id: "sentimientos", title: "Sentimientos", subtitle: "Gefühle", stop: "Santiago",
+    icon: '<path d="M12 21c-4.4-3.3-9-6.9-9-11.2C3 6.5 5.4 4 8.5 4c1.7 0 3.1.9 3.5 2.2C12.4 4.9 13.8 4 15.5 4 18.6 4 21 6.5 21 9.8c0 4.3-4.6 7.9-9 11.2Z"/>',
+    words: [
+      { es: "feliz", de: "glücklich", ex: "Estoy muy feliz hoy." },
+      { es: "triste", de: "traurig", ex: "Se siente un poco triste." },
+      { es: "cansado/a", de: "müde", ex: "Estoy cansado después del trabajo." },
+      { es: "enojado/a", de: "verärgert", ex: "Está enojada con su hermano." },
+      { es: "nervioso/a", de: "nervös", ex: "Estoy nervioso por el examen." },
+      { es: "sorprendido/a", de: "überrascht", ex: "Quedé muy sorprendido." },
+      { es: "tranquilo/a", de: "ruhig / entspannt", ex: "Ahora me siento tranquilo." },
+      { es: "emocionado/a", de: "aufgeregt", ex: "Estamos emocionados por el viaje." },
+      { es: "preocupado/a", de: "besorgt", ex: "Está preocupada por el examen." },
+      { es: "orgulloso/a", de: "stolz", ex: "Estoy orgulloso de ti." },
+    ],
+  },
+];
+
+const ALL_WORDS = CHAPTERS.flatMap(c => c.words);
+const CH_BY_ID = Object.fromEntries(CHAPTERS.map(c => [c.id, c]));
+
+/* ---------------------------------------------------------
+   Niveaustufen
+--------------------------------------------------------- */
+const LEVELS = [
+  {
+    id: "beginner",
+    name: "Anfänger",
+    tag: "A1 · Grundlagen",
+    accent: "coral",
+    icon: '<path d="M12 2v4M12 18v4M4.9 4.9l2.8 2.8M16.3 16.3l2.8 2.8M2 12h4M18 12h4M4.9 19.1l2.8-2.8M16.3 7.7l2.8-2.8"/><circle cx="12" cy="12" r="3"/>',
+    chapters: ["hola", "familia", "comida"],
+  },
+  {
+    id: "intermediate",
+    name: "Fortgeschritten",
+    tag: "A2–B1 · Alltag",
+    accent: "gold",
+    icon: '<circle cx="12" cy="12" r="10"/><path d="m16.2 7.8-2.2 6.2-6.2 2.2 2.2-6.2z"/>',
+    chapters: ["viaje", "numeros", "ciudad"],
+  },
+  {
+    id: "advanced",
+    name: "Profi",
+    tag: "B2 · Vertiefung",
+    accent: "mint",
+    icon: '<path d="M12 2 4 6v6c0 5 3.4 8.7 8 10 4.6-1.3 8-5 8-10V6z"/>',
+    chapters: ["trabajo", "tiempo", "sentimientos"],
+  },
+];
+const LEVEL_BY_ID = Object.fromEntries(LEVELS.map(l => [l.id, l]));
+const ACCENT_VARS = {
+  coral: { main: "var(--coral)", dark: "var(--coral-dark)" },
+  gold: { main: "var(--gold)", dark: "var(--gold-dark)" },
+  mint: { main: "var(--mint)", dark: "var(--mint-dark)" },
+};
+
+const LOCK_SVG = '<path d="M19 11H5a2 2 0 0 0-2 2v7a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7a2 2 0 0 0-2-2Z"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/>';
+const CHEVRON_SVG = '<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>';
+const STAR_SVG = (filled) => `<svg viewBox="0 0 24 24" width="14" height="14" fill="${filled ? '#F2B705' : 'none'}" stroke="#F2B705" stroke-width="1.5"><path d="M12 2l2.9 6.6L22 9.3l-5 4.8 1.3 7-6.3-3.6L5.7 21l1.3-7-5-4.8 7.1-0.7L12 2z"/></svg>`;
+
+/* ---------------------------------------------------------
+   State
+--------------------------------------------------------- */
+let state = {
+  levelId: null,
+  chapterId: null,
+  cardIndex: 0,
+  quiz: [],
+  qIndex: 0,
+  hearts: 3,
+  correctCount: 0,
+  xp: 0,
+  streak: 0,
+  progress: Object.fromEntries(CHAPTERS.map(c => [c.id, { done: false, stars: 0 }])),
+  lastGain: 0,
+  lastFailed: false,
+};
+
+function shuffle(arr) {
+  const a = [...arr];
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+
+function buildQuiz(chapter) {
+  const pool = shuffle(chapter.words).slice(0, 6);
+  return pool.map(word => {
+    const distractors = shuffle(ALL_WORDS.filter(w => w.de !== word.de)).slice(0, 3);
+    const options = shuffle([word.de, ...distractors.map(w => w.de)]);
+    return { word, options };
+  });
+}
+
+function showScreen(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+}
+
+/* ---------------------------------------------------------
+   Unlock-Logik
+--------------------------------------------------------- */
+function isLevelUnlocked(levelIdx) {
+  if (levelIdx === 0) return true;
+  const prev = LEVELS[levelIdx - 1];
+  return prev.chapters.every(id => state.progress[id].done);
+}
+
+function isChapterUnlocked(level, chapterIdxInLevel, levelIdx) {
+  if (!isLevelUnlocked(levelIdx)) return false;
+  if (chapterIdxInLevel === 0) return true;
+  const prevId = level.chapters[chapterIdxInLevel - 1];
+  return state.progress[prevId].done;
+}
+
+/* ---------------------------------------------------------
+   Levels screen
+--------------------------------------------------------- */
+function renderLevels() {
+  const list = document.getElementById('level-list');
+  list.innerHTML = '';
+
+  LEVELS.forEach((level, idx) => {
+    const unlocked = isLevelUnlocked(idx);
+    const doneCount = level.chapters.filter(id => state.progress[id].done).length;
+    const total = level.chapters.length;
+    const accent = ACCENT_VARS[level.accent];
+
+    const card = document.createElement('button');
+    card.className = 'level-card';
+    card.disabled = !unlocked;
+    card.onclick = () => unlocked && goToPath(level.id);
+    card.style.animationDelay = `${idx * 0.05}s`;
+
+    const iconSvg = unlocked
+      ? `<svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="${accent.main}" stroke-width="2">${level.icon}</svg>`
+      : `<svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="var(--cream-dim)" stroke-width="2">${LOCK_SVG}</svg>`;
+
+    card.innerHTML = `
+      <div class="level-icon" style="background:${unlocked ? 'rgba(255,255,255,0.06)' : 'var(--panel-light)'}">${iconSvg}</div>
+      <div class="level-info">
+        <p class="level-name">${level.name}</p>
+        <p class="level-tag">${level.tag}${unlocked ? '' : ' · gesperrt'}</p>
+        <div class="level-track">
+          <div class="level-track-fill" style="width:${(doneCount/total)*100}%; background:${accent.main}"></div>
+        </div>
+        <p class="level-count">${doneCount}/${total} Kapitel abgeschlossen</p>
+      </div>
+      <div class="level-chevron" style="color:var(--cream-dim)">${CHEVRON_SVG}</div>
+    `;
+    list.appendChild(card);
+  });
+}
+
+function goToLevels() {
+  renderLevels();
+  showScreen('screen-levels');
+}
+
+/* ---------------------------------------------------------
+   Path screen
+--------------------------------------------------------- */
+const OFFSETS = [0, 56, -20];
+
+function renderPath() {
+  const level = LEVEL_BY_ID[state.levelId];
+  const levelIdx = LEVELS.findIndex(l => l.id === level.id);
+
+  document.getElementById('path-eyebrow').textContent = `${level.name} · ${level.tag}`;
+  document.getElementById('path-title').textContent = 'Deine Route durchs Spanische';
+  document.getElementById('path-sub').textContent = 'Jede Station ist eine Stadt, jedes Kapitel ein neuer Stempel im Reisepass.';
+
+  const body = document.getElementById('path-body');
+  body.querySelectorAll('.chapter-node').forEach(n => n.remove());
+
+  level.chapters.forEach((chId, i) => {
+    const ch = CH_BY_ID[chId];
+    const st = state.progress[ch.id];
+    const unlocked = isChapterUnlocked(level, i, levelIdx);
+
+    const node = document.createElement('div');
+    node.className = 'chapter-node';
+    node.style.transform = `translateX(${OFFSETS[i % OFFSETS.length]}px)`;
+
+    const btnClass = unlocked ? (st.done ? 'node-btn done' : 'node-btn unlocked') : 'node-btn';
+    const iconSvg = unlocked
+      ? `<svg viewBox="0 0 24 24" fill="none" stroke="#0F2E2C" stroke-width="2.2" width="30" height="30">${ch.icon}</svg>`
+      : `<svg viewBox="0 0 24 24" fill="none" stroke="#CFE3DD" stroke-width="2" width="26" height="26">${LOCK_SVG}</svg>`;
+
+    const starsHtml = st.done
+      ? `<div class="node-stars">${[0,1,2].map(s => STAR_SVG(s < st.stars)).join('')}</div>`
+      : '';
+
+    node.innerHTML = `
+      <button class="${btnClass}" ${unlocked ? '' : 'disabled'} onclick="openChapter('${ch.id}')">
+        ${iconSvg}
+        ${starsHtml}
+      </button>
+      <div class="node-label">
+        <p class="name font-display ${unlocked ? '' : 'locked'}">${ch.title}</p>
+        <p class="meta">${ch.subtitle} · ${ch.stop}</p>
+      </div>
+    `;
+    body.appendChild(node);
+  });
+}
+
+function goToPath(levelId) {
+  state.levelId = levelId;
+  renderPath();
+  showScreen('screen-path');
+}
+
+/* ---------------------------------------------------------
+   Flashcard screen
+--------------------------------------------------------- */
+function openChapter(chapterId) {
+  state.chapterId = chapterId;
+  state.cardIndex = 0;
+  renderCard();
+  showScreen('screen-cards');
+}
+
+function renderCard() {
+  const chapter = CH_BY_ID[state.chapterId];
+  const word = chapter.words[state.cardIndex];
+  const total = chapter.words.length;
+
+  document.getElementById('card-progress').style.width = `${((state.cardIndex + 1) / total) * 100}%`;
+  document.getElementById('card-eyebrow').textContent = `${chapter.subtitle} · ${state.cardIndex + 1}/${total}`;
+  document.getElementById('card-word').textContent = word.es;
+  document.getElementById('card-de').textContent = word.de;
+  document.getElementById('card-ex').textContent = `„${word.ex}“`;
+  document.getElementById('card-next-label').textContent = (state.cardIndex + 1 < total) ? 'Weiter' : 'Zum Quiz';
+
+  const card = document.getElementById('flashcard');
+  card.style.animation = 'none';
+  void card.offsetWidth;
+  card.style.animation = '';
+}
+
+function nextCard() {
+  const chapter = CH_BY_ID[state.chapterId];
+  if (state.cardIndex + 1 < chapter.words.length) {
+    state.cardIndex++;
+    renderCard();
+  } else {
+    state.quiz = buildQuiz(chapter);
+    state.qIndex = 0;
+    state.hearts = 3;
+    state.correctCount = 0;
+    renderQuiz();
+    showScreen('screen-quiz');
+  }
+}
+
+/* ---------------------------------------------------------
+   Quiz screen
+--------------------------------------------------------- */
+function renderHearts() {
+  const el = document.getElementById('quiz-hearts');
+  el.innerHTML = [0,1,2].map(i => `
+    <svg viewBox="0 0 24 24" width="17" height="17" fill="${i < state.hearts ? '#FF5C5C' : 'none'}" stroke="#FF5C5C" stroke-width="1.8">
+      <path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.6l-1-1a5.5 5.5 0 0 0-7.8 7.8l1 1L12 21l7.8-7.6 1-1a5.5 5.5 0 0 0 0-7.8Z"/>
+    </svg>
+  `).join('');
+}
+
+function renderQuiz() {
+  const q = state.quiz[state.qIndex];
+  document.getElementById('quiz-progress').style.width = `${(state.qIndex / state.quiz.length) * 100}%`;
+  document.getElementById('quiz-xp').textContent = `${state.xp} XP`;
+  document.getElementById('quiz-streak').textContent = state.streak;
+  renderHearts();
+
+  const wordEl = document.getElementById('quiz-word');
+  wordEl.textContent = q.word.es;
+  wordEl.style.animation = 'none';
+  void wordEl.offsetWidth;
+  wordEl.style.animation = '';
+
+  const opts = document.getElementById('quiz-options');
+  opts.innerHTML = '';
+  q.options.forEach(opt => {
+    const btn = document.createElement('button');
+    btn.className = 'option-btn';
+    btn.textContent = opt;
+    btn.onclick = () => answerQuiz(opt);
+    opts.appendChild(btn);
+  });
+}
+
+const CHECK_SVG = '<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="#5FD1A0" stroke-width="2.4"><path d="M20 6 9 17l-5-5"/></svg>';
+const X_SVG = '<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="#FF5C5C" stroke-width="2.4"><path d="M18 6 6 18M6 6l12 12"/></svg>';
+
+function answerQuiz(opt) {
+  const q = state.quiz[state.qIndex];
+  const correct = opt === q.word.de;
+  const buttons = document.querySelectorAll('#quiz-options .option-btn');
+
+  buttons.forEach(btn => {
+    btn.disabled = true;
+    if (btn.textContent === opt) {
+      btn.classList.add(correct ? 'correct' : 'wrong');
+      btn.innerHTML = `<span>${btn.textContent}</span>${correct ? CHECK_SVG : X_SVG}`;
+    } else if (btn.textContent === q.word.de) {
+      btn.classList.add('correct');
+      btn.innerHTML = `<span>${btn.textContent}</span>${CHECK_SVG}`;
+    }
+  });
+
+  if (correct) {
+    state.correctCount++;
+    state.xp += 10;
+    state.streak++;
+  } else {
+    state.streak = 0;
+    state.hearts--;
+  }
+  document.getElementById('quiz-xp').textContent = `${state.xp} XP`;
+  document.getElementById('quiz-streak').textContent = state.streak;
+  renderHearts();
+
+  setTimeout(() => {
+    if (state.hearts <= 0) {
+      state.lastFailed = true;
+      renderResult();
+      showScreen('screen-result');
+      return;
+    }
+    if (state.qIndex + 1 < state.quiz.length) {
+      state.qIndex++;
+      renderQuiz();
+    } else {
+      const ratio = state.correctCount / state.quiz.length;
+      const stars = ratio === 1 ? 3 : ratio >= 0.66 ? 2 : 1;
+      const bonus = 50;
+      state.xp += bonus;
+      state.lastGain = state.correctCount * 10 + bonus;
+      state.lastFailed = false;
+      state.progress[state.chapterId] = { done: true, stars };
+      renderResult();
+      showScreen('screen-result');
+    }
+  }, 900);
+}
+
+/* ---------------------------------------------------------
+   Result screen
+--------------------------------------------------------- */
+function renderResult() {
+  const chapter = CH_BY_ID[state.chapterId];
+  const level = LEVEL_BY_ID[state.levelId];
+  const levelIdx = LEVELS.findIndex(l => l.id === level.id);
+  const ratio = state.correctCount / (state.quiz.length || 1);
+  const stars = ratio === 1 ? 3 : ratio >= 0.66 ? 2 : 1;
+
+  const icon = document.getElementById('result-icon');
+  const title = document.getElementById('result-title');
+  const text = document.getElementById('result-text');
+  const starsEl = document.getElementById('result-stars');
+  const actions = document.getElementById('result-actions');
+
+  if (state.lastFailed) {
+    icon.className = 'result-icon fail';
+    icon.innerHTML = '<svg viewBox="0 0 24 24" width="40" height="40" fill="#FF5C5C" stroke="#FF5C5C"><path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.6l-1-1a5.5 5.5 0 0 0-7.8 7.8l1 1L12 21l7.8-7.6 1-1a5.5 5.5 0 0 0 0-7.8Z"/></svg>';
+    title.textContent = 'Fast geschafft!';
+    text.textContent = 'Die Herzen sind aufgebraucht. Versuch die Lektion noch einmal.';
+    starsEl.innerHTML = '';
+    actions.innerHTML = `
+      <button class="btn-primary" onclick="retryChapter()">
+        <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="#0F2E2C" stroke-width="2.4"><path d="M1 4v6h6M23 20v-6h-6"/><path d="M20.5 9A9 9 0 0 0 5 5.3L1 10m22 4-4 4.7A9 9 0 0 1 3.5 15"/></svg>
+        Nochmal versuchen
+      </button>`;
+  } else {
+    const levelJustCompleted = level.chapters.every(id => state.progress[id].done);
+    const nextLevel = LEVELS[levelIdx + 1];
+    const unlockedNextLevel = levelJustCompleted && nextLevel;
+
+    icon.className = 'result-icon win';
+    icon.innerHTML = '<svg viewBox="0 0 24 24" width="40" height="40" fill="none" stroke="#F2B705" stroke-width="2"><path d="M8 21h8M12 17v4M7 4h10v5a5 5 0 0 1-10 0V4Z"/><path d="M7 5H4a2 2 0 0 0 2 4M17 5h3a2 2 0 0 1-2 4"/></svg>';
+    title.textContent = `${chapter.stop} erreicht!`;
+    text.textContent = unlockedNextLevel
+      ? `Du hast ${chapter.title} abgeschlossen (+${state.lastGain} XP) und das Niveau „${nextLevel.name}“ freigeschaltet!`
+      : `Du hast ${chapter.title} abgeschlossen und +${state.lastGain} XP gesammelt.`;
+    starsEl.innerHTML = [0,1,2].map(s => `
+      <svg viewBox="0 0 24 24" width="32" height="32" fill="${s < stars ? '#F2B705' : 'none'}" stroke="#F2B705" stroke-width="1.8">
+        <path d="M12 2l2.9 6.6L22 9.3l-5 4.8 1.3 7-6.3-3.6L5.7 21l1.3-7-5-4.8 7.1-0.7L12 2z"/>
+      </svg>`).join('');
+    actions.innerHTML = `
+      <button class="btn-primary mint" onclick="goToPath('${level.id}')">
+        Weiter auf der Route
+        <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="#0F2E2C" stroke-width="2.4"><path d="M5 12h14M13 5l7 7-7 7"/></svg>
+      </button>
+      ${unlockedNextLevel ? `<button class="btn-secondary" onclick="goToLevels()">Niveaus ansehen</button>` : ''}`;
+  }
+}
+
+function retryChapter() {
+  state.cardIndex = 0;
+  renderCard();
+  showScreen('screen-cards');
+}
+
+/* ---------------------------------------------------------
+   Init
+--------------------------------------------------------- */
+renderLevels();
+</script>
+</body>
+</html>

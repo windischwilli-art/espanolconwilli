@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>El Camino del Español</title>
+<title>El Camino del Español · 1000 Vokabeln</title>
 <style>
   @import url('https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600..800&family=Work+Sans:wght@400;500;600;700&display=swap');
 
@@ -19,6 +19,8 @@
     --gold-dark: #C99500;
     --mint: #5FD1A0;
     --mint-dark: #3FAE82;
+    --plum: #B48EE0;
+    --plum-dark: #8F68C2;
     --red: #FF5C5C;
     --line: rgba(251,243,230,0.14);
   }
@@ -54,7 +56,6 @@
   .screen { display: none; flex-direction: column; flex: 1; }
   .screen.active { display: flex; }
 
-  /* --- TopBar --- */
   .topbar {
     display: flex;
     align-items: center;
@@ -78,251 +79,120 @@
   .stat { display: flex; align-items: center; gap: 5px; font-weight: 600; font-size: 14px; font-variant-numeric: tabular-nums; }
   .hearts { display: flex; gap: 3px; }
 
-  /* --- Progress bar --- */
   .progress-wrap { padding: 12px 20px 0; }
-  .progress-track {
-    height: 8px;
-    border-radius: 999px;
-    background: var(--panel-light);
-    overflow: hidden;
-  }
-  .progress-fill {
-    height: 100%;
-    border-radius: 999px;
-    background: var(--coral);
-    transition: width 0.3s ease;
-  }
+  .progress-track { height: 8px; border-radius: 999px; background: var(--panel-light); overflow: hidden; }
+  .progress-fill { height: 100%; border-radius: 999px; background: var(--coral); transition: width 0.3s ease; }
   .progress-fill.mint { background: var(--mint); }
 
-  /* --- Levels screen --- */
   .levels-header { padding: 32px 24px 4px; }
-  .eyebrow {
-    font-size: 12px;
-    letter-spacing: 0.22em;
-    text-transform: uppercase;
-    color: var(--coral);
-    margin: 0 0 6px;
-    font-weight: 600;
-  }
-  .big-title { font-size: 28px; font-weight: 700; margin: 0; }
+  .eyebrow { font-size: 12px; letter-spacing: 0.22em; text-transform: uppercase; color: var(--coral); margin: 0 0 6px; font-weight: 600; }
+  .big-title { font-size: 26px; font-weight: 700; margin: 0; }
   .sub-text { font-size: 14px; color: var(--cream-dim); margin: 8px 0 0; }
 
-  .level-list {
-    display: flex;
-    flex-direction: column;
-    gap: 16px;
-    padding: 24px 24px 32px;
-  }
+  .level-list { display: flex; flex-direction: column; gap: 14px; padding: 22px 22px 28px; overflow-y: auto; }
   .level-card {
-    display: flex;
-    align-items: center;
-    gap: 16px;
-    padding: 18px 20px;
-    border-radius: 20px;
-    border: 1.5px solid var(--line);
-    background: var(--panel);
-    cursor: pointer;
-    text-align: left;
-    width: 100%;
-    transition: transform 0.15s ease, border-color 0.15s ease;
-    animation: popIn 0.3s cubic-bezier(.2,.9,.3,1.2);
+    display: flex; align-items: center; gap: 14px; padding: 16px 18px; border-radius: 20px;
+    border: 1.5px solid var(--line); background: var(--panel); cursor: pointer; text-align: left; width: 100%;
+    transition: transform 0.15s ease; animation: popIn 0.3s cubic-bezier(.2,.9,.3,1.2);
   }
   .level-card:hover:not(:disabled) { transform: translateY(-2px); }
   .level-card:active:not(:disabled) { transform: scale(0.98); }
   .level-card:disabled { cursor: not-allowed; opacity: 0.55; }
-  .level-icon {
-    width: 54px; height: 54px;
-    border-radius: 16px;
-    display: flex; align-items: center; justify-content: center;
-    flex-shrink: 0;
-  }
+  .level-icon { width: 50px; height: 50px; border-radius: 14px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
   .level-info { flex: 1; min-width: 0; }
-  .level-name { font-family: 'Fraunces', serif; font-weight: 700; font-size: 18px; margin: 0; }
-  .level-tag { font-size: 12px; color: var(--cream-dim); margin: 2px 0 8px; }
+  .level-name { font-family: 'Fraunces', serif; font-weight: 700; font-size: 17px; margin: 0; }
+  .level-tag { font-size: 11.5px; color: var(--cream-dim); margin: 2px 0 8px; }
   .level-track { height: 6px; border-radius: 999px; background: var(--panel-light); overflow: hidden; }
   .level-track-fill { height: 100%; border-radius: 999px; }
   .level-count { font-size: 11px; color: var(--cream-dim); margin: 6px 0 0; font-variant-numeric: tabular-nums; }
   .level-chevron { flex-shrink: 0; }
 
-  /* --- Path screen --- */
-  .path-header { padding: 28px 24px 0; }
-  .path-title { font-size: 24px; font-weight: 700; margin: 0; }
-  .path-sub { font-size: 14px; color: var(--cream-dim); margin: 8px 0 0; }
+  .path-header { padding: 26px 24px 0; }
+  .path-title { font-size: 22px; font-weight: 700; margin: 0; }
+  .path-sub { font-size: 13.5px; color: var(--cream-dim); margin: 6px 0 0; }
 
+  .path-scroll { flex: 1; overflow-y: auto; }
   .path-body {
-    position: relative;
-    max-width: 340px;
-    margin: 36px auto 20px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 56px;
-    padding-bottom: 20px;
+    position: relative; max-width: 340px; margin: 32px auto 20px;
+    display: flex; flex-direction: column; align-items: center; gap: 52px; padding-bottom: 24px;
   }
   .path-line {
-    position: absolute;
-    left: 50%;
-    top: 0;
-    bottom: 0;
-    width: 3px;
-    transform: translateX(-50%);
+    position: absolute; left: 50%; top: 0; bottom: 0; width: 3px; transform: translateX(-50%);
     background-image: linear-gradient(var(--line) 40%, transparent 0%);
-    background-position: center;
-    background-size: 3px 16px;
-    background-repeat: repeat-y;
-    z-index: 0;
+    background-position: center; background-size: 3px 16px; background-repeat: repeat-y; z-index: 0;
   }
 
   .chapter-node { position: relative; display: flex; flex-direction: column; align-items: center; z-index: 1; animation: popIn 0.3s cubic-bezier(.2,.9,.3,1.2); }
   .node-btn {
-    width: 76px;
-    height: 76px;
-    border-radius: 50%;
-    border: none;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    background: var(--panel-light);
-    transition: transform 0.15s ease;
+    width: 72px; height: 72px; border-radius: 50%; border: none; display: flex; align-items: center; justify-content: center;
+    cursor: pointer; background: var(--panel-light); transition: transform 0.15s ease;
   }
   .node-btn:hover:not(:disabled) { transform: scale(1.06); }
   .node-btn:active:not(:disabled) { transform: scale(0.95); }
   .node-btn.unlocked { background: var(--coral); box-shadow: 0 6px 0 0 var(--coral-dark); }
   .node-btn.done { background: var(--mint); box-shadow: 0 6px 0 0 var(--mint-dark); }
   .node-btn:disabled { cursor: not-allowed; }
-  .node-btn svg { width: 30px; height: 30px; }
+  .node-btn svg { width: 28px; height: 28px; }
 
   .node-stars {
-    position: absolute;
-    bottom: -8px;
-    left: 50%;
-    transform: translateX(-50%);
-    display: flex;
-    gap: 2px;
-    background: var(--ink);
-    padding: 2px 6px;
-    border-radius: 999px;
+    position: absolute; bottom: -8px; left: 50%; transform: translateX(-50%);
+    display: flex; gap: 2px; background: var(--ink); padding: 2px 6px; border-radius: 999px;
   }
-  .node-label { text-align: center; margin-top: 14px; }
-  .node-label .name { font-family: 'Fraunces', serif; font-weight: 700; font-size: 16px; margin: 0; }
-  .node-label .meta { font-size: 12px; color: var(--cream-dim); margin: 2px 0 0; }
+  .node-label { text-align: center; margin-top: 12px; }
+  .node-label .name { font-family: 'Fraunces', serif; font-weight: 700; font-size: 15px; margin: 0; }
+  .node-label .meta { font-size: 11.5px; color: var(--cream-dim); margin: 2px 0 0; }
   .node-label .name.locked { color: var(--cream-dim); }
 
-  /* --- Flashcard screen --- */
   .card-area { flex: 1; display: flex; align-items: center; justify-content: center; padding: 24px 32px; }
   .flashcard {
-    width: 100%;
-    max-width: 340px;
-    background: var(--panel);
-    border: 1px solid var(--line);
-    border-radius: 24px;
-    padding: 32px;
-    text-align: center;
-    animation: popIn 0.28s cubic-bezier(.2,.9,.3,1.2);
+    width: 100%; max-width: 340px; background: var(--panel); border: 1px solid var(--line); border-radius: 24px;
+    padding: 36px 32px; text-align: center; animation: popIn 0.28s cubic-bezier(.2,.9,.3,1.2);
   }
-  .flashcard .eyebrow { margin-bottom: 16px; }
-  .card-word-row { display: flex; align-items: center; justify-content: center; gap: 8px; margin-bottom: 12px; }
-  .card-word { font-family: 'Fraunces', serif; font-size: 34px; font-weight: 700; margin: 0; }
-  .card-de { font-size: 18px; color: var(--gold); margin: 0 0 22px; }
-  .card-ex {
-    font-size: 14px;
-    font-style: italic;
-    color: var(--cream-dim);
-    border-top: 1px solid var(--line);
-    padding-top: 16px;
-    margin: 0;
-  }
+  .flashcard .eyebrow { margin-bottom: 18px; }
+  .card-word-row { display: flex; align-items: center; justify-content: center; gap: 8px; margin-bottom: 14px; }
+  .card-word { font-family: 'Fraunces', serif; font-size: 32px; font-weight: 700; margin: 0; line-height: 1.2; }
+  .card-de { font-size: 18px; color: var(--gold); margin: 0; }
+
   .cta-wrap { padding: 8px 24px 32px; }
   .btn-primary {
-    width: 100%;
-    max-width: 340px;
-    margin: 0 auto;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 8px;
-    padding: 16px;
-    border: none;
-    border-radius: 16px;
-    background: var(--coral);
-    color: var(--ink);
-    font-family: 'Work Sans', sans-serif;
-    font-weight: 600;
-    font-size: 16px;
-    box-shadow: 0 5px 0 0 var(--coral-dark);
-    cursor: pointer;
-    transition: transform 0.1s ease;
+    width: 100%; max-width: 340px; margin: 0 auto; display: flex; align-items: center; justify-content: center; gap: 8px;
+    padding: 16px; border: none; border-radius: 16px; background: var(--coral); color: var(--ink);
+    font-family: 'Work Sans', sans-serif; font-weight: 600; font-size: 16px;
+    box-shadow: 0 5px 0 0 var(--coral-dark); cursor: pointer; transition: transform 0.1s ease;
   }
   .btn-primary:active { transform: translateY(2px); box-shadow: 0 3px 0 0 var(--coral-dark); }
   .btn-primary.mint { background: var(--mint); box-shadow: 0 5px 0 0 var(--mint-dark); color: var(--ink); }
   .btn-primary.mint:active { box-shadow: 0 3px 0 0 var(--mint-dark); }
   .btn-secondary {
-    width: 100%;
-    max-width: 340px;
-    margin: 0 auto;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 8px;
-    padding: 14px;
-    border: 1.5px solid var(--line);
-    border-radius: 16px;
-    background: transparent;
-    color: var(--cream-dim);
-    font-family: 'Work Sans', sans-serif;
-    font-weight: 600;
-    font-size: 15px;
-    cursor: pointer;
+    width: 100%; max-width: 340px; margin: 0 auto; display: flex; align-items: center; justify-content: center; gap: 8px;
+    padding: 14px; border: 1.5px solid var(--line); border-radius: 16px; background: transparent; color: var(--cream-dim);
+    font-family: 'Work Sans', sans-serif; font-weight: 600; font-size: 15px; cursor: pointer;
   }
 
-  /* --- Quiz screen --- */
   .quiz-area { flex: 1; display: flex; flex-direction: column; justify-content: center; padding: 24px 24px 32px; }
   .quiz-prompt { text-align: center; font-size: 14px; color: var(--cream-dim); margin: 0 0 8px; }
-  .quiz-word { font-family: 'Fraunces', serif; font-size: 34px; font-weight: 700; text-align: center; margin: 0 0 28px; animation: popIn 0.28s cubic-bezier(.2,.9,.3,1.2); }
+  .quiz-word { font-family: 'Fraunces', serif; font-size: 32px; font-weight: 700; text-align: center; margin: 0 0 26px; animation: popIn 0.28s cubic-bezier(.2,.9,.3,1.2); }
   .options { display: flex; flex-direction: column; gap: 12px; max-width: 340px; margin: 0 auto; width: 100%; }
   .option-btn {
-    text-align: left;
-    padding: 16px 20px;
-    border-radius: 16px;
-    border: 1.5px solid var(--line);
-    background: var(--panel);
-    color: var(--cream);
-    font-family: 'Work Sans', sans-serif;
-    font-size: 15px;
-    cursor: pointer;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    transition: background 0.15s ease, border-color 0.15s ease;
+    text-align: left; padding: 15px 20px; border-radius: 16px; border: 1.5px solid var(--line); background: var(--panel);
+    color: var(--cream); font-family: 'Work Sans', sans-serif; font-size: 14.5px; cursor: pointer;
+    display: flex; justify-content: space-between; align-items: center; transition: background 0.15s ease, border-color 0.15s ease;
   }
   .option-btn:disabled { cursor: default; }
   .option-btn.correct { background: rgba(95,209,160,0.18); border-color: var(--mint); }
   .option-btn.wrong { background: rgba(255,92,92,0.18); border-color: var(--red); animation: shake 0.4s; }
-  .option-btn svg { width: 18px; height: 18px; }
+  .option-btn svg { width: 18px; height: 18px; flex-shrink: 0; }
 
-  /* --- Result screen --- */
-  .result-area {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    padding: 32px;
-    text-align: center;
-  }
+  .result-area { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 32px; text-align: center; }
   .result-icon {
-    width: 96px; height: 96px;
-    border-radius: 50%;
-    display: flex; align-items: center; justify-content: center;
-    margin-bottom: 24px;
-    animation: popIn 0.3s cubic-bezier(.2,.9,.3,1.2);
+    width: 92px; height: 92px; border-radius: 50%; display: flex; align-items: center; justify-content: center;
+    margin-bottom: 22px; animation: popIn 0.3s cubic-bezier(.2,.9,.3,1.2);
   }
   .result-icon.win { background: rgba(242,183,5,0.15); }
   .result-icon.fail { background: rgba(255,92,92,0.15); }
-  .result-title { font-family: 'Fraunces', serif; font-size: 28px; font-weight: 700; margin: 0 0 8px; }
-  .result-text { font-size: 14px; color: var(--cream-dim); margin: 0 0 24px; max-width: 300px; }
-  .result-stars { display: flex; gap: 8px; margin-bottom: 32px; }
+  .result-title { font-family: 'Fraunces', serif; font-size: 26px; font-weight: 700; margin: 0 0 8px; }
+  .result-text { font-size: 14px; color: var(--cream-dim); margin: 0 0 22px; max-width: 300px; }
+  .result-stars { display: flex; gap: 8px; margin-bottom: 28px; }
   .result-actions { width: 100%; max-width: 260px; display: flex; flex-direction: column; gap: 12px; }
 
   @keyframes popIn { 0% { transform: scale(0.85); opacity: 0; } 100% { transform: scale(1); opacity: 1; } }
@@ -332,10 +202,10 @@
     .option-btn.wrong { animation: none; }
   }
 
-  button:focus-visible, .node-btn:focus-visible {
-    outline: 2px solid var(--gold);
-    outline-offset: 2px;
-  }
+  button:focus-visible, .node-btn:focus-visible { outline: 2px solid var(--gold); outline-offset: 2px; }
+
+  ::-webkit-scrollbar { width: 6px; }
+  ::-webkit-scrollbar-thumb { background: var(--panel-light); border-radius: 999px; }
 </style>
 </head>
 <body>
@@ -347,7 +217,7 @@
     <div class="levels-header">
       <p class="eyebrow">El Camino del Español</p>
       <h1 class="big-title font-display">Wähle dein Niveau</h1>
-      <p class="sub-text">Von den ersten Wörtern bis zum sicheren Alltagsspanisch — Schritt für Schritt durch Spanien.</p>
+      <p class="sub-text">1000 Vokabeln in 20 Kapiteln — von den ersten Wörtern bis zum sicheren Alltagsspanisch.</p>
     </div>
     <div class="level-list" id="level-list"></div>
   </section>
@@ -363,8 +233,10 @@
       <h1 class="path-title font-display" id="path-title"></h1>
       <p class="path-sub" id="path-sub"></p>
     </div>
-    <div class="path-body" id="path-body">
-      <div class="path-line"></div>
+    <div class="path-scroll">
+      <div class="path-body" id="path-body">
+        <div class="path-line"></div>
+      </div>
     </div>
   </section>
 
@@ -385,7 +257,6 @@
           <svg viewBox="0 0 24 24" fill="none" stroke="#CFE3DD" stroke-width="2" width="20" height="20"><path d="M11 5 6 9H2v6h4l5 4V5Z"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"/></svg>
         </div>
         <p class="card-de" id="card-de"></p>
-        <p class="card-ex" id="card-ex"></p>
       </div>
     </div>
     <div class="cta-wrap">
@@ -437,190 +308,1157 @@
 
 <script>
 /* ---------------------------------------------------------
-   Vokabel-Daten: 9 Kapitel in 3 Niveaustufen
+   Vokabel-Daten: 1000 Wörter, 20 Kapitel, 4 Niveaustufen
 --------------------------------------------------------- */
 const CHAPTERS = [
-  // ---------- ANFÄNGER ----------
   {
-    id: "hola", title: "Hola", subtitle: "Begrüßungen", stop: "Madrid",
-    icon: '<path d="M18 11V6a2 2 0 0 0-2-2v0a2 2 0 0 0-2 2v0"/><path d="M14 10V4a2 2 0 0 0-2-2v0a2 2 0 0 0-2 2v2"/><path d="M10 10.5V6a2 2 0 0 0-2-2v0a2 2 0 0 0-2 2v8"/><path d="M18 8a2 2 0 1 1 4 0v6a8 8 0 0 1-8 8h-2c-2.8 0-4.5-.86-5.99-2.34l-3.6-3.6a2 2 0 0 1 2.83-2.82L7 15"/>',
+    id: "saludos", title: "Saludos y Cortesía", subtitle: "Begrüßung & Höflichkeit", stop: "Madrid",
+    icon: "<path d=\"M18 11V6a2 2 0 0 0-2-2v0a2 2 0 0 0-2 2v0\"/><path d=\"M14 10V4a2 2 0 0 0-2-2v0a2 2 0 0 0-2 2v2\"/><path d=\"M10 10.5V6a2 2 0 0 0-2-2v0a2 2 0 0 0-2 2v8\"/><path d=\"M18 8a2 2 0 1 1 4 0v6a8 8 0 0 1-8 8h-2c-2.8 0-4.5-.86-5.99-2.34l-3.6-3.6a2 2 0 0 1 2.83-2.82L7 15\"/>",
     words: [
-      { es: "hola", de: "hallo", ex: "¡Hola! ¿Qué tal?" },
-      { es: "adiós", de: "tschüss / auf Wiedersehen", ex: "Adiós, hasta luego." },
-      { es: "buenos días", de: "guten Morgen", ex: "Buenos días, señora." },
-      { es: "buenas noches", de: "gute Nacht", ex: "Buenas noches, dulces sueños." },
-      { es: "por favor", de: "bitte", ex: "Un café, por favor." },
-      { es: "gracias", de: "danke", ex: "Muchas gracias por todo." },
-      { es: "de nada", de: "gern geschehen", ex: "— Gracias. — De nada." },
-      { es: "¿cómo estás?", de: "wie geht's?", ex: "¿Cómo estás hoy?" },
-      { es: "bien", de: "gut", ex: "Estoy muy bien, gracias." },
-      { es: "por supuesto", de: "klar / natürlich", ex: "¿Vienes? ¡Por supuesto!" },
-    ],
+      { es: "hola", de: "hallo" },
+      { es: "adiós", de: "tschüss / auf Wiedersehen" },
+      { es: "buenos días", de: "guten Morgen" },
+      { es: "buenas tardes", de: "guten Tag" },
+      { es: "buenas noches", de: "gute Nacht" },
+      { es: "por favor", de: "bitte" },
+      { es: "gracias", de: "danke" },
+      { es: "de nada", de: "gern geschehen" },
+      { es: "perdón", de: "Entschuldigung" },
+      { es: "lo siento", de: "es tut mir leid" },
+      { es: "¿cómo estás?", de: "wie geht's?" },
+      { es: "bien", de: "gut" },
+      { es: "mal", de: "schlecht" },
+      { es: "más o menos", de: "so lala" },
+      { es: "¿cómo te llamas?", de: "wie heißt du?" },
+      { es: "me llamo", de: "ich heiße" },
+      { es: "mucho gusto", de: "sehr erfreut" },
+      { es: "encantado/a", de: "erfreut" },
+      { es: "¿de dónde eres?", de: "woher kommst du?" },
+      { es: "soy de", de: "ich bin aus" },
+      { es: "¿qué tal?", de: "was gibt's?" },
+      { es: "hasta luego", de: "bis später" },
+      { es: "hasta mañana", de: "bis morgen" },
+      { es: "hasta pronto", de: "bis bald" },
+      { es: "bienvenido/a", de: "willkommen" },
+      { es: "con permiso", de: "entschuldigen Sie" },
+      { es: "claro", de: "klar" },
+      { es: "por supuesto", de: "natürlich" },
+      { es: "vale", de: "okay" },
+      { es: "de acuerdo", de: "einverstanden" },
+      { es: "sí", de: "ja" },
+      { es: "no", de: "nein" },
+      { es: "tal vez", de: "vielleicht" },
+      { es: "quizás", de: "vielleicht" },
+      { es: "nunca", de: "nie" },
+      { es: "siempre", de: "immer" },
+      { es: "a veces", de: "manchmal" },
+      { es: "señor", de: "Herr" },
+      { es: "señora", de: "Frau" },
+      { es: "señorita", de: "Fräulein" },
+      { es: "amigo/a", de: "Freund/in" },
+      { es: "¿qué hora es?", de: "wie spät ist es?" },
+      { es: "buen provecho", de: "guten Appetit" },
+      { es: "salud", de: "Gesundheit / Prost" },
+      { es: "feliz cumpleaños", de: "alles Gute zum Geburtstag" },
+      { es: "felicidades", de: "herzlichen Glückwunsch" },
+      { es: "buen viaje", de: "gute Reise" },
+      { es: "cuídate", de: "pass auf dich auf" },
+      { es: "nos vemos", de: "wir sehen uns" },
+      { es: "vale la pena", de: "es lohnt sich" },
+    ]
   },
   {
     id: "familia", title: "La Familia", subtitle: "Familie", stop: "Sevilla",
-    icon: '<path d="M17 21v-2a4 4 0 0 0-4-4H7a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/>',
+    icon: "<path d=\"M17 21v-2a4 4 0 0 0-4-4H7a4 4 0 0 0-4 4v2\"/><circle cx=\"9\" cy=\"7\" r=\"4\"/><path d=\"M23 21v-2a4 4 0 0 0-3-3.87\"/><path d=\"M16 3.13a4 4 0 0 1 0 7.75\"/>",
     words: [
-      { es: "la madre", de: "die Mutter", ex: "Mi madre cocina muy bien." },
-      { es: "el padre", de: "der Vater", ex: "Mi padre trabaja mucho." },
-      { es: "el hermano", de: "der Bruder", ex: "Tengo un hermano mayor." },
-      { es: "la hermana", de: "die Schwester", ex: "Mi hermana vive en Lima." },
-      { es: "el abuelo", de: "der Großvater", ex: "El abuelo cuenta historias." },
-      { es: "la abuela", de: "die Großmutter", ex: "La abuela hace pan casero." },
-      { es: "el hijo", de: "der Sohn", ex: "Su hijo tiene diez años." },
-      { es: "la hija", de: "die Tochter", ex: "Su hija estudia medicina." },
-      { es: "el tío", de: "der Onkel", ex: "El tío llega mañana." },
-      { es: "la tía", de: "die Tante", ex: "La tía vive cerca de aquí." },
-    ],
+      { es: "la madre", de: "die Mutter" },
+      { es: "el padre", de: "der Vater" },
+      { es: "los padres", de: "die Eltern" },
+      { es: "el hermano", de: "der Bruder" },
+      { es: "la hermana", de: "die Schwester" },
+      { es: "los hermanos", de: "die Geschwister" },
+      { es: "el abuelo", de: "der Großvater" },
+      { es: "la abuela", de: "die Großmutter" },
+      { es: "los abuelos", de: "die Großeltern" },
+      { es: "el hijo", de: "der Sohn" },
+      { es: "la hija", de: "die Tochter" },
+      { es: "los hijos", de: "die Kinder" },
+      { es: "el tío", de: "der Onkel" },
+      { es: "la tía", de: "die Tante" },
+      { es: "el primo", de: "der Cousin" },
+      { es: "la prima", de: "die Cousine" },
+      { es: "el sobrino", de: "der Neffe" },
+      { es: "la sobrina", de: "die Nichte" },
+      { es: "el nieto", de: "der Enkel" },
+      { es: "la nieta", de: "die Enkelin" },
+      { es: "el esposo", de: "der Ehemann" },
+      { es: "la esposa", de: "die Ehefrau" },
+      { es: "el marido", de: "der Ehemann" },
+      { es: "la mujer", de: "die Frau" },
+      { es: "el novio", de: "der Freund" },
+      { es: "la novia", de: "die Freundin" },
+      { es: "el suegro", de: "der Schwiegervater" },
+      { es: "la suegra", de: "die Schwiegermutter" },
+      { es: "el yerno", de: "der Schwiegersohn" },
+      { es: "la nuera", de: "die Schwiegertochter" },
+      { es: "el cuñado", de: "der Schwager" },
+      { es: "la cuñada", de: "die Schwägerin" },
+      { es: "el padrastro", de: "der Stiefvater" },
+      { es: "la madrastra", de: "die Stiefmutter" },
+      { es: "el hijastro", de: "der Stiefsohn" },
+      { es: "la hijastra", de: "die Stieftochter" },
+      { es: "el hermanastro", de: "der Stiefbruder" },
+      { es: "la hermanastra", de: "die Stiefschwester" },
+      { es: "el bebé", de: "das Baby" },
+      { es: "el niño", de: "der Junge" },
+      { es: "la niña", de: "das Mädchen" },
+      { es: "el adulto", de: "der Erwachsene" },
+      { es: "el adolescente", de: "der/die Jugendliche" },
+      { es: "la pareja", de: "das Paar" },
+      { es: "el matrimonio", de: "die Ehe" },
+      { es: "el nacimiento", de: "die Geburt" },
+      { es: "la infancia", de: "die Kindheit" },
+      { es: "el apellido", de: "der Nachname" },
+      { es: "el nombre", de: "der Vorname" },
+      { es: "el pariente", de: "der/die Verwandte" },
+    ]
   },
   {
-    id: "comida", title: "La Comida", subtitle: "Essen & Trinken", stop: "Valencia",
-    icon: '<path d="M3 2v7c0 1.1.9 2 2 2h0a2 2 0 0 0 2-2V2"/><path d="M7 2v20"/><path d="M21 15V2a5 5 0 0 0-5 5v6c0 1.1.9 2 2 2h3Zm0 0v7"/>',
+    id: "numeros", title: "Los Números", subtitle: "Zahlen 1–50", stop: "Valencia",
+    icon: "<path d=\"M4 9h16M4 15h16M10 3 8 21M16 3l-2 18\"/>",
     words: [
-      { es: "el pan", de: "das Brot", ex: "Compro pan fresco cada día." },
-      { es: "el agua", de: "das Wasser", ex: "Necesito un vaso de agua." },
-      { es: "el café", de: "der Kaffee", ex: "Un café con leche, por favor." },
-      { es: "la manzana", de: "der Apfel", ex: "La manzana está muy dulce." },
-      { es: "el pollo", de: "das Hähnchen", ex: "El pollo con arroz es rico." },
-      { es: "el arroz", de: "der Reis", ex: "Cocino arroz para la cena." },
-      { es: "el queso", de: "der Käse", ex: "Me encanta el queso manchego." },
-      { es: "el huevo", de: "das Ei", ex: "Un huevo frito, por favor." },
-      { es: "la leche", de: "die Milch", ex: "¿Tienes leche fría?" },
-      { es: "la verdura", de: "das Gemüse", ex: "Como verdura todos los días." },
-    ],
-  },
-
-  // ---------- FORTGESCHRITTEN ----------
-  {
-    id: "viaje", title: "De Viaje", subtitle: "Reisen", stop: "Granada",
-    icon: '<path d="M17.8 19.2 16 11l3.5-3.5C21 6 21.5 4 21 3c-1-.5-3 0-4.5 1.5L13 8 4.8 6.2c-.5-.1-1 .1-1.3.4l-.7.7a1 1 0 0 0 .3 1.6l5.9 2.5-2 2.5H3v2l3 1 1 3h2l.6-4 2.5-2 2.5 5.9a1 1 0 0 0 1.6.3l.7-.7c.3-.3.5-.8.4-1.3z"/>',
-    words: [
-      { es: "el aeropuerto", de: "der Flughafen", ex: "Llegamos al aeropuerto a tiempo." },
-      { es: "el tren", de: "der Zug", ex: "El tren sale a las nueve." },
-      { es: "el hotel", de: "das Hotel", ex: "Nuestro hotel está en el centro." },
-      { es: "la playa", de: "der Strand", ex: "Vamos a la playa mañana." },
-      { es: "el mapa", de: "die Karte", ex: "Necesito un mapa de la ciudad." },
-      { es: "la maleta", de: "der Koffer", ex: "Mi maleta es muy pesada." },
-      { es: "el pasaporte", de: "der Reisepass", ex: "No olvides tu pasaporte." },
-      { es: "el billete", de: "das Ticket", ex: "Compré un billete de ida y vuelta." },
-      { es: "la calle", de: "die Straße", ex: "La tienda está en esta calle." },
-      { es: "la ciudad", de: "die Stadt", ex: "Es una ciudad muy bonita." },
-    ],
-  },
-  {
-    id: "numeros", title: "Números y Colores", subtitle: "Zahlen & Farben", stop: "Barcelona",
-    icon: '<circle cx="13.5" cy="6.5" r=".5"/><circle cx="17.5" cy="10.5" r=".5"/><circle cx="8.5" cy="7.5" r=".5"/><circle cx="6.5" cy="12.5" r=".5"/><path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10c.9 0 1.5-.7 1.5-1.5 0-.4-.1-.7-.4-1a2 2 0 0 1 1.4-3.5H16a4 4 0 0 0 4-4c0-5.5-4-8-8-8z"/>',
-    words: [
-      { es: "uno", de: "eins", ex: "Solo tengo uno." },
-      { es: "dos", de: "zwei", ex: "Quiero dos billetes." },
-      { es: "tres", de: "drei", ex: "Son las tres." },
-      { es: "rojo", de: "rot", ex: "El coche rojo es rápido." },
-      { es: "azul", de: "blau", ex: "El cielo está azul." },
-      { es: "verde", de: "grün", ex: "Me gusta el verde." },
-      { es: "amarillo", de: "gelb", ex: "El sol es amarillo." },
-      { es: "negro", de: "schwarz", ex: "Lleva un abrigo negro." },
-      { es: "blanco", de: "weiß", ex: "La casa es blanca." },
-      { es: "grande", de: "groß", ex: "Es una casa muy grande." },
-    ],
-  },
-  {
-    id: "ciudad", title: "En la Ciudad", subtitle: "Wegbeschreibung", stop: "Bilbao",
-    icon: '<path d="M3 21h18M5 21V7l7-4 7 4v14M9 9h1m4 0h1m-6 4h1m4 0h1m-6 4h1m4 0h1"/>',
-    words: [
-      { es: "la estación", de: "der Bahnhof", ex: "La estación está muy cerca." },
-      { es: "el banco", de: "die Bank", ex: "Necesito ir al banco." },
-      { es: "el museo", de: "das Museum", ex: "El museo abre a las diez." },
-      { es: "la farmacia", de: "die Apotheke", ex: "¿Dónde está la farmacia?" },
-      { es: "el supermercado", de: "der Supermarkt", ex: "Voy al supermercado a comprar." },
-      { es: "la esquina", de: "die Ecke", ex: "Está en la esquina." },
-      { es: "el semáforo", de: "die Ampel", ex: "Cruza en el semáforo." },
-      { es: "a la izquierda", de: "nach links", ex: "Gira a la izquierda." },
-      { es: "a la derecha", de: "nach rechts", ex: "Sigue a la derecha." },
-      { es: "todo recto", de: "geradeaus", ex: "Sigue todo recto." },
-    ],
-  },
-
-  // ---------- PROFI ----------
-  {
-    id: "trabajo", title: "El Trabajo", subtitle: "Arbeit & Büro", stop: "San Sebastián",
-    icon: '<rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/>',
-    words: [
-      { es: "la oficina", de: "das Büro", ex: "Trabajo en la oficina hasta las seis." },
-      { es: "el jefe", de: "der Chef", ex: "El jefe tiene una reunión hoy." },
-      { es: "la reunión", de: "das Meeting", ex: "La reunión empieza a las nueve." },
-      { es: "el ordenador", de: "der Computer", ex: "Mi ordenador es muy lento." },
-      { es: "el correo electrónico", de: "die E-Mail", ex: "Te envío un correo electrónico." },
-      { es: "el proyecto", de: "das Projekt", ex: "El proyecto termina esta semana." },
-      { es: "el cliente", de: "der Kunde", ex: "El cliente llama mañana." },
-      { es: "el sueldo", de: "das Gehalt", ex: "El sueldo llega a fin de mes." },
-      { es: "la empresa", de: "die Firma", ex: "La empresa crece cada año." },
-      { es: "la entrevista", de: "das Vorstellungsgespräch", ex: "Tengo una entrevista de trabajo." },
-    ],
+      { es: "uno", de: "eins" },
+      { es: "dos", de: "zwei" },
+      { es: "tres", de: "drei" },
+      { es: "cuatro", de: "vier" },
+      { es: "cinco", de: "fünf" },
+      { es: "seis", de: "sechs" },
+      { es: "siete", de: "sieben" },
+      { es: "ocho", de: "acht" },
+      { es: "nueve", de: "neun" },
+      { es: "diez", de: "zehn" },
+      { es: "once", de: "elf" },
+      { es: "doce", de: "zwölf" },
+      { es: "trece", de: "dreizehn" },
+      { es: "catorce", de: "vierzehn" },
+      { es: "quince", de: "fünfzehn" },
+      { es: "dieciséis", de: "sechzehn" },
+      { es: "diecisiete", de: "siebzehn" },
+      { es: "dieciocho", de: "achtzehn" },
+      { es: "diecinueve", de: "neunzehn" },
+      { es: "veinte", de: "zwanzig" },
+      { es: "veintiuno", de: "einundzwanzig" },
+      { es: "veintidós", de: "zweiundzwanzig" },
+      { es: "veintitrés", de: "dreiundzwanzig" },
+      { es: "veinticuatro", de: "vierundzwanzig" },
+      { es: "veinticinco", de: "fünfundzwanzig" },
+      { es: "veintiséis", de: "sechsundzwanzig" },
+      { es: "veintisiete", de: "siebenundzwanzig" },
+      { es: "veintiocho", de: "achtundzwanzig" },
+      { es: "veintinueve", de: "neunundzwanzig" },
+      { es: "treinta", de: "dreißig" },
+      { es: "treinta y uno", de: "einunddreißig" },
+      { es: "treinta y dos", de: "zweiunddreißig" },
+      { es: "treinta y tres", de: "dreiunddreißig" },
+      { es: "treinta y cuatro", de: "vierunddreißig" },
+      { es: "treinta y cinco", de: "fünfunddreißig" },
+      { es: "treinta y seis", de: "sechsunddreißig" },
+      { es: "treinta y siete", de: "siebenunddreißig" },
+      { es: "treinta y ocho", de: "achtunddreißig" },
+      { es: "treinta y nueve", de: "neununddreißig" },
+      { es: "cuarenta", de: "vierzig" },
+      { es: "cuarenta y uno", de: "einundvierzig" },
+      { es: "cuarenta y dos", de: "zweiundvierzig" },
+      { es: "cuarenta y tres", de: "dreiundvierzig" },
+      { es: "cuarenta y cuatro", de: "vierundvierzig" },
+      { es: "cuarenta y cinco", de: "fünfundvierzig" },
+      { es: "cuarenta y seis", de: "sechsundvierzig" },
+      { es: "cuarenta y siete", de: "siebenundvierzig" },
+      { es: "cuarenta y ocho", de: "achtundvierzig" },
+      { es: "cuarenta y nueve", de: "neunundvierzig" },
+      { es: "cincuenta", de: "fünfzig" },
+    ]
   },
   {
-    id: "tiempo", title: "El Tiempo", subtitle: "Wetter & Jahreszeiten", stop: "Toledo",
-    icon: '<circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/>',
+    id: "colores", title: "Colores y Formas", subtitle: "Farben & Formen", stop: "Granada",
+    icon: "<path d=\"M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10c.9 0 1.5-.7 1.5-1.5 0-.4-.1-.7-.4-1a2 2 0 0 1 1.4-3.5H16a4 4 0 0 0 4-4c0-5.5-4-8-8-8z\"/><circle cx=\"7.5\" cy=\"10.5\" r=\".8\"/><circle cx=\"12\" cy=\"7\" r=\".8\"/><circle cx=\"16.5\" cy=\"10.5\" r=\".8\"/>",
     words: [
-      { es: "hace sol", de: "die Sonne scheint", ex: "Hoy hace sol." },
-      { es: "llueve", de: "es regnet", ex: "Llueve mucho en otoño." },
-      { es: "hace frío", de: "es ist kalt", ex: "En enero hace mucho frío." },
-      { es: "hace calor", de: "es ist heiß", ex: "En verano hace calor." },
-      { es: "la primavera", de: "der Frühling", ex: "Me gusta la primavera." },
-      { es: "el verano", de: "der Sommer", ex: "El verano es mi estación favorita." },
-      { es: "el otoño", de: "der Herbst", ex: "Las hojas caen en otoño." },
-      { es: "el invierno", de: "der Winter", ex: "En invierno nieva mucho." },
-      { es: "hoy", de: "heute", ex: "Hoy tengo mucho trabajo." },
-      { es: "mañana", de: "morgen", ex: "Mañana voy a la playa." },
-    ],
+      { es: "rojo", de: "rot" },
+      { es: "azul", de: "blau" },
+      { es: "verde", de: "grün" },
+      { es: "amarillo", de: "gelb" },
+      { es: "naranja", de: "orange" },
+      { es: "morado", de: "lila" },
+      { es: "rosa", de: "rosa" },
+      { es: "marrón", de: "braun" },
+      { es: "negro", de: "schwarz" },
+      { es: "blanco", de: "weiß" },
+      { es: "gris", de: "grau" },
+      { es: "dorado", de: "golden" },
+      { es: "plateado", de: "silbern" },
+      { es: "turquesa", de: "türkis" },
+      { es: "violeta", de: "violett" },
+      { es: "beige", de: "beige" },
+      { es: "claro", de: "hell" },
+      { es: "oscuro", de: "dunkel" },
+      { es: "celeste", de: "himmelblau" },
+      { es: "marfil", de: "elfenbeinfarben" },
+      { es: "el círculo", de: "der Kreis" },
+      { es: "el cuadrado", de: "das Quadrat" },
+      { es: "el triángulo", de: "das Dreieck" },
+      { es: "el rectángulo", de: "das Rechteck" },
+      { es: "el óvalo", de: "das Oval" },
+      { es: "la línea", de: "die Linie" },
+      { es: "el punto", de: "der Punkt" },
+      { es: "la estrella", de: "der Stern" },
+      { es: "el corazón", de: "das Herz" },
+      { es: "la flecha", de: "der Pfeil" },
+      { es: "nuevo", de: "neu" },
+      { es: "viejo", de: "alt" },
+      { es: "limpio", de: "sauber" },
+      { es: "sucio", de: "schmutzig" },
+      { es: "bonito", de: "schön" },
+      { es: "feo", de: "hässlich" },
+      { es: "brillante", de: "glänzend" },
+      { es: "mate", de: "matt" },
+      { es: "transparente", de: "durchsichtig" },
+      { es: "opaco", de: "undurchsichtig" },
+      { es: "colorido", de: "bunt" },
+      { es: "liso", de: "einfarbig" },
+      { es: "a rayas", de: "gestreift" },
+      { es: "a cuadros", de: "kariert" },
+      { es: "de lunares", de: "gepunktet" },
+      { es: "multicolor", de: "mehrfarbig" },
+      { es: "pálido", de: "blass" },
+      { es: "intenso", de: "intensiv" },
+      { es: "suave", de: "sanft" },
+      { es: "vivo", de: "leuchtend" },
+    ]
   },
   {
-    id: "sentimientos", title: "Sentimientos", subtitle: "Gefühle", stop: "Santiago",
-    icon: '<path d="M12 21c-4.4-3.3-9-6.9-9-11.2C3 6.5 5.4 4 8.5 4c1.7 0 3.1.9 3.5 2.2C12.4 4.9 13.8 4 15.5 4 18.6 4 21 6.5 21 9.8c0 4.3-4.6 7.9-9 11.2Z"/>',
+    id: "comida", title: "La Comida y Bebida", subtitle: "Essen & Trinken", stop: "Bilbao",
+    icon: "<path d=\"M3 2v7c0 1.1.9 2 2 2h0a2 2 0 0 0 2-2V2\"/><path d=\"M7 2v20\"/><path d=\"M21 15V2a5 5 0 0 0-5 5v6c0 1.1.9 2 2 2h3Zm0 0v7\"/>",
     words: [
-      { es: "feliz", de: "glücklich", ex: "Estoy muy feliz hoy." },
-      { es: "triste", de: "traurig", ex: "Se siente un poco triste." },
-      { es: "cansado/a", de: "müde", ex: "Estoy cansado después del trabajo." },
-      { es: "enojado/a", de: "verärgert", ex: "Está enojada con su hermano." },
-      { es: "nervioso/a", de: "nervös", ex: "Estoy nervioso por el examen." },
-      { es: "sorprendido/a", de: "überrascht", ex: "Quedé muy sorprendido." },
-      { es: "tranquilo/a", de: "ruhig / entspannt", ex: "Ahora me siento tranquilo." },
-      { es: "emocionado/a", de: "aufgeregt", ex: "Estamos emocionados por el viaje." },
-      { es: "preocupado/a", de: "besorgt", ex: "Está preocupada por el examen." },
-      { es: "orgulloso/a", de: "stolz", ex: "Estoy orgulloso de ti." },
-    ],
+      { es: "el pan", de: "das Brot" },
+      { es: "el agua", de: "das Wasser" },
+      { es: "el café", de: "der Kaffee" },
+      { es: "el té", de: "der Tee" },
+      { es: "la leche", de: "die Milch" },
+      { es: "el zumo", de: "der Saft" },
+      { es: "el vino", de: "der Wein" },
+      { es: "la cerveza", de: "das Bier" },
+      { es: "la manzana", de: "der Apfel" },
+      { es: "el plátano", de: "die Banane" },
+      { es: "la naranja", de: "die Orange" },
+      { es: "la fresa", de: "die Erdbeere" },
+      { es: "la uva", de: "die Weintraube" },
+      { es: "el limón", de: "die Zitrone" },
+      { es: "la pera", de: "die Birne" },
+      { es: "la piña", de: "die Ananas" },
+      { es: "el pollo", de: "das Hähnchen" },
+      { es: "la carne", de: "das Fleisch" },
+      { es: "el pescado", de: "der Fisch" },
+      { es: "el arroz", de: "der Reis" },
+      { es: "la pasta", de: "die Pasta" },
+      { es: "el queso", de: "der Käse" },
+      { es: "el huevo", de: "das Ei" },
+      { es: "la verdura", de: "das Gemüse" },
+      { es: "la ensalada", de: "der Salat" },
+      { es: "la sopa", de: "die Suppe" },
+      { es: "la patata", de: "die Kartoffel" },
+      { es: "la cebolla", de: "die Zwiebel" },
+      { es: "el tomate", de: "die Tomate" },
+      { es: "la zanahoria", de: "die Karotte" },
+      { es: "el ajo", de: "der Knoblauch" },
+      { es: "la sal", de: "das Salz" },
+      { es: "el azúcar", de: "der Zucker" },
+      { es: "el aceite", de: "das Öl" },
+      { es: "la mantequilla", de: "die Butter" },
+      { es: "el postre", de: "die Nachspeise" },
+      { es: "el pastel", de: "der Kuchen" },
+      { es: "el helado", de: "das Eis" },
+      { es: "el chocolate", de: "die Schokolade" },
+      { es: "la miel", de: "der Honig" },
+      { es: "el desayuno", de: "das Frühstück" },
+      { es: "el almuerzo", de: "das Mittagessen" },
+      { es: "la cena", de: "das Abendessen" },
+      { es: "la merienda", de: "der Nachmittagssnack" },
+      { es: "el restaurante", de: "das Restaurant" },
+      { es: "la cuenta", de: "die Rechnung" },
+      { es: "la propina", de: "das Trinkgeld" },
+      { es: "el menú", de: "die Speisekarte" },
+      { es: "el cuchillo", de: "das Messer" },
+      { es: "el tenedor", de: "die Gabel" },
+    ]
   },
+  {
+    id: "casa", title: "La Casa", subtitle: "Haus & Wohnung", stop: "San Sebastián",
+    icon: "<path d=\"M3 11 12 3l9 8\"/><path d=\"M5 10v10h14V10\"/><path d=\"M9 20v-6h6v6\"/>",
+    words: [
+      { es: "la casa", de: "das Haus" },
+      { es: "el piso", de: "die Wohnung" },
+      { es: "la habitación", de: "das Zimmer" },
+      { es: "el dormitorio", de: "das Schlafzimmer" },
+      { es: "la cocina", de: "die Küche" },
+      { es: "el baño", de: "das Badezimmer" },
+      { es: "el salón", de: "das Wohnzimmer" },
+      { es: "el comedor", de: "das Esszimmer" },
+      { es: "el jardín", de: "der Garten" },
+      { es: "el garaje", de: "die Garage" },
+      { es: "la puerta", de: "die Tür" },
+      { es: "la ventana", de: "das Fenster" },
+      { es: "la pared", de: "die Wand" },
+      { es: "el techo", de: "die Decke" },
+      { es: "el suelo", de: "der Boden" },
+      { es: "la escalera", de: "die Treppe" },
+      { es: "el balcón", de: "der Balkon" },
+      { es: "la terraza", de: "die Terrasse" },
+      { es: "el sótano", de: "der Keller" },
+      { es: "el ático", de: "der Dachboden" },
+      { es: "la mesa", de: "der Tisch" },
+      { es: "la silla", de: "der Stuhl" },
+      { es: "el sofá", de: "das Sofa" },
+      { es: "la cama", de: "das Bett" },
+      { es: "el armario", de: "der Schrank" },
+      { es: "la estantería", de: "das Regal" },
+      { es: "la lámpara", de: "die Lampe" },
+      { es: "el espejo", de: "der Spiegel" },
+      { es: "la alfombra", de: "der Teppich" },
+      { es: "la cortina", de: "der Vorhang" },
+      { es: "el frigorífico", de: "der Kühlschrank" },
+      { es: "la lavadora", de: "die Waschmaschine" },
+      { es: "el horno", de: "der Backofen" },
+      { es: "el microondas", de: "die Mikrowelle" },
+      { es: "el fregadero", de: "die Spüle" },
+      { es: "la ducha", de: "die Dusche" },
+      { es: "la bañera", de: "die Badewanne" },
+      { es: "el inodoro", de: "die Toilette" },
+      { es: "el lavabo", de: "das Waschbecken" },
+      { es: "la llave", de: "der Schlüssel" },
+      { es: "la cerradura", de: "das Schloss" },
+      { es: "el enchufe", de: "die Steckdose" },
+      { es: "la luz", de: "das Licht" },
+      { es: "el interruptor", de: "der Schalter" },
+      { es: "el alquiler", de: "die Miete" },
+      { es: "el propietario", de: "der Eigentümer" },
+      { es: "el vecino", de: "der Nachbar" },
+      { es: "mudarse", de: "umziehen" },
+      { es: "limpiar", de: "putzen" },
+      { es: "decorar", de: "dekorieren" },
+    ]
+  },
+  {
+    id: "ropa", title: "La Ropa", subtitle: "Kleidung", stop: "Toledo",
+    icon: "<path d=\"M16 3 12 6 8 3 3 7l3 3v11h12V10l3-3Z\"/>",
+    words: [
+      { es: "la camisa", de: "das Hemd" },
+      { es: "la camiseta", de: "das T-Shirt" },
+      { es: "el pantalón", de: "die Hose" },
+      { es: "los vaqueros", de: "die Jeans" },
+      { es: "la falda", de: "der Rock" },
+      { es: "el vestido", de: "das Kleid" },
+      { es: "la chaqueta", de: "die Jacke" },
+      { es: "el abrigo", de: "der Mantel" },
+      { es: "el jersey", de: "der Pullover" },
+      { es: "la sudadera", de: "der Sweatshirt" },
+      { es: "los calcetines", de: "die Socken" },
+      { es: "los zapatos", de: "die Schuhe" },
+      { es: "las botas", de: "die Stiefel" },
+      { es: "las sandalias", de: "die Sandalen" },
+      { es: "las zapatillas", de: "die Turnschuhe" },
+      { es: "el sombrero", de: "der Hut" },
+      { es: "la gorra", de: "die Kappe" },
+      { es: "la bufanda", de: "der Schal" },
+      { es: "los guantes", de: "die Handschuhe" },
+      { es: "el cinturón", de: "der Gürtel" },
+      { es: "la corbata", de: "die Krawatte" },
+      { es: "el traje", de: "der Anzug" },
+      { es: "el pijama", de: "der Schlafanzug" },
+      { es: "la ropa interior", de: "die Unterwäsche" },
+      { es: "el bañador", de: "die Badebekleidung" },
+      { es: "las gafas", de: "die Brille" },
+      { es: "las gafas de sol", de: "die Sonnenbrille" },
+      { es: "el reloj", de: "die Uhr" },
+      { es: "el collar", de: "die Halskette" },
+      { es: "el anillo", de: "der Ring" },
+      { es: "los pendientes", de: "die Ohrringe" },
+      { es: "la pulsera", de: "das Armband" },
+      { es: "el bolso", de: "die Handtasche" },
+      { es: "la mochila", de: "der Rucksack" },
+      { es: "la cartera", de: "das Portemonnaie" },
+      { es: "el paraguas", de: "der Regenschirm" },
+      { es: "la talla", de: "die Größe" },
+      { es: "probarse", de: "anprobieren" },
+      { es: "quedar bien", de: "gut passen" },
+      { es: "quedar mal", de: "schlecht passen" },
+      { es: "de moda", de: "in Mode" },
+      { es: "cómodo", de: "bequem" },
+      { es: "incómodo", de: "unbequem" },
+      { es: "elegante", de: "elegant" },
+      { es: "informal", de: "leger" },
+      { es: "el algodón", de: "die Baumwolle" },
+      { es: "la lana", de: "die Wolle" },
+      { es: "la seda", de: "die Seide" },
+      { es: "el cuero", de: "das Leder" },
+      { es: "coser", de: "nähen" },
+    ]
+  },
+  {
+    id: "cuerpo", title: "El Cuerpo y la Salud", subtitle: "Körper & Gesundheit", stop: "Santiago de Compostela",
+    icon: "<path d=\"M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.6l-1-1a5.5 5.5 0 0 0-7.8 7.8l1 1L12 21l7.8-7.6 1-1a5.5 5.5 0 0 0 0-7.8Z\"/><path d=\"M6 12h2l1.5-3 2 5 1.5-3H18\"/>",
+    words: [
+      { es: "la cabeza", de: "der Kopf" },
+      { es: "el pelo", de: "das Haar" },
+      { es: "la cara", de: "das Gesicht" },
+      { es: "el ojo", de: "das Auge" },
+      { es: "la nariz", de: "die Nase" },
+      { es: "la boca", de: "der Mund" },
+      { es: "la oreja", de: "das Ohr" },
+      { es: "el diente", de: "der Zahn" },
+      { es: "el cuello", de: "der Hals" },
+      { es: "el hombro", de: "die Schulter" },
+      { es: "el brazo", de: "der Arm" },
+      { es: "la mano", de: "die Hand" },
+      { es: "el dedo", de: "der Finger" },
+      { es: "la pierna", de: "das Bein" },
+      { es: "la rodilla", de: "das Knie" },
+      { es: "el pie", de: "der Fuß" },
+      { es: "la espalda", de: "der Rücken" },
+      { es: "el pecho", de: "die Brust" },
+      { es: "el estómago", de: "der Magen" },
+      { es: "el corazón", de: "das Herz" },
+      { es: "la piel", de: "die Haut" },
+      { es: "el hueso", de: "der Knochen" },
+      { es: "el músculo", de: "der Muskel" },
+      { es: "la sangre", de: "das Blut" },
+      { es: "el médico", de: "der Arzt" },
+      { es: "la enfermera", de: "die Krankenschwester" },
+      { es: "el hospital", de: "das Krankenhaus" },
+      { es: "la farmacia", de: "die Apotheke" },
+      { es: "la medicina", de: "die Medizin" },
+      { es: "la pastilla", de: "die Tablette" },
+      { es: "la receta", de: "das Rezept" },
+      { es: "la fiebre", de: "das Fieber" },
+      { es: "el dolor", de: "der Schmerz" },
+      { es: "la tos", de: "der Husten" },
+      { es: "el resfriado", de: "die Erkältung" },
+      { es: "la gripe", de: "die Grippe" },
+      { es: "la alergia", de: "die Allergie" },
+      { es: "la herida", de: "die Wunde" },
+      { es: "la cita", de: "der Termin" },
+      { es: "estar enfermo", de: "krank sein" },
+      { es: "estar sano", de: "gesund sein" },
+      { es: "doler", de: "wehtun" },
+      { es: "respirar", de: "atmen" },
+      { es: "toser", de: "husten" },
+      { es: "estornudar", de: "niesen" },
+      { es: "la ambulancia", de: "der Krankenwagen" },
+      { es: "la operación", de: "die Operation" },
+      { es: "la vacuna", de: "die Impfung" },
+      { es: "el seguro médico", de: "die Krankenversicherung" },
+      { es: "cuidarse", de: "sich pflegen" },
+    ]
+  },
+  {
+    id: "viaje", title: "De Viaje", subtitle: "Reisen", stop: "Málaga",
+    icon: "<path d=\"M17.8 19.2 16 11l3.5-3.5C21 6 21.5 4 21 3c-1-.5-3 0-4.5 1.5L13 8 4.8 6.2c-.5-.1-1 .1-1.3.4l-.7.7a1 1 0 0 0 .3 1.6l5.9 2.5-2 2.5H3v2l3 1 1 3h2l.6-4 2.5-2 2.5 5.9a1 1 0 0 0 1.6.3l.7-.7c.3-.3.5-.8.4-1.3z\"/>",
+    words: [
+      { es: "el aeropuerto", de: "der Flughafen" },
+      { es: "el avión", de: "das Flugzeug" },
+      { es: "el tren", de: "der Zug" },
+      { es: "la estación de tren", de: "der Bahnhof" },
+      { es: "el autobús", de: "der Bus" },
+      { es: "el coche", de: "das Auto" },
+      { es: "el barco", de: "das Schiff" },
+      { es: "la bicicleta", de: "das Fahrrad" },
+      { es: "el taxi", de: "das Taxi" },
+      { es: "el metro", de: "die U-Bahn" },
+      { es: "el billete", de: "das Ticket" },
+      { es: "el pasaporte", de: "der Reisepass" },
+      { es: "la maleta", de: "der Koffer" },
+      { es: "el equipaje", de: "das Gepäck" },
+      { es: "la reserva", de: "die Reservierung" },
+      { es: "el hotel", de: "das Hotel" },
+      { es: "el albergue", de: "die Jugendherberge" },
+      { es: "la habitación doble", de: "das Doppelzimmer" },
+      { es: "la recepción", de: "die Rezeption" },
+      { es: "la llegada", de: "die Ankunft" },
+      { es: "la salida", de: "die Abreise" },
+      { es: "el vuelo", de: "der Flug" },
+      { es: "el retraso", de: "die Verspätung" },
+      { es: "la conexión", de: "der Umstieg" },
+      { es: "la aduana", de: "der Zoll" },
+      { es: "la frontera", de: "die Grenze" },
+      { es: "el mapa", de: "die Karte" },
+      { es: "la guía turística", de: "der Reiseführer" },
+      { es: "el turista", de: "der Tourist" },
+      { es: "las vacaciones", de: "der Urlaub" },
+      { es: "la playa", de: "der Strand" },
+      { es: "la montaña", de: "der Berg" },
+      { es: "el lago", de: "der See" },
+      { es: "el campo", de: "das Land" },
+      { es: "el paisaje", de: "die Landschaft" },
+      { es: "la excursión", de: "der Ausflug" },
+      { es: "la ruta", de: "die Route" },
+      { es: "perderse", de: "sich verlaufen" },
+      { es: "hacer una reserva", de: "eine Reservierung machen" },
+      { es: "facturar el equipaje", de: "das Gepäck aufgeben" },
+      { es: "el visado", de: "das Visum" },
+      { es: "el seguro de viaje", de: "die Reiseversicherung" },
+      { es: "la moneda", de: "die Währung" },
+      { es: "cambiar dinero", de: "Geld wechseln" },
+      { es: "el itinerario", de: "die Reiseroute" },
+      { es: "la brújula", de: "der Kompass" },
+      { es: "la tienda de campaña", de: "das Zelt" },
+      { es: "acampar", de: "zelten" },
+      { es: "el crucero", de: "die Kreuzfahrt" },
+      { es: "el destino", de: "das Reiseziel" },
+    ]
+  },
+  {
+    id: "ciudad", title: "En la Ciudad", subtitle: "Stadt & Wegbeschreibung", stop: "Zaragoza",
+    icon: "<path d=\"M3 21h18M5 21V7l7-4 7 4v14M9 9h1m4 0h1m-6 4h1m4 0h1m-6 4h1m4 0h1\"/>",
+    words: [
+      { es: "la calle", de: "die Straße" },
+      { es: "la avenida", de: "die Allee" },
+      { es: "la plaza", de: "der Platz" },
+      { es: "el parque", de: "der Park" },
+      { es: "el edificio", de: "das Gebäude" },
+      { es: "la tienda", de: "der Laden" },
+      { es: "el supermercado", de: "der Supermarkt" },
+      { es: "el mercado", de: "der Markt" },
+      { es: "el banco", de: "die Bank" },
+      { es: "la oficina de correos", de: "das Postamt" },
+      { es: "la biblioteca", de: "die Bibliothek" },
+      { es: "el museo", de: "das Museum" },
+      { es: "el cine", de: "das Kino" },
+      { es: "el teatro", de: "das Theater" },
+      { es: "la iglesia", de: "die Kirche" },
+      { es: "el ayuntamiento", de: "das Rathaus" },
+      { es: "la comisaría", de: "die Polizeiwache" },
+      { es: "el hospital", de: "das Krankenhaus" },
+      { es: "la escuela", de: "die Schule" },
+      { es: "la universidad", de: "die Universität" },
+      { es: "el restaurante", de: "das Restaurant" },
+      { es: "el bar", de: "die Bar" },
+      { es: "la cafetería", de: "das Café" },
+      { es: "el semáforo", de: "die Ampel" },
+      { es: "la esquina", de: "die Ecke" },
+      { es: "el cruce", de: "die Kreuzung" },
+      { es: "la acera", de: "der Bürgersteig" },
+      { es: "el puente", de: "die Brücke" },
+      { es: "el túnel", de: "der Tunnel" },
+      { es: "la parada de autobús", de: "die Bushaltestelle" },
+      { es: "el aparcamiento", de: "der Parkplatz" },
+      { es: "el barrio", de: "das Viertel" },
+      { es: "el centro", de: "das Zentrum" },
+      { es: "las afueras", de: "der Vorort" },
+      { es: "a la izquierda", de: "nach links" },
+      { es: "a la derecha", de: "nach rechts" },
+      { es: "todo recto", de: "geradeaus" },
+      { es: "cerca", de: "nah" },
+      { es: "lejos", de: "weit" },
+      { es: "el ruido", de: "der Lärm" },
+      { es: "la contaminación", de: "die Verschmutzung" },
+      { es: "el tráfico", de: "der Verkehr" },
+      { es: "el peatón", de: "der Fußgänger" },
+      { es: "el ciudadano", de: "der Bürger" },
+      { es: "la multitud", de: "die Menschenmenge" },
+      { es: "el rascacielos", de: "der Wolkenkratzer" },
+      { es: "la estatua", de: "die Statue" },
+      { es: "la fuente", de: "der Brunnen" },
+      { es: "el mapa de la ciudad", de: "der Stadtplan" },
+      { es: "orientarse", de: "sich orientieren" },
+    ]
+  },
+  {
+    id: "tiempo", title: "El Tiempo y las Estaciones", subtitle: "Wetter & Jahreszeiten", stop: "Córdoba",
+    icon: "<circle cx=\"12\" cy=\"12\" r=\"4\"/><path d=\"M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4\"/>",
+    words: [
+      { es: "hace sol", de: "die Sonne scheint" },
+      { es: "hace calor", de: "es ist heiß" },
+      { es: "hace frío", de: "es ist kalt" },
+      { es: "llueve", de: "es regnet" },
+      { es: "nieva", de: "es schneit" },
+      { es: "hay niebla", de: "es ist neblig" },
+      { es: "hay viento", de: "es ist windig" },
+      { es: "está nublado", de: "es ist bewölkt" },
+      { es: "la tormenta", de: "das Gewitter" },
+      { es: "el trueno", de: "der Donner" },
+      { es: "el relámpago", de: "der Blitz" },
+      { es: "el arcoíris", de: "der Regenbogen" },
+      { es: "la nube", de: "die Wolke" },
+      { es: "el cielo", de: "der Himmel" },
+      { es: "el sol", de: "die Sonne" },
+      { es: "la lluvia", de: "der Regen" },
+      { es: "la nieve", de: "der Schnee" },
+      { es: "el hielo", de: "das Eis" },
+      { es: "la temperatura", de: "die Temperatur" },
+      { es: "el grado", de: "der Grad" },
+      { es: "el clima", de: "das Klima" },
+      { es: "el pronóstico", de: "die Vorhersage" },
+      { es: "la primavera", de: "der Frühling" },
+      { es: "el verano", de: "der Sommer" },
+      { es: "el otoño", de: "der Herbst" },
+      { es: "el invierno", de: "der Winter" },
+      { es: "húmedo", de: "feucht" },
+      { es: "seco", de: "trocken" },
+      { es: "templado", de: "mild" },
+      { es: "fresco", de: "kühl" },
+      { es: "la humedad", de: "die Feuchtigkeit" },
+      { es: "la sequía", de: "die Dürre" },
+      { es: "la inundación", de: "die Überschwemmung" },
+      { es: "el huracán", de: "der Hurrikan" },
+      { es: "el terremoto", de: "das Erdbeben" },
+      { es: "hoy", de: "heute" },
+      { es: "mañana", de: "morgen" },
+      { es: "ayer", de: "gestern" },
+      { es: "esta semana", de: "diese Woche" },
+      { es: "el mes", de: "der Monat" },
+      { es: "el año", de: "das Jahr" },
+      { es: "la estación", de: "die Jahreszeit" },
+      { es: "el amanecer", de: "der Sonnenaufgang" },
+      { es: "el atardecer", de: "der Sonnenuntergang" },
+      { es: "la sombra", de: "der Schatten" },
+      { es: "el paraguas", de: "der Regenschirm" },
+      { es: "la ola de calor", de: "die Hitzewelle" },
+      { es: "congelarse", de: "frieren" },
+      { es: "derretirse", de: "schmelzen" },
+      { es: "soplar", de: "wehen" },
+    ]
+  },
+  {
+    id: "animales", title: "Los Animales", subtitle: "Tiere", stop: "Salamanca",
+    icon: "<path d=\"M12 14c-3 0-6 2-6 5a2 2 0 0 0 2 2c1.2 0 2-1 4-1s2.8 1 4 1a2 2 0 0 0 2-2c0-3-3-5-6-5Z\"/><circle cx=\"6\" cy=\"10\" r=\"1.6\"/><circle cx=\"10\" cy=\"7\" r=\"1.6\"/><circle cx=\"14\" cy=\"7\" r=\"1.6\"/><circle cx=\"18\" cy=\"10\" r=\"1.6\"/>",
+    words: [
+      { es: "el perro", de: "der Hund" },
+      { es: "el gato", de: "die Katze" },
+      { es: "el caballo", de: "das Pferd" },
+      { es: "la vaca", de: "die Kuh" },
+      { es: "el cerdo", de: "das Schwein" },
+      { es: "la oveja", de: "das Schaf" },
+      { es: "la cabra", de: "die Ziege" },
+      { es: "la gallina", de: "das Huhn" },
+      { es: "el pato", de: "die Ente" },
+      { es: "el conejo", de: "das Kaninchen" },
+      { es: "el ratón", de: "die Maus" },
+      { es: "el león", de: "der Löwe" },
+      { es: "el tigre", de: "der Tiger" },
+      { es: "el elefante", de: "der Elefant" },
+      { es: "la jirafa", de: "die Giraffe" },
+      { es: "el mono", de: "der Affe" },
+      { es: "el oso", de: "der Bär" },
+      { es: "el lobo", de: "der Wolf" },
+      { es: "el zorro", de: "der Fuchs" },
+      { es: "el ciervo", de: "der Hirsch" },
+      { es: "el águila", de: "der Adler" },
+      { es: "el búho", de: "die Eule" },
+      { es: "el loro", de: "der Papagei" },
+      { es: "el pingüino", de: "der Pinguin" },
+      { es: "el pez", de: "der Fisch" },
+      { es: "el tiburón", de: "der Hai" },
+      { es: "la ballena", de: "der Wal" },
+      { es: "el delfín", de: "der Delfin" },
+      { es: "la tortuga", de: "die Schildkröte" },
+      { es: "la serpiente", de: "die Schlange" },
+      { es: "la rana", de: "der Frosch" },
+      { es: "el cocodrilo", de: "das Krokodil" },
+      { es: "la araña", de: "die Spinne" },
+      { es: "la abeja", de: "die Biene" },
+      { es: "la mariposa", de: "der Schmetterling" },
+      { es: "la hormiga", de: "die Ameise" },
+      { es: "la mosca", de: "die Fliege" },
+      { es: "el mosquito", de: "die Mücke" },
+      { es: "la mascota", de: "das Haustier" },
+      { es: "la granja", de: "der Bauernhof" },
+      { es: "el zoo", de: "der Zoo" },
+      { es: "la selva", de: "der Dschungel" },
+      { es: "el nido", de: "das Nest" },
+      { es: "la cola", de: "der Schwanz" },
+      { es: "la pata", de: "die Pfote" },
+      { es: "el ala", de: "der Flügel" },
+      { es: "la pluma", de: "die Feder" },
+      { es: "el pelaje", de: "das Fell" },
+      { es: "morder", de: "beißen" },
+      { es: "volar", de: "fliegen" },
+    ]
+  },
+  {
+    id: "naturaleza", title: "La Naturaleza", subtitle: "Natur & Umwelt", stop: "Valladolid",
+    icon: "<path d=\"M11 20A7 7 0 0 1 4 13c0-8 9-11 16-11 0 7-3 16-11 16-1.5 0-2.8-.3-4-1Z\"/><path d=\"M4 13c4-1 8-3 11-7\"/>",
+    words: [
+      { es: "el árbol", de: "der Baum" },
+      { es: "la flor", de: "die Blume" },
+      { es: "la planta", de: "die Pflanze" },
+      { es: "la hoja", de: "das Blatt" },
+      { es: "la hierba", de: "das Gras" },
+      { es: "el bosque", de: "der Wald" },
+      { es: "la selva tropical", de: "der Regenwald" },
+      { es: "el desierto", de: "die Wüste" },
+      { es: "la montaña", de: "der Berg" },
+      { es: "el valle", de: "das Tal" },
+      { es: "el río", de: "der Fluss" },
+      { es: "el lago", de: "der See" },
+      { es: "el mar", de: "das Meer" },
+      { es: "el océano", de: "der Ozean" },
+      { es: "la isla", de: "die Insel" },
+      { es: "la costa", de: "die Küste" },
+      { es: "la playa", de: "der Strand" },
+      { es: "la roca", de: "der Fels" },
+      { es: "la piedra", de: "der Stein" },
+      { es: "la arena", de: "der Sand" },
+      { es: "la tierra", de: "die Erde" },
+      { es: "el cielo", de: "der Himmel" },
+      { es: "la estrella", de: "der Stern" },
+      { es: "la luna", de: "der Mond" },
+      { es: "el sol", de: "die Sonne" },
+      { es: "el universo", de: "das Universum" },
+      { es: "el volcán", de: "der Vulkan" },
+      { es: "la cueva", de: "die Höhle" },
+      { es: "la cascada", de: "der Wasserfall" },
+      { es: "el manantial", de: "die Quelle" },
+      { es: "la semilla", de: "der Samen" },
+      { es: "la raíz", de: "die Wurzel" },
+      { es: "la rama", de: "der Ast" },
+      { es: "el tronco", de: "der Stamm" },
+      { es: "el fruto", de: "die Frucht" },
+      { es: "la naturaleza", de: "die Natur" },
+      { es: "el paisaje", de: "die Landschaft" },
+      { es: "el ecosistema", de: "das Ökosystem" },
+      { es: "la energía solar", de: "die Sonnenenergie" },
+      { es: "el reciclaje", de: "das Recycling" },
+      { es: "la contaminación", de: "die Verschmutzung" },
+      { es: "proteger", de: "schützen" },
+      { es: "plantar", de: "pflanzen" },
+      { es: "crecer", de: "wachsen" },
+      { es: "el medio ambiente", de: "die Umwelt" },
+      { es: "sostenible", de: "nachhaltig" },
+      { es: "renovable", de: "erneuerbar" },
+      { es: "la biodiversidad", de: "die Biodiversität" },
+      { es: "salvaje", de: "wild" },
+      { es: "florecer", de: "blühen" },
+    ]
+  },
+  {
+    id: "trabajo", title: "El Trabajo y la Oficina", subtitle: "Arbeit & Büro", stop: "Alicante",
+    icon: "<rect x=\"2\" y=\"7\" width=\"20\" height=\"14\" rx=\"2\"/><path d=\"M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16\"/>",
+    words: [
+      { es: "la oficina", de: "das Büro" },
+      { es: "el jefe", de: "der Chef" },
+      { es: "el empleado", de: "der/die Angestellte" },
+      { es: "el compañero de trabajo", de: "der/die Kollege/in" },
+      { es: "la reunión", de: "das Meeting" },
+      { es: "el proyecto", de: "das Projekt" },
+      { es: "la tarea", de: "die Aufgabe" },
+      { es: "el plazo", de: "die Frist" },
+      { es: "el correo electrónico", de: "die E-Mail" },
+      { es: "el ordenador", de: "der Computer" },
+      { es: "el teléfono", de: "das Telefon" },
+      { es: "la impresora", de: "der Drucker" },
+      { es: "el documento", de: "das Dokument" },
+      { es: "el informe", de: "der Bericht" },
+      { es: "el contrato", de: "der Vertrag" },
+      { es: "el sueldo", de: "das Gehalt" },
+      { es: "la empresa", de: "die Firma" },
+      { es: "el negocio", de: "das Geschäft" },
+      { es: "el cliente", de: "der Kunde" },
+      { es: "el mercado", de: "der Markt" },
+      { es: "la venta", de: "der Verkauf" },
+      { es: "la factura", de: "die Rechnung" },
+      { es: "el presupuesto", de: "das Budget" },
+      { es: "la entrevista", de: "das Vorstellungsgespräch" },
+      { es: "el currículum", de: "der Lebenslauf" },
+      { es: "la carrera", de: "die Karriere" },
+      { es: "el puesto", de: "die Stelle" },
+      { es: "el horario", de: "der Zeitplan" },
+      { es: "las horas extra", de: "die Überstunden" },
+      { es: "el descanso", de: "die Pause" },
+      { es: "las vacaciones", de: "der Urlaub" },
+      { es: "la jubilación", de: "die Rente" },
+      { es: "renunciar", de: "kündigen" },
+      { es: "contratar", de: "einstellen" },
+      { es: "despedir", de: "entlassen" },
+      { es: "ganar dinero", de: "Geld verdienen" },
+      { es: "ahorrar", de: "sparen" },
+      { es: "invertir", de: "investieren" },
+      { es: "el objetivo", de: "das Ziel" },
+      { es: "el éxito", de: "der Erfolg" },
+      { es: "el fracaso", de: "das Scheitern" },
+      { es: "la responsabilidad", de: "die Verantwortung" },
+      { es: "la habilidad", de: "die Fähigkeit" },
+      { es: "la experiencia", de: "die Erfahrung" },
+      { es: "el título", de: "der Abschluss" },
+      { es: "la formación", de: "die Ausbildung" },
+      { es: "el autónomo", de: "der/die Selbstständige" },
+      { es: "teletrabajar", de: "im Homeoffice arbeiten" },
+      { es: "dirigir", de: "leiten" },
+      { es: "colaborar", de: "zusammenarbeiten" },
+    ]
+  },
+  {
+    id: "escuela", title: "La Escuela y los Estudios", subtitle: "Schule & Studium", stop: "Cádiz",
+    icon: "<path d=\"M22 10 12 5 2 10l10 5 10-5Z\"/><path d=\"M6 12v5c0 1.7 2.7 3 6 3s6-1.3 6-3v-5\"/>",
+    words: [
+      { es: "la escuela", de: "die Schule" },
+      { es: "el colegio", de: "die Schule" },
+      { es: "la universidad", de: "die Universität" },
+      { es: "el profesor", de: "der/die Lehrer/in" },
+      { es: "el estudiante", de: "der/die Student(in)" },
+      { es: "la clase", de: "der Unterricht" },
+      { es: "el aula", de: "das Klassenzimmer" },
+      { es: "el examen", de: "die Prüfung" },
+      { es: "la nota", de: "die Note" },
+      { es: "la tarea", de: "die Hausaufgabe" },
+      { es: "el libro", de: "das Buch" },
+      { es: "el cuaderno", de: "das Heft" },
+      { es: "el lápiz", de: "der Bleistift" },
+      { es: "el bolígrafo", de: "der Kugelschreiber" },
+      { es: "la goma", de: "der Radiergummi" },
+      { es: "la mochila", de: "der Schulrucksack" },
+      { es: "la pizarra", de: "die Tafel" },
+      { es: "la tiza", de: "die Kreide" },
+      { es: "el mapa", de: "die Karte" },
+      { es: "la biblioteca", de: "die Bibliothek" },
+      { es: "la asignatura", de: "das Fach" },
+      { es: "las matemáticas", de: "die Mathematik" },
+      { es: "la historia", de: "die Geschichte" },
+      { es: "la geografía", de: "die Geografie" },
+      { es: "la ciencia", de: "die Wissenschaft" },
+      { es: "la biología", de: "die Biologie" },
+      { es: "la química", de: "die Chemie" },
+      { es: "la física", de: "die Physik" },
+      { es: "el idioma", de: "die Sprache" },
+      { es: "la literatura", de: "die Literatur" },
+      { es: "el arte", de: "die Kunst" },
+      { es: "la música", de: "die Musik" },
+      { es: "la educación física", de: "der Sportunterricht" },
+      { es: "el recreo", de: "die Pause" },
+      { es: "el semestre", de: "das Semester" },
+      { es: "el curso", de: "der Kurs" },
+      { es: "la carrera universitaria", de: "das Studium" },
+      { es: "la beca", de: "das Stipendium" },
+      { es: "graduarse", de: "den Abschluss machen" },
+      { es: "aprobar", de: "bestehen" },
+      { es: "suspender", de: "durchfallen" },
+      { es: "estudiar", de: "lernen" },
+      { es: "memorizar", de: "auswendig lernen" },
+      { es: "entender", de: "verstehen" },
+      { es: "preguntar", de: "fragen" },
+      { es: "responder", de: "antworten" },
+      { es: "la pregunta", de: "die Frage" },
+      { es: "la respuesta", de: "die Antwort" },
+      { es: "el conocimiento", de: "das Wissen" },
+      { es: "investigar", de: "forschen" },
+    ]
+  },
+  {
+    id: "sentimientos", title: "Sentimientos", subtitle: "Gefühle", stop: "León",
+    icon: "<path d=\"M12 21c-4.4-3.3-9-6.9-9-11.2C3 6.5 5.4 4 8.5 4c1.7 0 3.1.9 3.5 2.2C12.4 4.9 13.8 4 15.5 4 18.6 4 21 6.5 21 9.8c0 4.3-4.6 7.9-9 11.2Z\"/>",
+    words: [
+      { es: "feliz", de: "glücklich" },
+      { es: "triste", de: "traurig" },
+      { es: "contento/a", de: "zufrieden" },
+      { es: "enojado/a", de: "verärgert" },
+      { es: "enfadado/a", de: "wütend" },
+      { es: "nervioso/a", de: "nervös" },
+      { es: "tranquilo/a", de: "ruhig" },
+      { es: "preocupado/a", de: "besorgt" },
+      { es: "sorprendido/a", de: "überrascht" },
+      { es: "asustado/a", de: "verängstigt" },
+      { es: "cansado/a", de: "müde" },
+      { es: "aburrido/a", de: "gelangweilt" },
+      { es: "emocionado/a", de: "aufgeregt" },
+      { es: "orgulloso/a", de: "stolz" },
+      { es: "avergonzado/a", de: "verlegen" },
+      { es: "celoso/a", de: "eifersüchtig" },
+      { es: "confundido/a", de: "verwirrt" },
+      { es: "agradecido/a", de: "dankbar" },
+      { es: "decepcionado/a", de: "enttäuscht" },
+      { es: "esperanzado/a", de: "hoffnungsvoll" },
+      { es: "curioso/a", de: "neugierig" },
+      { es: "seguro/a", de: "sicher" },
+      { es: "inseguro/a", de: "unsicher" },
+      { es: "relajado/a", de: "entspannt" },
+      { es: "estresado/a", de: "gestresst" },
+      { es: "solo/a", de: "einsam" },
+      { es: "enamorado/a", de: "verliebt" },
+      { es: "satisfecho/a", de: "zufrieden" },
+      { es: "frustrado/a", de: "frustriert" },
+      { es: "motivado/a", de: "motiviert" },
+      { es: "el amor", de: "die Liebe" },
+      { es: "el odio", de: "der Hass" },
+      { es: "la alegría", de: "die Freude" },
+      { es: "la tristeza", de: "die Traurigkeit" },
+      { es: "el miedo", de: "die Angst" },
+      { es: "la sorpresa", de: "die Überraschung" },
+      { es: "la ira", de: "der Zorn" },
+      { es: "la vergüenza", de: "die Scham" },
+      { es: "la esperanza", de: "die Hoffnung" },
+      { es: "la confianza", de: "das Vertrauen" },
+      { es: "sonreír", de: "lächeln" },
+      { es: "reír", de: "lachen" },
+      { es: "llorar", de: "weinen" },
+      { es: "gritar", de: "schreien" },
+      { es: "abrazar", de: "umarmen" },
+      { es: "sentir", de: "fühlen" },
+      { es: "echar de menos", de: "vermissen" },
+      { es: "disfrutar", de: "genießen" },
+      { es: "preocuparse", de: "sich sorgen" },
+      { es: "calmarse", de: "sich beruhigen" },
+    ]
+  },
+  {
+    id: "tecnologia", title: "La Tecnología", subtitle: "Technologie", stop: "Pamplona",
+    icon: "<rect x=\"6\" y=\"6\" width=\"12\" height=\"12\" rx=\"2\"/><path d=\"M9 2v3M15 2v3M9 19v3M15 19v3M2 9h3M2 15h3M19 9h3M19 15h3\"/>",
+    words: [
+      { es: "el ordenador", de: "der Computer" },
+      { es: "el portátil", de: "der Laptop" },
+      { es: "el móvil", de: "das Handy" },
+      { es: "la tableta", de: "das Tablet" },
+      { es: "la pantalla", de: "der Bildschirm" },
+      { es: "el teclado", de: "die Tastatur" },
+      { es: "el ratón", de: "die Maus" },
+      { es: "la impresora", de: "der Drucker" },
+      { es: "la cámara", de: "die Kamera" },
+      { es: "los auriculares", de: "die Kopfhörer" },
+      { es: "el cargador", de: "das Ladegerät" },
+      { es: "la batería", de: "der Akku" },
+      { es: "la aplicación", de: "die App" },
+      { es: "el programa", de: "das Programm" },
+      { es: "el software", de: "die Software" },
+      { es: "el archivo", de: "die Datei" },
+      { es: "la carpeta", de: "der Ordner" },
+      { es: "la contraseña", de: "das Passwort" },
+      { es: "el usuario", de: "der Benutzer" },
+      { es: "la cuenta", de: "das Konto" },
+      { es: "internet", de: "das Internet" },
+      { es: "la red", de: "das Netzwerk" },
+      { es: "el wifi", de: "das WLAN" },
+      { es: "la conexión", de: "die Verbindung" },
+      { es: "el correo electrónico", de: "die E-Mail" },
+      { es: "la red social", de: "das soziale Netzwerk" },
+      { es: "el mensaje", de: "die Nachricht" },
+      { es: "el enlace", de: "der Link" },
+      { es: "la página web", de: "die Webseite" },
+      { es: "el navegador", de: "der Browser" },
+      { es: "descargar", de: "herunterladen" },
+      { es: "subir", de: "hochladen" },
+      { es: "instalar", de: "installieren" },
+      { es: "actualizar", de: "aktualisieren" },
+      { es: "guardar", de: "speichern" },
+      { es: "borrar", de: "löschen" },
+      { es: "hacer clic", de: "klicken" },
+      { es: "buscar", de: "suchen" },
+      { es: "la inteligencia artificial", de: "die künstliche Intelligenz" },
+      { es: "el robot", de: "der Roboter" },
+      { es: "la nube", de: "die Cloud" },
+      { es: "el dato", de: "die Daten" },
+      { es: "la seguridad", de: "die Sicherheit" },
+      { es: "el virus", de: "der Virus" },
+      { es: "hackear", de: "hacken" },
+      { es: "la pantalla táctil", de: "der Touchscreen" },
+      { es: "el dispositivo", de: "das Gerät" },
+      { es: "la actualización", de: "das Update" },
+      { es: "en línea", de: "online" },
+      { es: "desconectado", de: "offline" },
+    ]
+  },
+  {
+    id: "deporte", title: "El Deporte", subtitle: "Sport", stop: "Oviedo",
+    icon: "<path d=\"M8 21h8M12 17v4M7 4h10v5a5 5 0 0 1-10 0V4Z\"/><path d=\"M7 5H4a2 2 0 0 0 2 4M17 5h3a2 2 0 0 1-2 4\"/>",
+    words: [
+      { es: "el fútbol", de: "der Fußball" },
+      { es: "el baloncesto", de: "der Basketball" },
+      { es: "el tenis", de: "das Tennis" },
+      { es: "la natación", de: "das Schwimmen" },
+      { es: "el atletismo", de: "die Leichtathletik" },
+      { es: "el ciclismo", de: "das Radfahren" },
+      { es: "el golf", de: "das Golf" },
+      { es: "el voleibol", de: "der Volleyball" },
+      { es: "el boxeo", de: "das Boxen" },
+      { es: "el yoga", de: "das Yoga" },
+      { es: "correr", de: "laufen" },
+      { es: "nadar", de: "schwimmen" },
+      { es: "saltar", de: "springen" },
+      { es: "jugar", de: "spielen" },
+      { es: "ganar", de: "gewinnen" },
+      { es: "perder", de: "verlieren" },
+      { es: "empatar", de: "unentschieden spielen" },
+      { es: "entrenar", de: "trainieren" },
+      { es: "el entrenador", de: "der Trainer" },
+      { es: "el equipo", de: "die Mannschaft" },
+      { es: "el jugador", de: "der Spieler" },
+      { es: "el árbitro", de: "der Schiedsrichter" },
+      { es: "el partido", de: "das Spiel" },
+      { es: "el campeonato", de: "die Meisterschaft" },
+      { es: "la competición", de: "der Wettbewerb" },
+      { es: "la medalla", de: "die Medaille" },
+      { es: "el trofeo", de: "die Trophäe" },
+      { es: "el récord", de: "der Rekord" },
+      { es: "el estadio", de: "das Stadion" },
+      { es: "la cancha", de: "der Platz" },
+      { es: "la piscina", de: "das Schwimmbad" },
+      { es: "el gimnasio", de: "das Fitnessstudio" },
+      { es: "el balón", de: "der Ball" },
+      { es: "la raqueta", de: "der Schläger" },
+      { es: "los patines", de: "die Schlittschuhe" },
+      { es: "el casco", de: "der Helm" },
+      { es: "el ejercicio", de: "die Übung" },
+      { es: "el calentamiento", de: "das Aufwärmen" },
+      { es: "la fuerza", de: "die Kraft" },
+      { es: "la resistencia", de: "die Ausdauer" },
+      { es: "la velocidad", de: "die Geschwindigkeit" },
+      { es: "el músculo", de: "der Muskel" },
+      { es: "en forma", de: "fit" },
+      { es: "el maratón", de: "der Marathon" },
+      { es: "la carrera", de: "das Rennen" },
+      { es: "el esquí", de: "das Skifahren" },
+      { es: "escalar", de: "klettern" },
+      { es: "el senderismo", de: "das Wandern" },
+      { es: "la afición", de: "das Hobby" },
+      { es: "animar", de: "anfeuern" },
+    ]
+  },
+  {
+    id: "verbos", title: "Verbos Comunes", subtitle: "Häufige Verben", stop: "Santander",
+    icon: "<path d=\"M13 2 4 14h6l-1 8 9-12h-6z\"/>",
+    words: [
+      { es: "ser", de: "sein" },
+      { es: "estar", de: "sein / sich befinden" },
+      { es: "tener", de: "haben" },
+      { es: "hacer", de: "machen" },
+      { es: "ir", de: "gehen" },
+      { es: "venir", de: "kommen" },
+      { es: "ver", de: "sehen" },
+      { es: "dar", de: "geben" },
+      { es: "saber", de: "wissen" },
+      { es: "poder", de: "können" },
+      { es: "querer", de: "wollen" },
+      { es: "decir", de: "sagen" },
+      { es: "hablar", de: "sprechen" },
+      { es: "comer", de: "essen" },
+      { es: "beber", de: "trinken" },
+      { es: "dormir", de: "schlafen" },
+      { es: "vivir", de: "leben / wohnen" },
+      { es: "trabajar", de: "arbeiten" },
+      { es: "estudiar", de: "studieren" },
+      { es: "escribir", de: "schreiben" },
+      { es: "leer", de: "lesen" },
+      { es: "escuchar", de: "zuhören" },
+      { es: "mirar", de: "schauen" },
+      { es: "buscar", de: "suchen" },
+      { es: "encontrar", de: "finden" },
+      { es: "empezar", de: "anfangen" },
+      { es: "terminar", de: "beenden" },
+      { es: "abrir", de: "öffnen" },
+      { es: "cerrar", de: "schließen" },
+      { es: "comprar", de: "kaufen" },
+      { es: "vender", de: "verkaufen" },
+      { es: "pagar", de: "bezahlen" },
+      { es: "entender", de: "verstehen" },
+      { es: "aprender", de: "lernen" },
+      { es: "enseñar", de: "lehren" },
+      { es: "ayudar", de: "helfen" },
+      { es: "necesitar", de: "brauchen" },
+      { es: "gustar", de: "gefallen" },
+      { es: "amar", de: "lieben" },
+      { es: "odiar", de: "hassen" },
+      { es: "pensar", de: "denken" },
+      { es: "creer", de: "glauben" },
+      { es: "esperar", de: "warten / hoffen" },
+      { es: "llegar", de: "ankommen" },
+      { es: "salir", de: "hinausgehen" },
+      { es: "entrar", de: "hineingehen" },
+      { es: "subir", de: "hochgehen" },
+      { es: "bajar", de: "runtergehen" },
+      { es: "jugar", de: "spielen" },
+      { es: "viajar", de: "reisen" },
+    ]
+  },
+  {
+    id: "adjetivos", title: "Adjetivos y Expresiones", subtitle: "Adjektive & Redewendungen", stop: "Barcelona",
+    icon: "<path d=\"M20.6 12.4 12.4 20.6a2 2 0 0 1-2.8 0l-7.2-7.2a2 2 0 0 1 0-2.8L10.6 2.4A2 2 0 0 1 12 2H19a2 2 0 0 1 2 2v7a2 2 0 0 1-.4 1.4Z\"/><circle cx=\"15.5\" cy=\"8.5\" r=\"1.2\"/>",
+    words: [
+      { es: "bueno", de: "gut" },
+      { es: "malo", de: "schlecht" },
+      { es: "grande", de: "groß" },
+      { es: "pequeño", de: "klein" },
+      { es: "nuevo", de: "neu" },
+      { es: "viejo", de: "alt" },
+      { es: "joven", de: "jung" },
+      { es: "rápido", de: "schnell" },
+      { es: "lento", de: "langsam" },
+      { es: "fácil", de: "einfach" },
+      { es: "difícil", de: "schwierig" },
+      { es: "importante", de: "wichtig" },
+      { es: "interesante", de: "interessant" },
+      { es: "aburrido", de: "langweilig" },
+      { es: "divertido", de: "lustig" },
+      { es: "caro", de: "teuer" },
+      { es: "barato", de: "billig" },
+      { es: "fuerte", de: "stark" },
+      { es: "débil", de: "schwach" },
+      { es: "alto", de: "groß / hoch" },
+      { es: "bajo", de: "klein / niedrig" },
+      { es: "gordo", de: "dick" },
+      { es: "delgado", de: "dünn" },
+      { es: "guapo", de: "hübsch" },
+      { es: "feo", de: "hässlich" },
+      { es: "inteligente", de: "intelligent" },
+      { es: "tonto", de: "dumm" },
+      { es: "amable", de: "freundlich" },
+      { es: "simpático", de: "sympathisch" },
+      { es: "antipático", de: "unsympathisch" },
+      { es: "generoso", de: "großzügig" },
+      { es: "tacaño", de: "geizig" },
+      { es: "valiente", de: "mutig" },
+      { es: "tímido", de: "schüchtern" },
+      { es: "honesto", de: "ehrlich" },
+      { es: "mentiroso", de: "verlogen" },
+      { es: "limpio", de: "sauber" },
+      { es: "sucio", de: "schmutzig" },
+      { es: "ordenado", de: "ordentlich" },
+      { es: "desordenado", de: "unordentlich" },
+      { es: "útil", de: "nützlich" },
+      { es: "inútil", de: "nutzlos" },
+      { es: "posible", de: "möglich" },
+      { es: "imposible", de: "unmöglich" },
+      { es: "seguro", de: "sicher" },
+      { es: "peligroso", de: "gefährlich" },
+      { es: "cómodo", de: "bequem" },
+      { es: "cerca de", de: "in der Nähe von" },
+      { es: "lejos de", de: "weit weg von" },
+      { es: "sin embargo", de: "trotzdem" },
+    ]
+  }
 ];
 
 const ALL_WORDS = CHAPTERS.flatMap(c => c.words);
 const CH_BY_ID = Object.fromEntries(CHAPTERS.map(c => [c.id, c]));
 
 /* ---------------------------------------------------------
-   Niveaustufen
+   Niveaustufen (4 Stufen x 5 Kapitel = 20 Kapitel)
 --------------------------------------------------------- */
 const LEVELS = [
   {
-    id: "beginner",
-    name: "Anfänger",
-    tag: "A1 · Grundlagen",
-    accent: "coral",
+    id: "beginner", name: "Anfänger", tag: "A1 · Grundlagen", accent: "coral",
     icon: '<path d="M12 2v4M12 18v4M4.9 4.9l2.8 2.8M16.3 16.3l2.8 2.8M2 12h4M18 12h4M4.9 19.1l2.8-2.8M16.3 7.7l2.8-2.8"/><circle cx="12" cy="12" r="3"/>',
-    chapters: ["hola", "familia", "comida"],
+    chapters: ["saludos", "familia", "numeros", "colores", "comida"],
   },
   {
-    id: "intermediate",
-    name: "Fortgeschritten",
-    tag: "A2–B1 · Alltag",
-    accent: "gold",
+    id: "intermediate", name: "Fortgeschritten", tag: "A2–B1 · Alltag", accent: "gold",
     icon: '<circle cx="12" cy="12" r="10"/><path d="m16.2 7.8-2.2 6.2-6.2 2.2 2.2-6.2z"/>',
-    chapters: ["viaje", "numeros", "ciudad"],
+    chapters: ["casa", "ropa", "cuerpo", "viaje", "ciudad"],
   },
   {
-    id: "advanced",
-    name: "Profi",
-    tag: "B2 · Vertiefung",
-    accent: "mint",
-    icon: '<path d="M12 2 4 6v6c0 5 3.4 8.7 8 10 4.6-1.3 8-5 8-10V6z"/>',
-    chapters: ["trabajo", "tiempo", "sentimientos"],
+    id: "advanced", name: "Erfahren", tag: "B1–B2 · Vertiefung", accent: "mint",
+    icon: '<path d="M2 6a2 2 0 0 1 2-2h6v16H4a2 2 0 0 1-2-2Z"/><path d="M22 6a2 2 0 0 0-2-2h-6v16h6a2 2 0 0 0 2-2Z"/>',
+    chapters: ["tiempo", "animales", "naturaleza", "trabajo", "escuela"],
+  },
+  {
+    id: "master", name: "Profi", tag: "B2–C1 · Meisterschaft", accent: "plum",
+    icon: '<path d="M2 18h20l-2-9-5 4-3-7-3 7-5-4Z"/>',
+    chapters: ["sentimientos", "tecnologia", "deporte", "verbos", "adjetivos"],
   },
 ];
 const LEVEL_BY_ID = Object.fromEntries(LEVELS.map(l => [l.id, l]));
@@ -628,6 +1466,7 @@ const ACCENT_VARS = {
   coral: { main: "var(--coral)", dark: "var(--coral-dark)" },
   gold: { main: "var(--gold)", dark: "var(--gold-dark)" },
   mint: { main: "var(--mint)", dark: "var(--mint-dark)" },
+  plum: { main: "var(--plum)", dark: "var(--plum-dark)" },
 };
 
 const LOCK_SVG = '<path d="M19 11H5a2 2 0 0 0-2 2v7a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7a2 2 0 0 0-2-2Z"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/>';
@@ -638,18 +1477,10 @@ const STAR_SVG = (filled) => `<svg viewBox="0 0 24 24" width="14" height="14" fi
    State
 --------------------------------------------------------- */
 let state = {
-  levelId: null,
-  chapterId: null,
-  cardIndex: 0,
-  quiz: [],
-  qIndex: 0,
-  hearts: 3,
-  correctCount: 0,
-  xp: 0,
-  streak: 0,
+  levelId: null, chapterId: null, cardIndex: 0, quiz: [], qIndex: 0,
+  hearts: 3, correctCount: 0, xp: 0, streak: 0,
   progress: Object.fromEntries(CHAPTERS.map(c => [c.id, { done: false, stars: 0 }])),
-  lastGain: 0,
-  lastFailed: false,
+  lastGain: 0, lastFailed: false,
 };
 
 function shuffle(arr) {
@@ -683,7 +1514,6 @@ function isLevelUnlocked(levelIdx) {
   const prev = LEVELS[levelIdx - 1];
   return prev.chapters.every(id => state.progress[id].done);
 }
-
 function isChapterUnlocked(level, chapterIdxInLevel, levelIdx) {
   if (!isLevelUnlocked(levelIdx)) return false;
   if (chapterIdxInLevel === 0) return true;
@@ -697,7 +1527,6 @@ function isChapterUnlocked(level, chapterIdxInLevel, levelIdx) {
 function renderLevels() {
   const list = document.getElementById('level-list');
   list.innerHTML = '';
-
   LEVELS.forEach((level, idx) => {
     const unlocked = isLevelUnlocked(idx);
     const doneCount = level.chapters.filter(id => state.progress[id].done).length;
@@ -711,14 +1540,16 @@ function renderLevels() {
     card.style.animationDelay = `${idx * 0.05}s`;
 
     const iconSvg = unlocked
-      ? `<svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="${accent.main}" stroke-width="2">${level.icon}</svg>`
-      : `<svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="var(--cream-dim)" stroke-width="2">${LOCK_SVG}</svg>`;
+      ? `<svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="${accent.main}" stroke-width="2">${level.icon}</svg>`
+      : `<svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="var(--cream-dim)" stroke-width="2">${LOCK_SVG}</svg>`;
+
+    const wordCount = level.chapters.reduce((sum, id) => sum + CH_BY_ID[id].words.length, 0);
 
     card.innerHTML = `
       <div class="level-icon" style="background:${unlocked ? 'rgba(255,255,255,0.06)' : 'var(--panel-light)'}">${iconSvg}</div>
       <div class="level-info">
         <p class="level-name">${level.name}</p>
-        <p class="level-tag">${level.tag}${unlocked ? '' : ' · gesperrt'}</p>
+        <p class="level-tag">${level.tag}${unlocked ? '' : ' · gesperrt'} · ${wordCount} Vokabeln</p>
         <div class="level-track">
           <div class="level-track-fill" style="width:${(doneCount/total)*100}%; background:${accent.main}"></div>
         </div>
@@ -729,16 +1560,12 @@ function renderLevels() {
     list.appendChild(card);
   });
 }
-
-function goToLevels() {
-  renderLevels();
-  showScreen('screen-levels');
-}
+function goToLevels() { renderLevels(); showScreen('screen-levels'); }
 
 /* ---------------------------------------------------------
    Path screen
 --------------------------------------------------------- */
-const OFFSETS = [0, 56, -20];
+const OFFSETS = [0, 56, -20, 60, -8];
 
 function renderPath() {
   const level = LEVEL_BY_ID[state.levelId];
@@ -762,8 +1589,8 @@ function renderPath() {
 
     const btnClass = unlocked ? (st.done ? 'node-btn done' : 'node-btn unlocked') : 'node-btn';
     const iconSvg = unlocked
-      ? `<svg viewBox="0 0 24 24" fill="none" stroke="#0F2E2C" stroke-width="2.2" width="30" height="30">${ch.icon}</svg>`
-      : `<svg viewBox="0 0 24 24" fill="none" stroke="#CFE3DD" stroke-width="2" width="26" height="26">${LOCK_SVG}</svg>`;
+      ? `<svg viewBox="0 0 24 24" fill="none" stroke="#0F2E2C" stroke-width="2.2" width="28" height="28">${ch.icon}</svg>`
+      : `<svg viewBox="0 0 24 24" fill="none" stroke="#CFE3DD" stroke-width="2" width="24" height="24">${LOCK_SVG}</svg>`;
 
     const starsHtml = st.done
       ? `<div class="node-stars">${[0,1,2].map(s => STAR_SVG(s < st.stars)).join('')}</div>`
@@ -782,12 +1609,7 @@ function renderPath() {
     body.appendChild(node);
   });
 }
-
-function goToPath(levelId) {
-  state.levelId = levelId;
-  renderPath();
-  showScreen('screen-path');
-}
+function goToPath(levelId) { state.levelId = levelId; renderPath(); showScreen('screen-path'); }
 
 /* ---------------------------------------------------------
    Flashcard screen
@@ -808,7 +1630,6 @@ function renderCard() {
   document.getElementById('card-eyebrow').textContent = `${chapter.subtitle} · ${state.cardIndex + 1}/${total}`;
   document.getElementById('card-word').textContent = word.es;
   document.getElementById('card-de').textContent = word.de;
-  document.getElementById('card-ex').textContent = `„${word.ex}“`;
   document.getElementById('card-next-label').textContent = (state.cardIndex + 1 < total) ? 'Weiter' : 'Zum Quiz';
 
   const card = document.getElementById('flashcard');
@@ -959,7 +1780,7 @@ function renderResult() {
     icon.innerHTML = '<svg viewBox="0 0 24 24" width="40" height="40" fill="none" stroke="#F2B705" stroke-width="2"><path d="M8 21h8M12 17v4M7 4h10v5a5 5 0 0 1-10 0V4Z"/><path d="M7 5H4a2 2 0 0 0 2 4M17 5h3a2 2 0 0 1-2 4"/></svg>';
     title.textContent = `${chapter.stop} erreicht!`;
     text.textContent = unlockedNextLevel
-      ? `Du hast ${chapter.title} abgeschlossen (+${state.lastGain} XP) und das Niveau „${nextLevel.name}“ freigeschaltet!`
+      ? `Du hast ${chapter.title} abgeschlossen (+${state.lastGain} XP) und das Niveau „${nextLevel.name}" freigeschaltet!`
       : `Du hast ${chapter.title} abgeschlossen und +${state.lastGain} XP gesammelt.`;
     starsEl.innerHTML = [0,1,2].map(s => `
       <svg viewBox="0 0 24 24" width="32" height="32" fill="${s < stars ? '#F2B705' : 'none'}" stroke="#F2B705" stroke-width="1.8">

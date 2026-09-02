@@ -88,7 +88,18 @@
   .hero-banner { width: 100%; height: 150px; overflow: hidden; position: relative; }
   .hero-banner svg { width: 100%; height: 100%; display: block; }
 
-  .levels-header { padding: 22px 24px 4px; }
+  .mode-toggle {
+    display: flex; gap: 4px; margin: 16px 24px 0; background: var(--panel-light);
+    padding: 4px; border-radius: 14px;
+  }
+  .mode-btn {
+    flex: 1; text-align: center; padding: 9px; border: none; background: transparent;
+    border-radius: 10px; font-family: 'Work Sans', sans-serif; font-weight: 600; font-size: 13.5px;
+    color: var(--cream-dim); cursor: pointer; transition: background 0.15s ease, color 0.15s ease;
+  }
+  .mode-btn.active { background: var(--panel); color: var(--ink); box-shadow: 0 2px 6px rgba(178,110,60,0.14); }
+
+  .levels-header { padding: 18px 24px 4px; }
   .eyebrow { font-size: 12px; letter-spacing: 0.22em; text-transform: uppercase; color: var(--coral); margin: 0 0 6px; font-weight: 600; }
   .big-title { font-size: 26px; font-weight: 700; margin: 0; }
   .sub-text { font-size: 14px; color: var(--cream-dim); margin: 8px 0 0; }
@@ -163,6 +174,16 @@
   .card-word-row { display: flex; align-items: center; justify-content: center; gap: 8px; margin-bottom: 14px; }
   .card-word { font-family: 'Fraunces', serif; font-size: 32px; font-weight: 700; margin: 0; line-height: 1.2; }
   .card-de { font-size: 18px; color: var(--gold); margin: 0; }
+
+  .glesson-card { text-align: left; }
+  .glesson-card .eyebrow { text-align: left; }
+  .glesson-title { font-size: 21px; font-weight: 700; margin: 0 0 10px; line-height: 1.3; }
+  .glesson-body { font-size: 14.5px; line-height: 1.65; color: var(--cream); margin: 0 0 16px; white-space: pre-line; }
+  .glesson-example {
+    background: var(--panel-light); border-radius: 12px; padding: 13px 15px;
+    font-size: 13.5px; line-height: 1.55; color: var(--cream-dim);
+  }
+  .glesson-example strong { color: var(--ink); font-weight: 600; display: block; margin-bottom: 4px; }
 
   .cta-wrap { padding: 8px 24px 32px; }
   .btn-primary {
@@ -268,10 +289,14 @@
         </g>
       </svg>
     </div>
+    <div class="mode-toggle">
+      <button class="mode-btn active" data-mode="vocab" onclick="setMode('vocab')">Vokabeln</button>
+      <button class="mode-btn" data-mode="grammar" onclick="setMode('grammar')">Grammatik</button>
+    </div>
     <div class="levels-header">
-      <p class="eyebrow">El Camino del Español</p>
-      <h1 class="big-title font-display">Wähle dein Niveau</h1>
-      <p class="sub-text">1000 Vokabeln in 20 Kapiteln — von den ersten Wörtern bis zum sicheren Alltagsspanisch.</p>
+      <p class="eyebrow" id="levels-eyebrow">El Camino del Español</p>
+      <h1 class="big-title font-display" id="levels-title">Wähle dein Niveau</h1>
+      <p class="sub-text" id="levels-sub">1000 Vokabeln in 20 Kapiteln — von den ersten Wörtern bis zum sicheren Alltagsspanisch.</p>
     </div>
     <div class="level-list" id="level-list"></div>
   </section>
@@ -322,6 +347,31 @@
     </div>
   </section>
 
+  <!-- ================= GRAMMAR LESSON SCREEN ================= -->
+  <section class="screen" id="screen-glesson">
+    <div class="topbar">
+      <button class="back-btn" onclick="goToPath(state.levelId)">&larr; Ruta</button>
+      <div></div>
+    </div>
+    <div class="progress-wrap">
+      <div class="progress-track"><div class="progress-fill" id="glesson-progress"></div></div>
+    </div>
+    <div class="card-area">
+      <div class="flashcard glesson-card" id="glesson-card">
+        <p class="eyebrow" id="glesson-eyebrow"></p>
+        <h2 class="font-display glesson-title" id="glesson-title"></h2>
+        <p class="glesson-body" id="glesson-body"></p>
+        <div class="glesson-example" id="glesson-example"></div>
+      </div>
+    </div>
+    <div class="cta-wrap">
+      <button class="btn-primary" id="glesson-next-btn" onclick="nextGrammarCard()">
+        <span id="glesson-next-label">Weiter</span>
+        <svg viewBox="0 0 24 24" fill="none" stroke="#2B2118" stroke-width="2.4" width="18" height="18"><path d="M5 12h14M13 5l7 7-7 7"/></svg>
+      </button>
+    </div>
+  </section>
+
   <!-- ================= QUIZ SCREEN ================= -->
   <section class="screen" id="screen-quiz">
     <div class="topbar">
@@ -342,7 +392,7 @@
       <div class="progress-track"><div class="progress-fill mint" id="quiz-progress"></div></div>
     </div>
     <div class="quiz-area">
-      <p class="quiz-prompt">Was bedeutet dieses Wort?</p>
+      <p class="quiz-prompt" id="quiz-prompt">Was bedeutet dieses Wort?</p>
       <h2 class="quiz-word font-display" id="quiz-word"></h2>
       <div class="options" id="quiz-options"></div>
     </div>
@@ -1648,15 +1698,262 @@ const LOCK_SVG = '<path d="M19 11H5a2 2 0 0 0-2 2v7a2 2 0 0 0 2 2h14a2 2 0 0 0 2
 const CHEVRON_SVG = '<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>';
 const STAR_SVG = (filled) => `<svg viewBox="0 0 24 24" width="14" height="14" fill="${filled ? '#F2B705' : 'none'}" stroke="#F2B705" stroke-width="1.5"><path d="M12 2l2.9 6.6L22 9.3l-5 4.8 1.3 7-6.3-3.6L5.7 21l1.3-7-5-4.8 7.1-0.7L12 2z"/></svg>`;
 
+/* ===========================================================
+   GRAMMATIK: 12 Kapitel (3 pro Niveau) mit Regelkarten + Übungen
+=========================================================== */
+const GRAMMAR_CHAPTERS = [
+  {
+    id: "g-ser-estar", title: "Ser vs. Estar", subtitle: "Die zwei Formen von \"sein\"", tag: "Grundlagen",
+    icon: '<path d="M12 3v18M4 7h16M6 7l-3 8a4 4 0 0 0 6 0zM18 7l-3 8a4 4 0 0 0 6 0z"/>',
+    rules: [
+      { title: "Zwei Verben für \"sein\"", body: "Im Spanischen gibt es zwei Verben für \"sein\": SER und ESTAR. Die Wahl hängt davon ab, ob etwas dauerhaft oder vorübergehend ist.", example: "Soy alemán. / Estoy cansado.", exampleDe: "Ich bin Deutscher. (dauerhaft) / Ich bin müde. (vorübergehend)" },
+      { title: "SER — dauerhafte Eigenschaften", body: "SER benutzt man für Identität, Herkunft, Beruf, Charakter und Uhrzeit — Dinge, die sich nicht ständig ändern.", example: "Es profesora. Son las tres.", exampleDe: "Sie ist Lehrerin. Es ist drei Uhr." },
+      { title: "ESTAR — Zustand & Ort", body: "ESTAR benutzt man für Orte, vorübergehende Zustände und Gefühle.", example: "Madrid está en España. Estoy feliz.", exampleDe: "Madrid liegt in Spanien. Ich bin glücklich." },
+      { title: "Konjugation im Präsens", body: "SER: soy, eres, es, somos, sois, son.\nESTAR: estoy, estás, está, estamos, estáis, están.", example: "Nosotros somos amigos y estamos en casa.", exampleDe: "Wir sind Freunde und sind zu Hause." }
+    ],
+    practice: [
+      { prompt: "Yo ___ estudiante.", options: ["soy","estoy","es","está"], correct: "soy", explain: "Beruf/Identität → SER." },
+      { prompt: "Ella ___ muy cansada hoy.", options: ["es","está","soy","eres"], correct: "está", explain: "Vorübergehender Zustand → ESTAR." },
+      { prompt: "Nosotros ___ de Alemania.", options: ["estamos","somos","son","están"], correct: "somos", explain: "Herkunft → SER." },
+      { prompt: "El libro ___ sobre la mesa.", options: ["es","está","son","están"], correct: "está", explain: "Ort → ESTAR." },
+      { prompt: "Tú ___ muy inteligente.", options: ["eres","estás","es","está"], correct: "eres", explain: "Charaktereigenschaft → SER." },
+      { prompt: "¿Cómo ___ (tú) hoy?", options: ["eres","estás","es","soy"], correct: "estás", explain: "Befinden erfragen → ESTAR." }
+    ]
+  },
+  {
+    id: "g-articulos", title: "Artikel & Genus", subtitle: "el, la, un, una", tag: "Grundlagen",
+    icon: "<path d=\"M20.6 12.4 12.4 20.6a2 2 0 0 1-2.8 0l-7.2-7.2a2 2 0 0 1 0-2.8L10.6 2.4A2 2 0 0 1 12 2H19a2 2 0 0 1 2 2v7a2 2 0 0 1-.4 1.4Z\"/><circle cx=\"15.5\" cy=\"8.5\" r=\"1.2\"/>",
+    rules: [
+      { title: "Bestimmte Artikel", body: "el (maskulin Singular), la (feminin Singular), los (maskulin Plural), las (feminin Plural).", example: "el libro, la casa, los libros, las casas", exampleDe: "das Buch, das Haus, die Bücher, die Häuser" },
+      { title: "Unbestimmte Artikel", body: "un (maskulin), una (feminin), unos/unas (Plural, \"einige\").", example: "un perro, una gata, unos amigos", exampleDe: "ein Hund, eine Katze, ein paar Freunde" },
+      { title: "Faustregel & Ausnahmen", body: "Wörter auf -o sind meist maskulin, Wörter auf -a meist feminin. Es gibt aber wichtige Ausnahmen wie el día (der Tag) oder la mano (die Hand).", example: "el día es largo, la mano es pequeña", exampleDe: "der Tag ist lang, die Hand ist klein" }
+    ],
+    practice: [
+      { prompt: "___ coche es rojo.", options: ["el","la","los","las"], correct: "el", explain: "coche ist maskulin Singular." },
+      { prompt: "___ mesa es grande.", options: ["el","la","los","las"], correct: "la", explain: "mesa ist feminin Singular." },
+      { prompt: "___ estudiantes son inteligentes.", options: ["el","la","los","las"], correct: "los", explain: "Plural, gemischte/männliche Gruppe." },
+      { prompt: "Tengo ___ perro.", options: ["un","una","unos","unas"], correct: "un", explain: "perro ist maskulin." },
+      { prompt: "___ día es corto.", options: ["el","la"], correct: "el", explain: "Ausnahme: día ist trotz -a maskulin." },
+      { prompt: "___ manos están frías.", options: ["los","las"], correct: "las", explain: "Ausnahme: mano ist trotz -o feminin." }
+    ]
+  },
+  {
+    id: "g-plural", title: "Plural bilden", subtitle: "Einzahl → Mehrzahl", tag: "Grundlagen",
+    icon: '<path d="m12 2 9 5-9 5-9-5 9-5Z"/><path d="m3 12 9 5 9-5"/><path d="m3 17 9 5 9-5"/>',
+    rules: [
+      { title: "Endung auf Vokal", body: "Endet das Wort auf einen Vokal, wird einfach ein -s angehängt.", example: "casa → casas, coche → coches", exampleDe: "Haus → Häuser, Auto → Autos" },
+      { title: "Endung auf Konsonant", body: "Endet das Wort auf einen Konsonanten, wird -es angehängt.", example: "papel → papeles, profesor → profesores", exampleDe: "Papier → Papiere, Lehrer → Lehrer(pl.)" },
+      { title: "Endung auf -z", body: "Wörter, die auf -z enden, ändern das z zu c und hängen -es an.", example: "lápiz → lápices, luz → luces", exampleDe: "Bleistift → Bleistifte, Licht → Lichter" }
+    ],
+    practice: [
+      { prompt: "Plural von \"coche\":", options: ["coches","cochees","cocheres","coche"], correct: "coches", explain: "Vokal-Endung → +s." },
+      { prompt: "Plural von \"ciudad\":", options: ["ciudads","ciudades","ciudaes","ciudadas"], correct: "ciudades", explain: "Konsonant-Endung → +es." },
+      { prompt: "Plural von \"lápiz\":", options: ["lápizes","lápics","lápices","lápizs"], correct: "lápices", explain: "z → c, dann +es." },
+      { prompt: "Plural von \"profesor\":", options: ["profesors","profesores","profesoras","profesorres"], correct: "profesores", explain: "Konsonant-Endung → +es." },
+      { prompt: "Plural von \"flor\":", options: ["flors","flores","florees","floras"], correct: "flores", explain: "Konsonant-Endung → +es." },
+      { prompt: "Plural von \"luz\":", options: ["luzes","luces","luzs","lucos"], correct: "luces", explain: "z → c, dann +es." }
+    ]
+  },
+  {
+    id: "g-presente", title: "Presente Regular", subtitle: "-ar, -er, -ir im Präsens", tag: "Verben",
+    icon: '<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/>',
+    rules: [
+      { title: "Verben auf -ar", body: "Endungen: -o, -as, -a, -amos, -áis, -an.", example: "hablar: hablo, hablas, habla, hablamos, habláis, hablan", exampleDe: "sprechen: ich spreche, du sprichst, ..." },
+      { title: "Verben auf -er", body: "Endungen: -o, -es, -e, -emos, -éis, -en.", example: "comer: como, comes, come, comemos, coméis, comen", exampleDe: "essen: ich esse, du isst, ..." },
+      { title: "Verben auf -ir", body: "Endungen: -o, -es, -e, -imos, -ís, -en.", example: "vivir: vivo, vives, vive, vivimos, vivís, viven", exampleDe: "leben: ich lebe, du lebst, ..." }
+    ],
+    practice: [
+      { prompt: "Yo ___ (hablar) español.", options: ["hablo","hablas","habla","hablamos"], correct: "hablo", explain: "1. Person Singular -ar → -o." },
+      { prompt: "Tú ___ (comer) mucho.", options: ["como","comes","come","comen"], correct: "comes", explain: "2. Person Singular -er → -es." },
+      { prompt: "Nosotros ___ (vivir) en Madrid.", options: ["vivo","vives","vivimos","viven"], correct: "vivimos", explain: "1. Person Plural -ir → -imos." },
+      { prompt: "Ellos ___ (trabajar) aquí.", options: ["trabaja","trabajas","trabajamos","trabajan"], correct: "trabajan", explain: "3. Person Plural -ar → -an." },
+      { prompt: "Ella ___ (escribir) una carta.", options: ["escribo","escribe","escribes","escribimos"], correct: "escribe", explain: "3. Person Singular -ir → -e." },
+      { prompt: "Vosotros ___ (leer) el libro.", options: ["leéis","lees","leemos","leen"], correct: "leéis", explain: "2. Person Plural -er → -éis." }
+    ]
+  },
+  {
+    id: "g-stammaenderung", title: "Verben mit Stammänderung", subtitle: "e→ie, o→ue", tag: "Verben",
+    icon: '<path d="M17 2l4 4-4 4"/><path d="M3 11V9a4 4 0 0 1 4-4h14"/><path d="M7 22l-4-4 4-4"/><path d="M21 13v2a4 4 0 0 1-4 4H3"/>',
+    rules: [
+      { title: "e → ie", body: "Bei manchen Verben ändert sich der betonte Stammvokal e zu ie — außer in der wir- und ihr-Form.", example: "querer: quiero, quieres, quiere, queremos, queréis, quieren", exampleDe: "wollen: ich will, du willst, ..." },
+      { title: "o → ue", body: "Andere Verben ändern den Stammvokal o zu ue — auch hier bleiben nosotros/vosotros unverändert.", example: "poder: puedo, puedes, puede, podemos, podéis, pueden", exampleDe: "können: ich kann, du kannst, ..." },
+      { title: "Wichtige Beispiele", body: "e→ie: pensar, querer, empezar. o→ue: poder, dormir, volver.", example: "Pienso mucho y duermo poco.", exampleDe: "Ich denke viel und schlafe wenig." }
+    ],
+    practice: [
+      { prompt: "Yo ___ (querer) un café.", options: ["quiero","quero","queo","queremos"], correct: "quiero", explain: "e→ie in der ich-Form." },
+      { prompt: "Nosotros ___ (querer) viajar.", options: ["quieremos","queremos","quieren","quiero"], correct: "queremos", explain: "nosotros bleibt unverändert." },
+      { prompt: "¿Tú ___ (poder) venir?", options: ["podes","puedes","puedas","podas"], correct: "puedes", explain: "o→ue in der du-Form." },
+      { prompt: "Ella ___ (pensar) mucho.", options: ["pensa","piensa","pensae","piensas"], correct: "piensa", explain: "e→ie in der er/sie-Form." },
+      { prompt: "Ellos ___ (dormir) ocho horas.", options: ["dormen","duermen","dorman","duermon"], correct: "duermen", explain: "o→ue in der sie-Form." },
+      { prompt: "Vosotros ___ (volver) tarde.", options: ["volvéis","vuelvéis","volven","vuelven"], correct: "volvéis", explain: "vosotros bleibt unverändert." }
+    ]
+  },
+  {
+    id: "g-posesivos", title: "Possessivpronomen", subtitle: "mi, tu, su, nuestro...", tag: "Pronomen",
+    icon: '<path d="M21 2 11 12"/><path d="m15 6 3 3"/><circle cx="7" cy="17" r="4"/>',
+    rules: [
+      { title: "Übersicht", body: "mi/mis (mein), tu/tus (dein), su/sus (sein/ihr/Ihr), nuestro/-a/-os/-as (unser), vuestro/-a/-os/-as (euer), su/sus (ihr).", example: "mi casa, tus libros, nuestra familia", exampleDe: "mein Haus, deine Bücher, unsere Familie" },
+      { title: "Anpassung an die Zahl", body: "Possessivpronomen richten sich nach dem besessenen Gegenstand, nicht nach dem Besitzer — mis Freunde heißt \"meine Freunde\", egal ob ich männlich oder weiblich bin.", example: "mis amigos, mis amigas", exampleDe: "meine Freunde, meine Freundinnen" },
+      { title: "nuestro/vuestro haben vier Formen", body: "Nur nuestro und vuestro ändern sich auch nach Genus: nuestro/nuestra/nuestros/nuestras.", example: "nuestro perro, nuestra casa", exampleDe: "unser Hund, unser Haus" }
+    ],
+    practice: [
+      { prompt: "___ perro es grande. (mein)", options: ["mi","mis","tu","su"], correct: "mi", explain: "Singular, 1. Person: mi." },
+      { prompt: "¿Dónde están ___ llaves? (deine)", options: ["tu","tus","mi","mis"], correct: "tus", explain: "Plural, 2. Person: tus." },
+      { prompt: "Esta es ___ casa. (unser, fem.)", options: ["nuestro","nuestra","nuestros","vuestra"], correct: "nuestra", explain: "casa ist feminin Singular." },
+      { prompt: "___ coche es nuevo. (Ihr, formell)", options: ["su","sus","tu","nuestro"], correct: "su", explain: "Singular, formelle Anrede: su." },
+      { prompt: "___ amigos llegan. (unsere, masc.)", options: ["nuestro","nuestros","nuestras","vuestros"], correct: "nuestros", explain: "amigos ist maskulin Plural." },
+      { prompt: "___ hermanas viven aquí. (seine)", options: ["su","sus","tu","mis"], correct: "sus", explain: "Plural, 3. Person: sus." }
+    ]
+  },
+  {
+    id: "g-indefinido", title: "Pretérito Indefinido", subtitle: "Regelmäßige Vergangenheit", tag: "Vergangenheit",
+    icon: '<path d="M3 3v5h5"/><path d="M3.05 13A9 9 0 1 0 6 5.3L3 8"/><path d="M12 7v5l4 2"/>',
+    rules: [
+      { title: "Wofür benutzt man es?", body: "Der Pretérito Indefinido beschreibt abgeschlossene Handlungen in der Vergangenheit — Dinge, die einmal passiert und vorbei sind.", example: "Ayer hablé con ella.", exampleDe: "Gestern habe ich mit ihr gesprochen." },
+      { title: "-ar Verben", body: "Endungen: -é, -aste, -ó, -amos, -asteis, -aron.", example: "hablar: hablé, hablaste, habló, hablamos, hablasteis, hablaron", exampleDe: "sprechen (Vergangenheit)" },
+      { title: "-er / -ir Verben", body: "Endungen: -í, -iste, -ió, -imos, -isteis, -ieron.", example: "comer: comí, comiste, comió, comimos, comisteis, comieron", exampleDe: "essen (Vergangenheit)" }
+    ],
+    practice: [
+      { prompt: "Ayer yo ___ (hablar) con ella.", options: ["hablé","hablo","hablaste","hablará"], correct: "hablé", explain: "1. Person Singular -ar → -é." },
+      { prompt: "Tú ___ (comer) paella.", options: ["comiste","comí","come","comerás"], correct: "comiste", explain: "2. Person Singular -er → -iste." },
+      { prompt: "Ellos ___ (vivir) en Perú.", options: ["vivieron","vivían","viven","vivió"], correct: "vivieron", explain: "3. Person Plural -ir → -ieron." },
+      { prompt: "Nosotros ___ (trabajar) todo el día.", options: ["trabajamos","trabajábamos","trabajaron","trabajaremos"], correct: "trabajamos", explain: "1. Person Plural -ar → -amos." },
+      { prompt: "Ella ___ (escribir) una carta.", options: ["escribió","escribí","escribe","escribirá"], correct: "escribió", explain: "3. Person Singular -ir → -ió." },
+      { prompt: "Vosotros ___ (viajar) a Roma.", options: ["viajasteis","viajáis","viajaron","viajamos"], correct: "viajasteis", explain: "2. Person Plural -ar → -asteis." }
+    ]
+  },
+  {
+    id: "g-perfecto", title: "Pretérito Perfecto", subtitle: "haber + Partizip", tag: "Vergangenheit",
+    icon: '<circle cx="12" cy="12" r="9"/><path d="m8 12 3 3 5-6"/>',
+    rules: [
+      { title: "Bildung", body: "Pretérito Perfecto = haber (Präsens) + Partizip. haber: he, has, ha, hemos, habéis, han.", example: "He comido. Has visto.", exampleDe: "Ich habe gegessen. Du hast gesehen." },
+      { title: "Regelmäßige Partizipien", body: "-ar → -ado, -er/-ir → -ido.", example: "hablado, comido, vivido", exampleDe: "gesprochen, gegessen, gelebt" },
+      { title: "Unregelmäßige Partizipien", body: "hacer→hecho, decir→dicho, ver→visto, escribir→escrito, poner→puesto, volver→vuelto, abrir→abierto.", example: "He hecho los deberes.", exampleDe: "Ich habe die Hausaufgaben gemacht." }
+    ],
+    practice: [
+      { prompt: "Yo ___ comido ya.", options: ["he","has","ha","hemos"], correct: "he", explain: "haber, 1. Person Singular: he." },
+      { prompt: "¿___ tú visto la película?", options: ["Ha","Has","He","Han"], correct: "Has", explain: "haber, 2. Person Singular: has." },
+      { prompt: "Ella ha ___ (hacer) los deberes.", options: ["hacido","hecho","haciendo","hace"], correct: "hecho", explain: "Unregelmäßiges Partizip von hacer." },
+      { prompt: "Nosotros ___ llegado tarde.", options: ["hemos","habéis","han","he"], correct: "hemos", explain: "haber, 1. Person Plural: hemos." },
+      { prompt: "Ellos han ___ (escribir) la carta.", options: ["escribido","escrito","escribiendo","escribo"], correct: "escrito", explain: "Unregelmäßiges Partizip von escribir." },
+      { prompt: "Yo he ___ (ver) esa serie.", options: ["veído","visto","veo","vía"], correct: "visto", explain: "Unregelmäßiges Partizip von ver." }
+    ]
+  },
+  {
+    id: "g-reflexivos", title: "Reflexive Verben", subtitle: "me, te, se...", tag: "Verben",
+    icon: '<circle cx="12" cy="12" r="9"/><circle cx="12" cy="10" r="3"/><path d="M6.5 18a5.5 5.5 0 0 1 11 0"/>',
+    rules: [
+      { title: "Reflexivpronomen", body: "me, te, se, nos, os, se — sie stehen meist vor dem konjugierten Verb.", example: "me levanto, te levantas, se levanta", exampleDe: "ich stehe auf, du stehst auf, er/sie steht auf" },
+      { title: "Typische reflexive Verben", body: "llamarse (heißen), levantarse (aufstehen), ducharse (duschen), vestirse (sich anziehen), despertarse (aufwachen).", example: "Me llamo Ana. Nos duchamos por la mañana.", exampleDe: "Ich heiße Ana. Wir duschen morgens." },
+      { title: "Konjugation Beispiel", body: "levantarse: me levanto, te levantas, se levanta, nos levantamos, os levantáis, se levantan.", example: "¿A qué hora te levantas?", exampleDe: "Um wie viel Uhr stehst du auf?" }
+    ],
+    practice: [
+      { prompt: "Yo ___ Ana. (llamarse)", options: ["me llamo","te llamas","se llama","nos llamamos"], correct: "me llamo", explain: "1. Person Singular: me llamo." },
+      { prompt: "¿Cómo ___ tú? (llamarse)", options: ["te llamas","me llamo","se llama","os llamáis"], correct: "te llamas", explain: "2. Person Singular: te llamas." },
+      { prompt: "Él ___ a las siete. (despertarse)", options: ["se despierta","me despierto","te despiertas","nos despertamos"], correct: "se despierta", explain: "3. Person Singular: se despierta." },
+      { prompt: "Nosotros ___ temprano. (levantarse)", options: ["nos levantamos","se levantan","os levantáis","me levanto"], correct: "nos levantamos", explain: "1. Person Plural: nos levantamos." },
+      { prompt: "Ellos ___ por la mañana. (ducharse)", options: ["se duchan","nos duchamos","os ducháis","se ducha"], correct: "se duchan", explain: "3. Person Plural: se duchan." },
+      { prompt: "Vosotros ___ rápido. (vestirse)", options: ["os vestís","se visten","te vistes","nos vestimos"], correct: "os vestís", explain: "2. Person Plural: os vestís." }
+    ]
+  },
+  {
+    id: "g-futuro", title: "Futuro Simple", subtitle: "Die einfache Zukunft", tag: "Zukunft",
+    icon: '<path d="M5 19 19 5"/><path d="M9 5h10v10"/>',
+    rules: [
+      { title: "Bildung", body: "Infinitiv + Endungen: -é, -ás, -á, -emos, -éis, -án. Bei regelmäßigen Verben bleibt der ganze Infinitiv erhalten.", example: "hablaré, hablarás, hablará...", exampleDe: "ich werde sprechen, du wirst sprechen, ..." },
+      { title: "Unregelmäßige Stämme", body: "Manche Verben haben einen verkürzten Stamm: tener→tendr-, hacer→har-, decir→dir-, poder→podr-, salir→saldr-, venir→vendr-.", example: "Tendré tiempo. Haré la tarea.", exampleDe: "Ich werde Zeit haben. Ich werde die Aufgabe machen." },
+      { title: "Verwendung", body: "Futuro Simple beschreibt Pläne, Vorhersagen und Vermutungen über die Zukunft.", example: "Mañana lloverá.", exampleDe: "Morgen wird es regnen." }
+    ],
+    practice: [
+      { prompt: "Mañana yo ___ (hablar) con el jefe.", options: ["hablaré","hablo","hablé","hablando"], correct: "hablaré", explain: "Futuro, 1. Person Singular: -é." },
+      { prompt: "Ella ___ (tener) tiempo mañana.", options: ["tenerá","tendrá","tenía","tiene"], correct: "tendrá", explain: "Unregelmäßiger Stamm: tendr-." },
+      { prompt: "Nosotros ___ (hacer) la tarea.", options: ["haceremos","haremos","hacimos","haciendo"], correct: "haremos", explain: "Unregelmäßiger Stamm: har-." },
+      { prompt: "¿Tú ___ (venir) a la fiesta?", options: ["venirás","vendrás","vienes","viniste"], correct: "vendrás", explain: "Unregelmäßiger Stamm: vendr-." },
+      { prompt: "Ellos ___ (poder) ayudarnos.", options: ["poderán","podrán","pueden","podían"], correct: "podrán", explain: "Unregelmäßiger Stamm: podr-." },
+      { prompt: "Yo ___ (decir) la verdad.", options: ["diceré","diré","digo","decía"], correct: "diré", explain: "Unregelmäßiger Stamm: dir-." }
+    ]
+  },
+  {
+    id: "g-subjuntivo", title: "Subjuntivo Presente", subtitle: "Einführung in den Konjunktiv", tag: "Fortgeschritten",
+    icon: '<path d="M12 3v4M12 17v4M3 12h4M17 12h4M5.6 5.6l2.8 2.8M15.6 15.6l2.8 2.8M18.4 5.6l-2.8 2.8M8.4 15.6l-2.8 2.8"/>',
+    rules: [
+      { title: "Wann benutzt man ihn?", body: "Der Subjuntivo folgt oft auf Ausdrücke von Wunsch, Zweifel oder Emotion: querer que, esperar que, es importante que.", example: "Espero que vengas.", exampleDe: "Ich hoffe, dass du kommst." },
+      { title: "Bildung -ar Verben", body: "Bei -ar Verben werden im Subjuntivo die \"e\"-Endungen benutzt (umgekehrt zum Indikativ).", example: "hablar → hable, hables, hable, hablemos, habléis, hablen", exampleDe: "sprechen (Subjuntivo)" },
+      { title: "Bildung -er/-ir Verben", body: "Bei -er/-ir Verben werden die \"a\"-Endungen benutzt.", example: "comer → coma, comas, coma, comamos, comáis, coman", exampleDe: "essen (Subjuntivo)" }
+    ],
+    practice: [
+      { prompt: "Espero que tú ___ (venir).", options: ["vengas","vienes","vendrás","viniste"], correct: "vengas", explain: "Subjuntivo nach \"espero que\"." },
+      { prompt: "Quiero que ella ___ (hablar) conmigo.", options: ["hable","habla","hablará","habló"], correct: "hable", explain: "Subjuntivo nach \"quiero que\"." },
+      { prompt: "Es importante que nosotros ___ (estudiar).", options: ["estudiemos","estudiamos","estudiaremos","estudiábamos"], correct: "estudiemos", explain: "Subjuntivo nach \"es importante que\"." },
+      { prompt: "Ojalá ___ (tener, yo) suerte.", options: ["tenga","tengo","tendré","tenía"], correct: "tenga", explain: "Subjuntivo nach \"ojalá\"." },
+      { prompt: "No creo que ellos ___ (saber) la respuesta.", options: ["sepan","saben","sabrán","sabían"], correct: "sepan", explain: "Subjuntivo nach Zweifel (\"no creo que\")." },
+      { prompt: "Espero que vosotros ___ (comer) bien.", options: ["comáis","coméis","comeréis","comisteis"], correct: "comáis", explain: "Subjuntivo nach \"espero que\"." }
+    ]
+  },
+  {
+    id: "g-por-para", title: "Por vs. Para", subtitle: "Zwei Wörter für \"für\"", tag: "Fortgeschritten",
+    icon: '<path d="M7 7h13l-4-4M17 17H4l4 4"/>',
+    rules: [
+      { title: "POR — Grund & Weg", body: "POR benutzt man für Ursache, Grund, Dauer, Austausch oder \"durch/entlang\".", example: "Gracias por tu ayuda. Caminamos por el parque.", exampleDe: "Danke für deine Hilfe. Wir gehen durch den Park." },
+      { title: "PARA — Zweck & Ziel", body: "PARA benutzt man für Zweck, Ziel, Empfänger oder eine Frist.", example: "Este regalo es para ti. Estudio para aprender.", exampleDe: "Dieses Geschenk ist für dich. Ich lerne, um zu lernen." },
+      { title: "Merkregel", body: "POR = Ursache/Weg (Warum? Wodurch?). PARA = Ziel/Zweck (Wofür? Wohin?).", example: "Por eso estudio para el examen.", exampleDe: "Deshalb lerne ich für die Prüfung." }
+    ],
+    practice: [
+      { prompt: "Este regalo es ___ ti.", options: ["para","por","de","con"], correct: "para", explain: "Empfänger → PARA." },
+      { prompt: "Gracias ___ tu ayuda.", options: ["por","para","de","en"], correct: "por", explain: "Grund → POR." },
+      { prompt: "Caminamos ___ el parque.", options: ["por","para","a","en"], correct: "por", explain: "Durch/entlang → POR." },
+      { prompt: "Estudio ___ aprender español.", options: ["para","por","de","con"], correct: "para", explain: "Zweck → PARA." },
+      { prompt: "Salimos ___ Madrid mañana.", options: ["para","por","a","de"], correct: "para", explain: "Ziel/Richtung → PARA." },
+      { prompt: "Pasamos ___ tu casa ayer.", options: ["por","para","a","en"], correct: "por", explain: "Vorbei an/durch → POR." }
+    ]
+  }
+];
+const GRAMMAR_CH_BY_ID = Object.fromEntries(GRAMMAR_CHAPTERS.map(c => [c.id, c]));
+
+const GRAMMAR_LEVELS = [
+  {
+    id: "g-beginner", name: "Anfänger", tag: "A1 · Grundlagen", accent: "coral",
+    icon: '<path d="M12 2v4M12 18v4M4.9 4.9l2.8 2.8M16.3 16.3l2.8 2.8M2 12h4M18 12h4M4.9 19.1l2.8-2.8M16.3 7.7l2.8-2.8"/><circle cx="12" cy="12" r="3"/>',
+    chapters: ["g-ser-estar", "g-articulos", "g-plural"],
+  },
+  {
+    id: "g-intermediate", name: "Fortgeschritten", tag: "A2–B1 · Verben", accent: "gold",
+    icon: '<circle cx="12" cy="12" r="10"/><path d="m16.2 7.8-2.2 6.2-6.2 2.2 2.2-6.2z"/>',
+    chapters: ["g-presente", "g-stammaenderung", "g-posesivos"],
+  },
+  {
+    id: "g-advanced", name: "Erfahren", tag: "B1–B2 · Vergangenheit", accent: "mint",
+    icon: '<path d="M2 6a2 2 0 0 1 2-2h6v16H4a2 2 0 0 1-2-2Z"/><path d="M22 6a2 2 0 0 0-2-2h-6v16h6a2 2 0 0 0 2-2Z"/>',
+    chapters: ["g-indefinido", "g-perfecto", "g-reflexivos"],
+  },
+  {
+    id: "g-master", name: "Profi", tag: "B2–C1 · Feinheiten", accent: "plum",
+    icon: '<path d="M2 18h20l-2-9-5 4-3-7-3 7-5-4Z"/>',
+    chapters: ["g-futuro", "g-subjuntivo", "g-por-para"],
+  },
+];
+const GRAMMAR_LEVEL_BY_ID = Object.fromEntries(GRAMMAR_LEVELS.map(l => [l.id, l]));
+
 /* ---------------------------------------------------------
    State
 --------------------------------------------------------- */
 let state = {
+  mode: "vocab", // "vocab" | "grammar"
   levelId: null, chapterId: null, cardIndex: 0, quiz: [], qIndex: 0,
   hearts: 3, correctCount: 0, xp: 0, streak: 0,
   progress: Object.fromEntries(CHAPTERS.map(c => [c.id, { done: false, stars: 0 }])),
+  gProgress: Object.fromEntries(GRAMMAR_CHAPTERS.map(c => [c.id, { done: false, stars: 0 }])),
+  gChapterId: null, gStep: 0, quizMode: "vocab",
   lastGain: 0, lastFailed: false,
 };
+
+/* ---------------------------------------------------------
+   Modus-Helfer: Vokabeln vs. Grammatik
+--------------------------------------------------------- */
+function currentLevels() { return state.mode === "grammar" ? GRAMMAR_LEVELS : LEVELS; }
+function currentLevelById(id) { return state.mode === "grammar" ? GRAMMAR_LEVEL_BY_ID[id] : LEVEL_BY_ID[id]; }
+function currentChapterById(id) { return state.mode === "grammar" ? GRAMMAR_CH_BY_ID[id] : CH_BY_ID[id]; }
+function currentProgress() { return state.mode === "grammar" ? state.gProgress : state.progress; }
 
 function shuffle(arr) {
   const a = [...arr];
@@ -1672,8 +1969,13 @@ function buildQuiz(chapter) {
   return pool.map(word => {
     const distractors = shuffle(ALL_WORDS.filter(w => w.de !== word.de)).slice(0, 3);
     const options = shuffle([word.de, ...distractors.map(w => w.de)]);
-    return { word, options };
+    return { prompt: word.es, correct: word.de, options };
   });
+}
+
+function buildGrammarQuiz(chapter) {
+  const pool = shuffle(chapter.practice).slice(0, 6);
+  return pool.map(q => ({ prompt: q.prompt, correct: q.correct, options: shuffle(q.options), explain: q.explain }));
 }
 
 function showScreen(id) {
@@ -1698,27 +2000,30 @@ function isChapterUnlocked(level, chapterIdxInLevel, levelIdx) {
 function renderLevels() {
   const list = document.getElementById('level-list');
   list.innerHTML = '';
-  LEVELS.forEach((level, idx) => {
-    const unlocked = isLevelUnlocked(idx);
-    const doneCount = level.chapters.filter(id => state.progress[id].done).length;
+  const levels = currentLevels();
+  const progress = currentProgress();
+
+  levels.forEach((level, idx) => {
+    const doneCount = level.chapters.filter(id => progress[id].done).length;
     const total = level.chapters.length;
     const accent = ACCENT_VARS[level.accent];
 
     const card = document.createElement('button');
     card.className = 'level-card';
-    card.disabled = !unlocked;
-    card.onclick = () => unlocked && goToPath(level.id);
+    card.onclick = () => goToPath(level.id);
     card.style.animationDelay = `${idx * 0.05}s`;
 
     const iconSvg = `<svg viewBox="0 0 24 24" width="27" height="27" fill="none" stroke="#FFFFFF" stroke-width="2.1">${level.icon}</svg>`;
 
-    const wordCount = level.chapters.reduce((sum, id) => sum + CH_BY_ID[id].words.length, 0);
+    const countLabel = state.mode === "grammar"
+      ? `${level.chapters.reduce((sum, id) => sum + GRAMMAR_CH_BY_ID[id].practice.length, 0)} Übungen`
+      : `${level.chapters.reduce((sum, id) => sum + CH_BY_ID[id].words.length, 0)} Vokabeln`;
 
     card.innerHTML = `
       <div class="level-icon" style="background:linear-gradient(135deg, ${accent.main}, ${accent.dark})">${iconSvg}</div>
       <div class="level-info">
         <p class="level-name">${level.name}</p>
-        <p class="level-tag">${level.tag}${unlocked ? '' : ' · gesperrt'} · ${wordCount} Vokabeln</p>
+        <p class="level-tag">${level.tag} · ${countLabel}</p>
         <div class="level-track">
           <div class="level-track-fill" style="width:${(doneCount/total)*100}%; background:${accent.main}"></div>
         </div>
@@ -1731,15 +2036,30 @@ function renderLevels() {
 }
 function goToLevels() { renderLevels(); showScreen('screen-levels'); }
 
+function setMode(mode) {
+  state.mode = mode;
+  document.querySelectorAll('.mode-btn').forEach(b => b.classList.toggle('active', b.dataset.mode === mode));
+  if (mode === "grammar") {
+    document.getElementById('levels-eyebrow').textContent = 'Gramática Española';
+    document.getElementById('levels-title').textContent = 'Grammatik-Regeln lernen';
+    document.getElementById('levels-sub').textContent = '12 Kapitel mit Erklärungen und Übungen — von Ser/Estar bis zum Subjuntivo.';
+  } else {
+    document.getElementById('levels-eyebrow').textContent = 'El Camino del Español';
+    document.getElementById('levels-title').textContent = 'Wähle dein Niveau';
+    document.getElementById('levels-sub').textContent = '1000 Vokabeln in 20 Kapiteln — von den ersten Wörtern bis zum sicheren Alltagsspanisch.';
+  }
+  renderLevels();
+}
+
 /* ---------------------------------------------------------
    Path screen
 --------------------------------------------------------- */
 const OFFSETS = [0, 56, -20, 60, -8];
 
 function renderPath() {
-  const level = LEVEL_BY_ID[state.levelId];
-  const levelIdx = LEVELS.findIndex(l => l.id === level.id);
+  const level = currentLevelById(state.levelId);
   const accent = ACCENT_VARS[level.accent];
+  const progress = currentProgress();
 
   document.getElementById('path-banner').innerHTML = `
     <svg viewBox="0 0 480 92" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">
@@ -1768,38 +2088,43 @@ function renderPath() {
   `;
 
   document.getElementById('path-eyebrow').textContent = `${level.name} · ${level.tag}`;
-  document.getElementById('path-title').textContent = 'Deine Route durchs Spanische';
-  document.getElementById('path-sub').textContent = 'Jede Station ist eine Stadt, jedes Kapitel ein neuer Stempel im Reisepass.';
+  if (state.mode === "grammar") {
+    document.getElementById('path-title').textContent = 'Grammatik-Kapitel';
+    document.getElementById('path-sub').textContent = 'Jede Station erklärt eine Regel und testet sie direkt mit Übungen.';
+  } else {
+    document.getElementById('path-title').textContent = 'Deine Route durchs Spanische';
+    document.getElementById('path-sub').textContent = 'Jede Station ist eine Stadt, jedes Kapitel ein neuer Stempel im Reisepass.';
+  }
 
   const body = document.getElementById('path-body');
   body.querySelectorAll('.chapter-node').forEach(n => n.remove());
 
   level.chapters.forEach((chId, i) => {
-    const ch = CH_BY_ID[chId];
-    const st = state.progress[ch.id];
-    const unlocked = isChapterUnlocked(level, i, levelIdx);
+    const ch = currentChapterById(chId);
+    const st = progress[ch.id];
 
     const node = document.createElement('div');
     node.className = 'chapter-node';
     node.style.transform = `translateX(${OFFSETS[i % OFFSETS.length]}px)`;
 
-    const btnClass = unlocked ? (st.done ? 'node-btn done' : 'node-btn unlocked') : 'node-btn';
-    const iconSvg = unlocked
-      ? `<svg viewBox="0 0 24 24" fill="none" stroke="#2B2118" stroke-width="2.2" width="28" height="28">${ch.icon}</svg>`
-      : `<svg viewBox="0 0 24 24" fill="none" stroke="#9C8B72" stroke-width="2" width="24" height="24">${LOCK_SVG}</svg>`;
+    const btnClass = st.done ? 'node-btn done' : 'node-btn unlocked';
+    const iconSvg = `<svg viewBox="0 0 24 24" fill="none" stroke="#2B2118" stroke-width="2.2" width="28" height="28">${ch.icon}</svg>`;
 
     const starsHtml = st.done
       ? `<div class="node-stars">${[0,1,2].map(s => STAR_SVG(s < st.stars)).join('')}</div>`
       : '';
 
+    const openFn = state.mode === "grammar" ? 'openGrammarChapter' : 'openChapter';
+    const metaLabel = state.mode === "grammar" ? ch.tag : ch.stop;
+
     node.innerHTML = `
-      <button class="${btnClass}" ${unlocked ? '' : 'disabled'} onclick="openChapter('${ch.id}')">
+      <button class="${btnClass}" onclick="${openFn}('${ch.id}')">
         ${iconSvg}
         ${starsHtml}
       </button>
       <div class="node-label">
-        <p class="name font-display ${unlocked ? '' : 'locked'}">${ch.title}</p>
-        <p class="meta">${ch.subtitle} · ${ch.stop}</p>
+        <p class="name font-display">${ch.title}</p>
+        <p class="meta">${ch.subtitle} · ${metaLabel}</p>
       </div>
     `;
     body.appendChild(node);
@@ -1808,7 +2133,7 @@ function renderPath() {
 function goToPath(levelId) { state.levelId = levelId; renderPath(); showScreen('screen-path'); }
 
 /* ---------------------------------------------------------
-   Flashcard screen
+   Flashcard screen (Vokabeln)
 --------------------------------------------------------- */
 function openChapter(chapterId) {
   state.chapterId = chapterId;
@@ -1840,6 +2165,7 @@ function nextCard() {
     state.cardIndex++;
     renderCard();
   } else {
+    state.quizMode = 'vocab';
     state.quiz = buildQuiz(chapter);
     state.qIndex = 0;
     state.hearts = 3;
@@ -1850,7 +2176,53 @@ function nextCard() {
 }
 
 /* ---------------------------------------------------------
-   Quiz screen
+   Lesson screen (Grammatik-Regelkarten)
+--------------------------------------------------------- */
+function openGrammarChapter(chapterId) {
+  state.gChapterId = chapterId;
+  state.gStep = 0;
+  renderGrammarCard();
+  showScreen('screen-glesson');
+}
+
+function renderGrammarCard() {
+  const chapter = GRAMMAR_CH_BY_ID[state.gChapterId];
+  const rule = chapter.rules[state.gStep];
+  const total = chapter.rules.length;
+
+  document.getElementById('glesson-progress').style.width = `${((state.gStep + 1) / total) * 100}%`;
+  document.getElementById('glesson-eyebrow').textContent = `${chapter.subtitle} · ${state.gStep + 1}/${total}`;
+  document.getElementById('glesson-title').textContent = rule.title;
+  document.getElementById('glesson-body').textContent = rule.body;
+  document.getElementById('glesson-example').innerHTML = rule.example
+    ? `<strong>${rule.example}</strong><br>${rule.exampleDe}`
+    : '';
+  document.getElementById('glesson-next-label').textContent = (state.gStep + 1 < total) ? 'Weiter' : 'Übung starten';
+
+  const card = document.getElementById('glesson-card');
+  card.style.animation = 'none';
+  void card.offsetWidth;
+  card.style.animation = '';
+}
+
+function nextGrammarCard() {
+  const chapter = GRAMMAR_CH_BY_ID[state.gChapterId];
+  if (state.gStep + 1 < chapter.rules.length) {
+    state.gStep++;
+    renderGrammarCard();
+  } else {
+    state.quizMode = 'grammar';
+    state.quiz = buildGrammarQuiz(chapter);
+    state.qIndex = 0;
+    state.hearts = 3;
+    state.correctCount = 0;
+    renderQuiz();
+    showScreen('screen-quiz');
+  }
+}
+
+/* ---------------------------------------------------------
+   Quiz screen (gemeinsam für Vokabeln & Grammatik)
 --------------------------------------------------------- */
 function renderHearts() {
   const el = document.getElementById('quiz-hearts');
@@ -1866,10 +2238,14 @@ function renderQuiz() {
   document.getElementById('quiz-progress').style.width = `${(state.qIndex / state.quiz.length) * 100}%`;
   document.getElementById('quiz-xp').textContent = `${state.xp} XP`;
   document.getElementById('quiz-streak').textContent = state.streak;
+  document.getElementById('quiz-prompt').textContent = state.quizMode === 'grammar'
+    ? 'Ergänze die Lücke:'
+    : 'Was bedeutet dieses Wort?';
   renderHearts();
 
   const wordEl = document.getElementById('quiz-word');
-  wordEl.textContent = q.word.es;
+  wordEl.textContent = q.prompt;
+  wordEl.style.fontSize = state.quizMode === 'grammar' ? '24px' : '32px';
   wordEl.style.animation = 'none';
   void wordEl.offsetWidth;
   wordEl.style.animation = '';
@@ -1890,7 +2266,7 @@ const X_SVG = '<svg viewBox="0 0 24 24" width="18" height="18" fill="none" strok
 
 function answerQuiz(opt) {
   const q = state.quiz[state.qIndex];
-  const correct = opt === q.word.de;
+  const correct = opt === q.correct;
   const buttons = document.querySelectorAll('#quiz-options .option-btn');
 
   buttons.forEach(btn => {
@@ -1898,7 +2274,7 @@ function answerQuiz(opt) {
     if (btn.textContent === opt) {
       btn.classList.add(correct ? 'correct' : 'wrong');
       btn.innerHTML = `<span>${btn.textContent}</span>${correct ? CHECK_SVG : X_SVG}`;
-    } else if (btn.textContent === q.word.de) {
+    } else if (btn.textContent === q.correct) {
       btn.classList.add('correct');
       btn.innerHTML = `<span>${btn.textContent}</span>${CHECK_SVG}`;
     }
@@ -1933,7 +2309,11 @@ function answerQuiz(opt) {
       state.xp += bonus;
       state.lastGain = state.correctCount * 10 + bonus;
       state.lastFailed = false;
-      state.progress[state.chapterId] = { done: true, stars };
+      if (state.quizMode === 'grammar') {
+        state.gProgress[state.gChapterId] = { done: true, stars };
+      } else {
+        state.progress[state.chapterId] = { done: true, stars };
+      }
       renderResult();
       showScreen('screen-result');
     }
@@ -1941,12 +2321,15 @@ function answerQuiz(opt) {
 }
 
 /* ---------------------------------------------------------
-   Result screen
+   Result screen (gemeinsam für Vokabeln & Grammatik)
 --------------------------------------------------------- */
 function renderResult() {
-  const chapter = CH_BY_ID[state.chapterId];
-  const level = LEVEL_BY_ID[state.levelId];
-  const levelIdx = LEVELS.findIndex(l => l.id === level.id);
+  const isGrammar = state.quizMode === 'grammar';
+  const chapter = isGrammar ? GRAMMAR_CH_BY_ID[state.gChapterId] : CH_BY_ID[state.chapterId];
+  const level = currentLevelById(state.levelId);
+  const levels = currentLevels();
+  const progress = currentProgress();
+  const levelIdx = levels.findIndex(l => l.id === level.id);
   const ratio = state.correctCount / (state.quiz.length || 1);
   const stars = ratio === 1 ? 3 : ratio >= 0.66 ? 2 : 1;
 
@@ -1960,26 +2343,27 @@ function renderResult() {
     icon.className = 'result-icon fail';
     icon.innerHTML = '<svg viewBox="0 0 24 24" width="40" height="40" fill="#FF5C5C" stroke="#FF5C5C"><path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.6l-1-1a5.5 5.5 0 0 0-7.8 7.8l1 1L12 21l7.8-7.6 1-1a5.5 5.5 0 0 0 0-7.8Z"/></svg>';
     title.textContent = 'Fast geschafft!';
-    text.textContent = 'Die Herzen sind aufgebraucht. Versuch die Lektion noch einmal.';
+    text.textContent = 'Die Herzen sind aufgebraucht. Versuch es noch einmal.';
     starsEl.innerHTML = '';
+    const retryFn = isGrammar ? 'retryGrammarChapter' : 'retryChapter';
     actions.innerHTML = `
-      <button class="btn-primary" onclick="retryChapter()">
+      <button class="btn-primary" onclick="${retryFn}()">
         <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="#2B2118" stroke-width="2.4"><path d="M1 4v6h6M23 20v-6h-6"/><path d="M20.5 9A9 9 0 0 0 5 5.3L1 10m22 4-4 4.7A9 9 0 0 1 3.5 15"/></svg>
         Nochmal versuchen
       </button>`;
   } else {
-    const levelJustCompleted = level.chapters.every(id => state.progress[id].done);
-    const nextLevel = LEVELS[levelIdx + 1];
+    const levelJustCompleted = level.chapters.every(id => progress[id].done);
+    const nextLevel = levels[levelIdx + 1];
     const unlockedNextLevel = levelJustCompleted && nextLevel;
 
     icon.className = 'result-icon win';
-    icon.innerHTML = '<svg viewBox="0 0 24 24" width="40" height="40" fill="none" stroke="#F2B705" stroke-width="2"><path d="M8 21h8M12 17v4M7 4h10v5a5 5 0 0 1-10 0V4Z"/><path d="M7 5H4a2 2 0 0 0 2 4M17 5h3a2 2 0 0 1-2 4"/></svg>';
-    title.textContent = `${chapter.stop} erreicht!`;
+    icon.innerHTML = '<svg viewBox="0 0 24 24" width="40" height="40" fill="none" stroke="#F2A705" stroke-width="2"><path d="M8 21h8M12 17v4M7 4h10v5a5 5 0 0 1-10 0V4Z"/><path d="M7 5H4a2 2 0 0 0 2 4M17 5h3a2 2 0 0 1-2 4"/></svg>';
+    title.textContent = isGrammar ? `${chapter.title} gemeistert!` : `${chapter.stop} erreicht!`;
     text.textContent = unlockedNextLevel
       ? `Du hast ${chapter.title} abgeschlossen (+${state.lastGain} XP) und das Niveau „${nextLevel.name}" freigeschaltet!`
       : `Du hast ${chapter.title} abgeschlossen und +${state.lastGain} XP gesammelt.`;
     starsEl.innerHTML = [0,1,2].map(s => `
-      <svg viewBox="0 0 24 24" width="32" height="32" fill="${s < stars ? '#F2B705' : 'none'}" stroke="#F2B705" stroke-width="1.8">
+      <svg viewBox="0 0 24 24" width="32" height="32" fill="${s < stars ? '#F2A705' : 'none'}" stroke="#F2A705" stroke-width="1.8">
         <path d="M12 2l2.9 6.6L22 9.3l-5 4.8 1.3 7-6.3-3.6L5.7 21l1.3-7-5-4.8 7.1-0.7L12 2z"/>
       </svg>`).join('');
     actions.innerHTML = `
@@ -1995,6 +2379,17 @@ function retryChapter() {
   state.cardIndex = 0;
   renderCard();
   showScreen('screen-cards');
+}
+
+function retryGrammarChapter() {
+  const chapter = GRAMMAR_CH_BY_ID[state.gChapterId];
+  state.quizMode = 'grammar';
+  state.quiz = buildGrammarQuiz(chapter);
+  state.qIndex = 0;
+  state.hearts = 3;
+  state.correctCount = 0;
+  renderQuiz();
+  showScreen('screen-quiz');
 }
 
 /* ---------------------------------------------------------

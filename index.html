@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>El Camino del Español · 1000 Vokabeln</title>
+<title>El Camino del Español · 3000 Vokabeln</title>
 <style>
   @import url('https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600..800&family=Work+Sans:wght@400;500;600;700&display=swap');
 
@@ -341,7 +341,7 @@
     <div class="levels-header">
       <p class="eyebrow" id="levels-eyebrow">El Camino del Español</p>
       <h1 class="big-title font-display" id="levels-title">Wähle dein Niveau</h1>
-      <p class="sub-text" id="levels-sub">1000 Vokabeln in 20 Kapiteln — von den ersten Wörtern bis zum sicheren Alltagsspanisch.</p>
+      <p class="sub-text" id="levels-sub">3000 Vokabeln in 120 Kapiteln — von den ersten Wörtern bis zum sicheren Alltagsspanisch.</p>
     </div>
     <div class="level-list" id="level-list"></div>
   </section>
@@ -500,7 +500,7 @@
 
 <script>
 /* ---------------------------------------------------------
-   Vokabel-Daten: 1000 Wörter, 20 Kapitel, 4 Niveaustufen
+   Vokabel-Daten: 3000 Wörter, 120 Kapitel, 4 Niveaustufen
 --------------------------------------------------------- */
 const CHAPTERS = [
   {
@@ -4624,7 +4624,7 @@ function setMode(mode) {
   } else {
     document.getElementById('levels-eyebrow').textContent = 'El Camino del Español';
     document.getElementById('levels-title').textContent = 'Wähle dein Niveau';
-    document.getElementById('levels-sub').textContent = '1000 Vokabeln in 20 Kapiteln — von den ersten Wörtern bis zum sicheren Alltagsspanisch.';
+    document.getElementById('levels-sub').textContent = '3000 Vokabeln in 120 Kapiteln — von den ersten Wörtern bis zum sicheren Alltagsspanisch.';
   }
   renderLevels();
 }

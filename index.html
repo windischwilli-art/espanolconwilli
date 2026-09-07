@@ -234,6 +234,18 @@
   .card-word { font-family: 'Fraunces', serif; font-size: 32px; font-weight: 700; margin: 0; line-height: 1.2; }
   .card-de { font-size: 18px; color: var(--gold); margin: 0; }
 
+  .speak-btn {
+    display: flex; align-items: center; justify-content: center; width: 34px; height: 34px;
+    border: none; border-radius: 50%; background: var(--panel-light); color: var(--cream-dim);
+    cursor: pointer; flex-shrink: 0; transition: transform 0.12s ease, background 0.15s ease, color 0.15s ease;
+  }
+  .speak-btn:hover { background: rgba(255,107,84,0.14); color: var(--coral); }
+  .speak-btn:active { transform: scale(0.9); }
+  .speak-btn.speaking { color: var(--coral); background: rgba(255,107,84,0.16); animation: speakPulse 0.9s ease-in-out infinite; }
+  .speak-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+  @keyframes speakPulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.12); } }
+  @media (prefers-reduced-motion: reduce) { .speak-btn.speaking { animation: none; } }
+
   .glesson-card { text-align: left; }
   .glesson-card .eyebrow { text-align: left; }
   .glesson-title { font-size: 21px; font-weight: 700; margin: 0 0 10px; line-height: 1.3; }
@@ -504,7 +516,9 @@
         <p class="eyebrow" id="card-eyebrow"></p>
         <div class="card-word-row">
           <h2 class="card-word font-display" id="card-word"></h2>
-          <svg viewBox="0 0 24 24" fill="none" stroke="#9C8B72" stroke-width="2" width="20" height="20"><path d="M11 5 6 9H2v6h4l5 4V5Z"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"/></svg>
+          <button class="speak-btn" id="speak-btn" onclick="speakWord()" title="Aussprache anhören" aria-label="Aussprache anhören">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="20" height="20"><path d="M11 5 6 9H2v6h4l5 4V5Z"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"/></svg>
+          </button>
         </div>
         <p class="card-de" id="card-de"></p>
       </div>
@@ -4920,8 +4934,52 @@ function goToPath(levelId) { state.levelId = levelId; renderPath(); showScreen('
 function openChapter(chapterId) {
   state.chapterId = chapterId;
   state.cardIndex = 0;
+  if ('speechSynthesis' in window) window.speechSynthesis.cancel();
   renderCard();
   showScreen('screen-cards');
+}
+
+/* ---------------------------------------------------------
+   Aussprache (Web Speech API) - liest das aktuelle Vokabelwort auf Spanisch vor
+--------------------------------------------------------- */
+let spanishVoice = null;
+function pickSpanishVoice() {
+  if (!('speechSynthesis' in window)) return null;
+  const voices = window.speechSynthesis.getVoices();
+  if (!voices || !voices.length) return null;
+  return voices.find(v => v.lang === 'es-ES') ||
+         voices.find(v => v.lang && v.lang.toLowerCase().startsWith('es')) ||
+         null;
+}
+if ('speechSynthesis' in window) {
+  spanishVoice = pickSpanishVoice();
+  window.speechSynthesis.onvoiceschanged = () => { spanishVoice = pickSpanishVoice(); };
+}
+
+function speakWord() {
+  const btn = document.getElementById('speak-btn');
+  if (!('speechSynthesis' in window)) {
+    btn.disabled = true;
+    btn.title = 'Sprachausgabe wird von diesem Browser leider nicht unterstützt';
+    return;
+  }
+  const chapter = CH_BY_ID[state.chapterId];
+  const word = chapter.words[state.cardIndex];
+  if (!word) return;
+
+  window.speechSynthesis.cancel(); // evtl. laufende Sprachausgabe abbrechen, bevor neu gestartet wird
+
+  const utterance = new SpeechSynthesisUtterance(word.es);
+  utterance.lang = 'es-ES';
+  if (spanishVoice) utterance.voice = spanishVoice;
+  utterance.rate = 0.88;
+  utterance.pitch = 1;
+
+  btn.classList.add('speaking');
+  utterance.onend = () => btn.classList.remove('speaking');
+  utterance.onerror = () => btn.classList.remove('speaking');
+
+  window.speechSynthesis.speak(utterance);
 }
 
 function renderCard() {
@@ -4942,6 +5000,7 @@ function renderCard() {
 }
 
 function nextCard() {
+  if ('speechSynthesis' in window) window.speechSynthesis.cancel();
   const chapter = CH_BY_ID[state.chapterId];
   if (state.cardIndex + 1 < chapter.words.length) {
     state.cardIndex++;

@@ -8,29 +8,29 @@
   @import url('https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600..800&family=Work+Sans:wght@400;500;600;700&display=swap');
 
   :root {
-    --ink: #2B2118;
+    --ink: #16323A;
     --panel: #FFFFFF;
-    --panel-light: #F3EBDC;
-    --cream: #2B2118;
-    --cream-dim: #8C7A64;
-    --coral: #FF6B54;
-    --coral-dark: #E5573F;
-    --gold: #F2A705;
-    --gold-dark: #C98600;
-    --mint: #2FBA88;
-    --mint-dark: #24996E;
-    --plum: #A873E0;
-    --plum-dark: #8952C2;
+    --panel-light: #EAF1EF;
+    --cream: #16323A;
+    --cream-dim: #6E8B87;
+    --coral: #FF7A5C;
+    --coral-dark: #E5623F;
+    --gold: #F2B705;
+    --gold-dark: #C99500;
+    --mint: #14B8A6;
+    --mint-dark: #0F9587;
+    --plum: #5E6BB8;
+    --plum-dark: #47539B;
     --red: #F04949;
-    --line: rgba(43,33,24,0.10);
-    --bg: #FFF6EA;
+    --line: rgba(22,50,58,0.10);
+    --bg: #FDF8EE;
   }
 
   * { box-sizing: border-box; }
 
   body {
     margin: 0;
-    background: linear-gradient(160deg, #FFE9D2 0%, #FFF6EA 45%, #FFEFE0 100%);
+    background: linear-gradient(165deg, #BFE3EA 0%, #E8F3EE 35%, #FDF8EE 70%, #FBEFDC 100%);
     font-family: 'Work Sans', sans-serif;
     color: var(--cream);
     display: flex;
@@ -50,7 +50,7 @@
     background-size: 22px 22px;
     border-radius: 32px;
     overflow: hidden;
-    box-shadow: 0 20px 50px rgba(178,110,60,0.22), 0 4px 14px rgba(178,110,60,0.12);
+    box-shadow: 0 20px 50px rgba(22,80,90,0.22), 0 4px 14px rgba(22,80,90,0.12);
     display: flex;
     flex-direction: column;
     position: relative;
@@ -93,7 +93,7 @@
   .profile-bar {
     display: flex; align-items: center; gap: 12px; width: calc(100% - 48px); margin: 14px 24px 0;
     padding: 10px 14px; border-radius: 16px; border: 1.5px solid var(--line); background: var(--panel);
-    cursor: pointer; box-shadow: 0 3px 10px rgba(178,110,60,0.08); transition: transform 0.15s ease;
+    cursor: pointer; box-shadow: 0 3px 10px rgba(22,80,90,0.08); transition: transform 0.15s ease;
   }
   .profile-bar:hover { transform: translateY(-1px); }
   .profile-bar:active { transform: scale(0.98); }
@@ -112,7 +112,7 @@
   .onboarding-input {
     width: 100%; margin-top: 18px; padding: 14px 16px; border-radius: 16px; border: 1.5px solid var(--line);
     background: var(--panel); color: var(--ink); font-family: 'Work Sans', sans-serif; font-size: 16px;
-    box-shadow: 0 3px 10px rgba(178,110,60,0.06);
+    box-shadow: 0 3px 10px rgba(22,80,90,0.06);
   }
   .onboarding-input:focus { outline: 2px solid var(--coral); outline-offset: 1px; }
   .onboarding-label { font-size: 12.5px; font-weight: 600; color: var(--cream-dim); margin: 22px 0 10px; }
@@ -156,7 +156,7 @@
     border-radius: 10px; font-family: 'Work Sans', sans-serif; font-weight: 600; font-size: 13.5px;
     color: var(--cream-dim); cursor: pointer; transition: background 0.15s ease, color 0.15s ease;
   }
-  .mode-btn.active { background: var(--panel); color: var(--ink); box-shadow: 0 2px 6px rgba(178,110,60,0.14); }
+  .mode-btn.active { background: var(--panel); color: var(--ink); box-shadow: 0 2px 6px rgba(22,80,90,0.14); }
 
   .levels-header { padding: 18px 24px 4px; }
   .eyebrow { font-size: 12px; letter-spacing: 0.22em; text-transform: uppercase; color: var(--coral); margin: 0 0 6px; font-weight: 600; }
@@ -167,10 +167,10 @@
   .level-card {
     display: flex; align-items: center; gap: 14px; padding: 16px 18px; border-radius: 22px;
     border: 1.5px solid var(--line); background: var(--panel); cursor: pointer; text-align: left; width: 100%;
-    box-shadow: 0 3px 10px rgba(178,110,60,0.08);
+    box-shadow: 0 3px 10px rgba(22,80,90,0.08);
     transition: transform 0.15s ease, box-shadow 0.15s ease; animation: popIn 0.3s cubic-bezier(.2,.9,.3,1.2);
   }
-  .level-card:hover:not(:disabled) { transform: translateY(-2px); box-shadow: 0 8px 18px rgba(178,110,60,0.14); }
+  .level-card:hover:not(:disabled) { transform: translateY(-2px); box-shadow: 0 8px 18px rgba(22,80,90,0.14); }
   .level-card:active:not(:disabled) { transform: scale(0.98); }
   .level-card:disabled { cursor: not-allowed; opacity: 0.55; }
   .level-icon {
@@ -288,6 +288,29 @@
   .option-btn.wrong { background: rgba(255,92,92,0.18); border-color: var(--red); animation: shake 0.4s; }
   .option-btn svg { width: 18px; height: 18px; flex-shrink: 0; }
 
+  .type-answer { display: none; flex-direction: column; gap: 14px; max-width: 340px; margin: 0 auto; width: 100%; }
+  .type-answer.active { display: flex; }
+  .type-input {
+    width: 100%; padding: 16px 18px; border-radius: 18px; border: 1.5px solid var(--line); background: var(--panel);
+    color: var(--ink); font-family: 'Work Sans', sans-serif; font-size: 17px; text-align: center;
+    box-shadow: 0 3px 10px rgba(22,80,90,0.06);
+  }
+  .type-input:focus { outline: 2px solid var(--coral); outline-offset: 1px; }
+  .type-input.correct { border-color: var(--mint); background: rgba(20,184,166,0.08); }
+  .type-input.wrong { border-color: var(--red); background: rgba(240,73,73,0.08); animation: shake 0.4s; }
+  .type-input:disabled { opacity: 0.85; }
+  .accent-row { display: flex; gap: 6px; justify-content: center; flex-wrap: wrap; }
+  .accent-btn {
+    width: 32px; height: 32px; border-radius: 10px; border: 1.5px solid var(--line); background: var(--panel-light);
+    color: var(--ink); font-family: 'Work Sans', sans-serif; font-size: 14.5px; cursor: pointer; transition: background 0.15s ease, border-color 0.15s ease;
+  }
+  .accent-btn:hover { background: rgba(255,122,92,0.12); border-color: var(--coral); }
+  .accent-btn:active { transform: scale(0.92); }
+  .type-feedback { text-align: center; font-size: 13.5px; min-height: 20px; margin: 0; }
+  .type-feedback .fb-ok { color: var(--mint-dark); display: inline-flex; align-items: center; gap: 6px; font-weight: 600; }
+  .type-feedback .fb-bad { color: var(--red); display: inline-flex; align-items: center; gap: 6px; font-weight: 600; }
+  .type-feedback .fb-explain { display: block; color: var(--cream-dim); font-weight: 400; margin-top: 4px; }
+
   .result-area { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 32px; text-align: center; }
   .result-icon {
     width: 96px; height: 96px; border-radius: 50%; display: flex; align-items: center; justify-content: center;
@@ -305,6 +328,7 @@
   @media (prefers-reduced-motion: reduce) {
     .chapter-node, .flashcard, .quiz-word, .result-icon, .level-card { animation: none; }
     .option-btn.wrong { animation: none; }
+    .type-input.wrong { animation: none; }
   }
 
   button:focus-visible, .node-btn:focus-visible { outline: 2px solid var(--gold); outline-offset: 2px; }
@@ -314,7 +338,7 @@
   .cert-card {
     width: 100%; max-width: 360px; background: var(--panel); border-radius: 22px; padding: 30px 26px;
     text-align: center; position: relative; overflow: hidden;
-    box-shadow: 0 14px 34px rgba(178,110,60,0.2);
+    box-shadow: 0 14px 34px rgba(22,80,90,0.2);
     animation: popIn 0.32s cubic-bezier(.2,.9,.3,1.2);
   }
   .cert-card::before, .cert-card::after {
@@ -361,21 +385,35 @@
     <div class="onboarding-hero">
       <svg viewBox="0 0 480 170" preserveAspectRatio="xMidYMax slice" xmlns="http://www.w3.org/2000/svg">
         <defs>
-          <linearGradient id="obSky" x1="0" y1="0" x2="1" y2="1">
-            <stop offset="0%" stop-color="#FFB37A"/><stop offset="50%" stop-color="#FF6B54"/><stop offset="100%" stop-color="#A873E0"/>
+          <linearGradient id="obSky" x1="0" y1="1" x2="0.6" y2="0">
+            <stop offset="0%" stop-color="#1B3A52"/><stop offset="60%" stop-color="#173257"/><stop offset="100%" stop-color="#0F2242"/>
           </linearGradient>
+          <radialGradient id="obGlow" cx="50%" cy="50%" r="50%">
+            <stop offset="0%" stop-color="#FFF8E0" stop-opacity="0.9"/>
+            <stop offset="45%" stop-color="#FFE9B8" stop-opacity="0.3"/>
+            <stop offset="100%" stop-color="#FFE9B8" stop-opacity="0"/>
+          </radialGradient>
         </defs>
         <rect width="480" height="170" fill="url(#obSky)"/>
-        <ellipse cx="70" cy="30" rx="24" ry="11" fill="#FFF6EA" opacity="0.8"/><ellipse cx="94" cy="24" rx="16" ry="9" fill="#FFF6EA" opacity="0.7"/>
-        <ellipse cx="400" cy="20" rx="18" ry="8" fill="#FFF6EA" opacity="0.6"/>
-        <g transform="translate(240,90)">
-          <g stroke="#FFE08A" stroke-width="4" stroke-linecap="round" opacity="0.9">
-            <path d="M0 -48v-10M34 -34l7-7M48 0h10M34 34l7 7M0 48v10M-34 34l-7 7M-48 0h-10M-34 -34l-7-7"/>
-          </g>
-          <circle r="36" fill="#FFE08A"/>
-          <circle cx="-12" cy="-6" r="4.5" fill="#3B2A1D"/><circle cx="12" cy="-6" r="4.5" fill="#3B2A1D"/>
-          <path d="M-14 11q14 13 28 0" stroke="#3B2A1D" stroke-width="3.2" fill="none" stroke-linecap="round"/>
-          <ellipse cx="-22" cy="4" rx="5.5" ry="3.5" fill="#FF9B7A" opacity="0.7"/><ellipse cx="22" cy="4" rx="5.5" ry="3.5" fill="#FF9B7A" opacity="0.7"/>
+        <g fill="#FFFFFF">
+          <circle cx="70" cy="30" r="1.4" opacity="0.8"/><circle cx="360" cy="24" r="1.2" opacity="0.6"/>
+          <circle cx="410" cy="60" r="1.4" opacity="0.7"/><circle cx="150" cy="20" r="1" opacity="0.5"/>
+          <circle cx="300" cy="42" r="1.2" opacity="0.6"/>
+        </g>
+        <circle cx="240" cy="72" r="66" fill="url(#obGlow)"/>
+        <circle cx="240" cy="72" r="30" fill="#FFF6E3"/>
+        <circle cx="230" cy="65" r="4.5" fill="#16323A" opacity="0.55"/><circle cx="252" cy="65" r="4.5" fill="#16323A" opacity="0.55"/>
+        <path d="M226 84q14 13 28 0" stroke="#16323A" stroke-width="3.2" fill="none" stroke-linecap="round" opacity="0.55"/>
+        <g fill="#EAF1EF" opacity="0.2">
+          <ellipse cx="120" cy="150" rx="90" ry="20"/><ellipse cx="360" cy="158" rx="80" ry="18"/>
+        </g>
+        <g fill="#0B1B2E">
+          <path d="M0 170V150a3 3 0 0 1 6 0v20Z" transform="translate(-2,-4)"/>
+          <path d="M8 150C -2 148 -10 140 -12 130 C -4 140 4 144 12 148Z"/>
+          <path d="M8 148C 18 140 24 130 24 120 C 16 132 10 138 4 144Z"/>
+          <path d="M480 170V148a3 3 0 0 0-6 0v22Z"/>
+          <path d="M474 148C 486 144 494 134 496 122 C 486 134 478 140 470 146Z"/>
+          <path d="M474 146C 462 140 456 130 456 120 C 464 132 470 138 478 144Z"/>
         </g>
       </svg>
     </div>
@@ -391,7 +429,7 @@
 
       <button class="btn-primary" id="onboarding-start-btn" onclick="createProfile()" style="margin-top:22px;">
         Los geht's
-        <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="#2B2118" stroke-width="2.4"><path d="M5 12h14M13 5l7 7-7 7"/></svg>
+        <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="#16323A" stroke-width="2.4"><path d="M5 12h14M13 5l7 7-7 7"/></svg>
       </button>
     </div>
   </section>
@@ -401,62 +439,49 @@
     <div class="hero-banner">
       <svg viewBox="0 0 480 190" preserveAspectRatio="xMidYMax slice" xmlns="http://www.w3.org/2000/svg">
         <defs>
-          <linearGradient id="heroSky" x1="0" y1="0" x2="1" y2="1">
-            <stop offset="0%" stop-color="#FFB37A"/>
-            <stop offset="45%" stop-color="#FF6B54"/>
-            <stop offset="100%" stop-color="#A873E0"/>
+          <linearGradient id="heroSky" x1="0" y1="1" x2="0.7" y2="0">
+            <stop offset="0%" stop-color="#1B3A52"/>
+            <stop offset="55%" stop-color="#173257"/>
+            <stop offset="100%" stop-color="#0F2242"/>
           </linearGradient>
+          <radialGradient id="moonGlow" cx="50%" cy="50%" r="50%">
+            <stop offset="0%" stop-color="#FFF8E0" stop-opacity="0.9"/>
+            <stop offset="45%" stop-color="#FFE9B8" stop-opacity="0.35"/>
+            <stop offset="100%" stop-color="#FFE9B8" stop-opacity="0"/>
+          </radialGradient>
         </defs>
         <rect width="480" height="190" fill="url(#heroSky)"/>
 
-        <!-- Woelkchen -->
-        <g fill="#FFF6EA" opacity="0.85">
-          <ellipse cx="70" cy="34" rx="26" ry="12"/><ellipse cx="92" cy="28" rx="18" ry="10"/><ellipse cx="48" cy="30" rx="16" ry="9"/>
-          <ellipse cx="400" cy="20" rx="20" ry="9"/><ellipse cx="418" cy="16" rx="14" ry="8"/>
+        <!-- Sterne -->
+        <g fill="#FFFFFF">
+          <circle cx="60" cy="24" r="1.3" opacity="0.8"/><circle cx="120" cy="46" r="1" opacity="0.6"/>
+          <circle cx="200" cy="18" r="1.4" opacity="0.7"/><circle cx="30" cy="70" r="1" opacity="0.5"/>
+          <circle cx="160" cy="90" r="1.2" opacity="0.6"/><circle cx="90" cy="110" r="1" opacity="0.5"/>
         </g>
 
-        <!-- Voegel -->
-        <g stroke="#FFF6EA" stroke-width="2.5" fill="none" stroke-linecap="round" opacity="0.9">
-          <path d="M330 46q6-6 12 0q6-6 12 0"/>
-          <path d="M356 62q5-5 10 0q5-5 10 0"/>
+        <!-- Mond mit weichem Schein -->
+        <circle cx="120" cy="70" r="60" fill="url(#moonGlow)"/>
+        <circle cx="120" cy="70" r="17" fill="#FFF6E3"/>
+        <circle cx="126" cy="64" r="14.5" fill="url(#heroSky)" opacity="0.16"/>
+
+        <!-- Woelkchen vor dem Mond -->
+        <g fill="#EAF1EF" opacity="0.22">
+          <ellipse cx="70" cy="150" rx="90" ry="20"/>
+          <ellipse cx="230" cy="168" rx="70" ry="16"/>
+          <ellipse cx="40" cy="120" rx="50" ry="12"/>
+        </g>
+        <g fill="#EAF1EF" opacity="0.14">
+          <ellipse cx="150" cy="40" rx="40" ry="10"/>
         </g>
 
-        <!-- Sonnen-Maskottchen (laechelnd) -->
-        <g transform="translate(95,86)">
-          <g stroke="#FFE08A" stroke-width="4" stroke-linecap="round" opacity="0.9">
-            <path d="M0 -46v-10M32 -32l7-7M46 0h10M32 32l7 7M0 46v10M-32 32l-7 7M-46 0h-10M-32 -32l-7-7"/>
-          </g>
-          <circle r="34" fill="#FFE08A"/>
-          <circle r="34" fill="none" stroke="#FFF6EA" stroke-width="2" opacity="0.6"/>
-          <circle cx="-11" cy="-6" r="4" fill="#3B2A1D"/>
-          <circle cx="11" cy="-6" r="4" fill="#3B2A1D"/>
-          <path d="M-13 10q13 12 26 0" stroke="#3B2A1D" stroke-width="3" fill="none" stroke-linecap="round"/>
-          <ellipse cx="-20" cy="4" rx="5" ry="3" fill="#FF9B7A" opacity="0.7"/>
-          <ellipse cx="20" cy="4" rx="5" ry="3" fill="#FF9B7A" opacity="0.7"/>
-        </g>
-
-        <!-- Torbogen (Puerta de Alcalá-artig) -->
-        <g fill="#FFF6EA" opacity="0.96">
-          <path d="M190 190V96a40 40 0 0 1 80 0v94h-18V96a22 22 0 0 0-44 0v94Z"/>
-          <path d="M298 190V96a40 40 0 0 1 80 0v94h-18V96a22 22 0 0 0-44 0v94Z"/>
-        </g>
-        <!-- Skyline-Silhouette -->
-        <g fill="#3B2A1D" opacity="0.85">
-          <rect x="0" y="150" width="480" height="40"/>
-          <rect x="18" y="126" width="26" height="24"/>
-          <rect x="400" y="118" width="24" height="32"/>
-          <rect x="436" y="100" width="18" height="50"/>
-          <polygon points="405,118 412,106 419,118"/>
-        </g>
-        <!-- Wimpelkette -->
-        <g fill="#FFE08A" opacity="0.85">
-          <polygon points="60,60 70,60 65,74"/><polygon points="80,58 90,58 85,72"/><polygon points="100,60 110,60 105,74"/>
-          <polygon points="380,54 390,54 385,68"/><polygon points="400,52 410,52 405,66"/>
-        </g>
-        <!-- Blumen am unteren Rand -->
-        <g>
-          <circle cx="150" cy="184" r="4" fill="#5FE0B0"/><circle cx="160" cy="180" r="3" fill="#FFE08A"/>
-          <circle cx="260" cy="186" r="4" fill="#FFE08A"/><circle cx="272" cy="182" r="3" fill="#5FE0B0"/>
+        <!-- Palmwedel-Silhouette, von oben rechts hereinragend (Blick nach oben) -->
+        <g fill="#0B1B2E">
+          <path d="M480 0C 440 10 400 5 372 30 C 400 15 440 8 480 22 Z"/>
+          <path d="M480 0C 430 -4 392 20 360 60 C 396 28 436 8 480 40 Z"/>
+          <path d="M480 20C 420 18 378 46 342 88 C 384 48 430 30 480 55 Z"/>
+          <path d="M480 55C 410 46 362 78 320 120 C 368 78 420 62 480 85 Z"/>
+          <path d="M470 0C 450 22 430 55 415 95 C 438 60 458 30 470 0 Z"/>
+          <circle cx="372" cy="34" r="14"/>
         </g>
       </svg>
     </div>
@@ -526,7 +551,7 @@
     <div class="cta-wrap">
       <button class="btn-primary" id="card-next-btn" onclick="nextCard()">
         <span id="card-next-label">Weiter</span>
-        <svg viewBox="0 0 24 24" fill="none" stroke="#2B2118" stroke-width="2.4" width="18" height="18"><path d="M5 12h14M13 5l7 7-7 7"/></svg>
+        <svg viewBox="0 0 24 24" fill="none" stroke="#16323A" stroke-width="2.4" width="18" height="18"><path d="M5 12h14M13 5l7 7-7 7"/></svg>
       </button>
     </div>
   </section>
@@ -551,7 +576,7 @@
     <div class="cta-wrap">
       <button class="btn-primary" id="glesson-next-btn" onclick="nextGrammarCard()">
         <span id="glesson-next-label">Weiter</span>
-        <svg viewBox="0 0 24 24" fill="none" stroke="#2B2118" stroke-width="2.4" width="18" height="18"><path d="M5 12h14M13 5l7 7-7 7"/></svg>
+        <svg viewBox="0 0 24 24" fill="none" stroke="#16323A" stroke-width="2.4" width="18" height="18"><path d="M5 12h14M13 5l7 7-7 7"/></svg>
       </button>
     </div>
   </section>
@@ -579,6 +604,26 @@
       <p class="quiz-prompt" id="quiz-prompt">Was bedeutet dieses Wort?</p>
       <h2 class="quiz-word font-display" id="quiz-word"></h2>
       <div class="options" id="quiz-options"></div>
+      <div class="type-answer" id="quiz-type-answer">
+        <input type="text" id="quiz-type-input" class="type-input" placeholder="Antwort eingeben …"
+               autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false"
+               onkeydown="if(event.key==='Enter'){event.preventDefault();submitTypedAnswer();}" />
+        <div class="accent-row">
+          <button type="button" class="accent-btn" onclick="insertAccent('á')">á</button>
+          <button type="button" class="accent-btn" onclick="insertAccent('é')">é</button>
+          <button type="button" class="accent-btn" onclick="insertAccent('í')">í</button>
+          <button type="button" class="accent-btn" onclick="insertAccent('ó')">ó</button>
+          <button type="button" class="accent-btn" onclick="insertAccent('ú')">ú</button>
+          <button type="button" class="accent-btn" onclick="insertAccent('ñ')">ñ</button>
+          <button type="button" class="accent-btn" onclick="insertAccent('¿')">¿</button>
+          <button type="button" class="accent-btn" onclick="insertAccent('¡')">¡</button>
+        </div>
+        <button class="btn-primary" id="quiz-type-submit" onclick="submitTypedAnswer()">
+          Prüfen
+          <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="#16323A" stroke-width="2.4"><path d="m5 12 5 5L20 7"/></svg>
+        </button>
+        <p class="type-feedback" id="quiz-type-feedback"></p>
+      </div>
     </div>
   </section>
 
@@ -4725,12 +4770,20 @@ function shuffle(arr) {
   return a;
 }
 
+// Von 6 Fragen pro Runde sind Frage 2 und 5 Tipp-Aufgaben (aktives Schreiben statt nur Auswaehlen)
+const TYPE_QUESTION_INDICES = new Set([1, 4]);
+
 function buildQuiz(chapter) {
   const pool = shuffle(chapter.words).slice(0, 6);
   const category = categoryOf(chapter.id);
   const categoryPool = CATEGORY_WORDS[category] || ALL_WORDS;
 
-  return pool.map(word => {
+  return pool.map((word, i) => {
+    // Tipp-Aufgabe: Deutsches Wort wird angezeigt, das spanische Wort muss getippt werden
+    if (TYPE_QUESTION_INDICES.has(i)) {
+      return { type: 'type', prompt: word.de, correct: word.es };
+    }
+
     // 1. Bevorzugt: aehnliche Woerter aus derselben Themenkategorie (z.B. andere Familien-Woerter)
     let candidates = shuffle(categoryPool.filter(w => w.de !== word.de && w.es !== word.es));
     let distractors = candidates.slice(0, 3);
@@ -4743,13 +4796,18 @@ function buildQuiz(chapter) {
     }
 
     const options = shuffle([word.de, ...distractors.map(w => w.de)]);
-    return { prompt: word.es, correct: word.de, options };
+    return { type: 'choice', prompt: word.es, correct: word.de, options };
   });
 }
 
 function buildGrammarQuiz(chapter) {
   const pool = shuffle(chapter.practice).slice(0, 6);
-  return pool.map(q => ({ prompt: q.prompt, correct: q.correct, options: shuffle(q.options), explain: q.explain }));
+  return pool.map((q, i) => {
+    if (TYPE_QUESTION_INDICES.has(i)) {
+      return { type: 'type', prompt: q.prompt, correct: q.correct, explain: q.explain };
+    }
+    return { type: 'choice', prompt: q.prompt, correct: q.correct, options: shuffle(q.options), explain: q.explain };
+  });
 }
 
 function showScreen(id) {
@@ -4851,34 +4909,36 @@ function renderPath() {
   document.getElementById('path-banner').innerHTML = `
     <svg viewBox="0 0 480 92" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">
       <defs>
-        <linearGradient id="pathSky-${level.id}" x1="0" y1="0" x2="1" y2="1">
+        <linearGradient id="pathSky-${level.id}" x1="0" y1="0" x2="1" y2="0">
           <stop offset="0%" stop-color="${accent.main}"/>
           <stop offset="100%" stop-color="${accent.dark}"/>
         </linearGradient>
+        <linearGradient id="pathSea-${level.id}" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stop-color="#1FA8A0"/>
+          <stop offset="100%" stop-color="#0E8A8C"/>
+        </linearGradient>
       </defs>
-      <rect width="480" height="92" fill="url(#pathSky-${level.id})"/>
-      <ellipse cx="70" cy="20" rx="20" ry="9" fill="#FFF6EA" opacity="0.4"/>
-      <ellipse cx="90" cy="16" rx="13" ry="7" fill="#FFF6EA" opacity="0.35"/>
-      <g transform="translate(432,26)">
-        <circle r="16" fill="#FFF6EA" opacity="0.9"/>
-        <circle cx="-5" cy="-2" r="1.8" fill="${accent.dark}" opacity="0.7"/>
-        <circle cx="5" cy="-2" r="1.8" fill="${accent.dark}" opacity="0.7"/>
-        <path d="M-6 5q6 5 12 0" stroke="${accent.dark}" stroke-width="1.6" fill="none" stroke-linecap="round" opacity="0.7"/>
+      <rect width="480" height="30" fill="url(#pathSky-${level.id})"/>
+      <ellipse cx="410" cy="14" rx="26" ry="10" fill="#FFFFFF" opacity="0.25"/>
+      <ellipse cx="60" cy="10" rx="18" ry="7" fill="#FFFFFF" opacity="0.2"/>
+      <rect y="30" width="480" height="34" fill="url(#pathSea-${level.id})"/>
+      <g fill="#FFFFFF" opacity="0.5">
+        <path d="M0 44q20-6 40 0t40 0 40 0 40 0 40 0 40 0 40 0 40 0 40 0 40 0v6H0Z"/>
       </g>
-      <g fill="#FFF6EA" opacity="0.7">
-        <polygon points="150,14 158,14 154,24"/><polygon points="166,12 174,12 170,22"/><polygon points="182,14 190,14 186,24"/>
-        <polygon points="290,12 298,12 294,22"/><polygon points="306,14 314,14 310,24"/>
+      <g fill="#FFFFFF" opacity="0.7">
+        <path d="M0 56q15-5 30 0t30 0 30 0 30 0 30 0 30 0 30 0 30 0 30 0 30 0 30 0v5H0Z"/>
       </g>
-      <g fill="#FFF6EA" opacity="0.9">
-        <rect x="0" y="66" width="480" height="26"/>
-        <rect x="24" y="48" width="22" height="20"/>
-        <rect x="64" y="38" width="16" height="30"/>
-        <rect x="120" y="52" width="24" height="16"/>
-        <rect x="300" y="44" width="20" height="24"/>
-        <rect x="340" y="30" width="16" height="38"/>
-        <rect x="380" y="50" width="26" height="18"/>
-        <rect x="430" y="40" width="18" height="28"/>
-        <path d="M64 38h16v-9l-8-7-8 7Z"/>
+      <rect y="61" width="480" height="31" fill="#F7EFDD"/>
+      <g fill="#E7DAB8" opacity="0.6">
+        <circle cx="70" cy="74" r="1.6"/><circle cx="130" cy="82" r="1.4"/><circle cx="220" cy="70" r="1.6"/>
+        <circle cx="300" cy="80" r="1.4"/><circle cx="380" cy="72" r="1.6"/><circle cx="440" cy="84" r="1.4"/>
+        <circle cx="40" cy="86" r="1.4"/><circle cx="180" cy="88" r="1.4"/>
+      </g>
+      <g fill="#16323A" opacity="0.85">
+        <path d="M14 92V70a3 3 0 0 1 6 0v22Z"/>
+        <path d="M17 70C 6 68 0 60 0 52 C 8 60 14 62 20 66Z"/>
+        <path d="M17 68C 26 62 30 54 30 46 C 24 56 20 60 15 64Z"/>
+        <path d="M17 66C 8 58 6 50 8 42 C 12 52 15 58 19 62Z"/>
       </g>
     </svg>
   `;
@@ -4904,7 +4964,7 @@ function renderPath() {
     node.style.transform = `translateX(${OFFSETS[i % OFFSETS.length]}px)`;
 
     const btnClass = st.done ? 'node-btn done' : 'node-btn unlocked';
-    const iconSvg = `<svg viewBox="0 0 24 24" fill="none" stroke="#2B2118" stroke-width="2.2" width="28" height="28">${ch.icon}</svg>`;
+    const iconSvg = `<svg viewBox="0 0 24 24" fill="none" stroke="#16323A" stroke-width="2.2" width="28" height="28">${ch.icon}</svg>`;
 
     const starsHtml = st.done
       ? `<div class="node-stars">${[0,1,2].map(s => STAR_SVG(s < st.stars)).join('')}</div>`
@@ -5079,27 +5139,48 @@ function renderQuiz() {
   document.getElementById('quiz-progress').style.width = `${(state.qIndex / state.quiz.length) * 100}%`;
   document.getElementById('quiz-xp').textContent = `${state.xp} XP`;
   document.getElementById('quiz-streak').textContent = state.streak;
-  document.getElementById('quiz-prompt').textContent = state.quizMode === 'grammar'
-    ? 'Ergänze die Lücke:'
-    : 'Was bedeutet dieses Wort?';
+
+  const isType = q.type === 'type';
+  const isGrammar = state.quizMode === 'grammar';
+  document.getElementById('quiz-prompt').textContent = isType
+    ? (isGrammar ? 'Ergänze die Lücke (tippen):' : 'Wie heißt das auf Spanisch?')
+    : (isGrammar ? 'Ergänze die Lücke:' : 'Was bedeutet dieses Wort?');
   renderHearts();
 
   const wordEl = document.getElementById('quiz-word');
   wordEl.textContent = q.prompt;
-  wordEl.style.fontSize = state.quizMode === 'grammar' ? '24px' : '32px';
+  wordEl.style.fontSize = isGrammar ? '24px' : '32px';
   wordEl.style.animation = 'none';
   void wordEl.offsetWidth;
   wordEl.style.animation = '';
 
-  const opts = document.getElementById('quiz-options');
-  opts.innerHTML = '';
-  q.options.forEach(opt => {
-    const btn = document.createElement('button');
-    btn.className = 'option-btn';
-    btn.textContent = opt;
-    btn.onclick = () => answerQuiz(opt);
-    opts.appendChild(btn);
-  });
+  const optsWrap = document.getElementById('quiz-options');
+  const typeWrap = document.getElementById('quiz-type-answer');
+
+  if (isType) {
+    optsWrap.style.display = 'none';
+    optsWrap.innerHTML = '';
+    typeWrap.classList.add('active');
+
+    const input = document.getElementById('quiz-type-input');
+    input.value = '';
+    input.disabled = false;
+    input.classList.remove('correct', 'wrong');
+    document.getElementById('quiz-type-submit').disabled = false;
+    document.getElementById('quiz-type-feedback').innerHTML = '';
+    setTimeout(() => input.focus(), 50);
+  } else {
+    typeWrap.classList.remove('active');
+    optsWrap.style.display = '';
+    optsWrap.innerHTML = '';
+    q.options.forEach(opt => {
+      const btn = document.createElement('button');
+      btn.className = 'option-btn';
+      btn.textContent = opt;
+      btn.onclick = () => answerQuiz(opt);
+      optsWrap.appendChild(btn);
+    });
+  }
 }
 
 const CHECK_SVG = '<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="#5FD1A0" stroke-width="2.4"><path d="M20 6 9 17l-5-5"/></svg>';
@@ -5121,6 +5202,61 @@ function answerQuiz(opt) {
     }
   });
 
+  finishAnswer(correct, 900);
+}
+
+/* ---------------------------------------------------------
+   Tipp-Aufgaben: Antwort wird per Tastatur eingegeben statt ausgewaehlt
+--------------------------------------------------------- */
+function normalizeAnswer(s) {
+  return (s || '')
+    .toLowerCase()
+    .trim()
+    .normalize('NFD').replace(/[\u0300-\u036f]/g, '') // Akzente entfernen -> toleranter beim Vergleich
+    .replace(/[¿¡?!.,]/g, '')
+    .replace(/\s+/g, ' ');
+}
+
+function insertAccent(ch) {
+  const input = document.getElementById('quiz-type-input');
+  if (input.disabled) return;
+  const start = input.selectionStart ?? input.value.length;
+  const end = input.selectionEnd ?? input.value.length;
+  input.value = input.value.slice(0, start) + ch + input.value.slice(end);
+  input.focus();
+  const pos = start + ch.length;
+  if (input.setSelectionRange) input.setSelectionRange(pos, pos);
+}
+
+function submitTypedAnswer() {
+  const q = state.quiz[state.qIndex];
+  const input = document.getElementById('quiz-type-input');
+  const submitBtn = document.getElementById('quiz-type-submit');
+  if (input.disabled) return;
+
+  const userVal = input.value.trim();
+  if (!userVal) { input.focus(); return; }
+
+  const correct = normalizeAnswer(userVal) === normalizeAnswer(q.correct);
+  input.disabled = true;
+  submitBtn.disabled = true;
+  input.classList.add(correct ? 'correct' : 'wrong');
+
+  const feedback = document.getElementById('quiz-type-feedback');
+  if (correct) {
+    feedback.innerHTML = `<span class="fb-ok">${CHECK_SVG} Richtig!</span>`;
+  } else {
+    feedback.innerHTML = `<span class="fb-bad">${X_SVG} Richtige Antwort: <strong>${q.correct}</strong></span>` +
+      (q.explain ? `<span class="fb-explain">${q.explain}</span>` : '');
+  }
+
+  finishAnswer(correct, correct ? 900 : 1700);
+}
+
+/* ---------------------------------------------------------
+   Gemeinsame Auswertung fuer Auswahl- und Tipp-Fragen
+--------------------------------------------------------- */
+function finishAnswer(correct, delay) {
   if (correct) {
     state.correctCount++;
     state.xp += 10;
@@ -5160,7 +5296,7 @@ function answerQuiz(opt) {
       renderResult();
       showScreen('screen-result');
     }
-  }, 900);
+  }, delay);
 }
 
 /* ---------------------------------------------------------
@@ -5191,7 +5327,7 @@ function renderResult() {
     const retryFn = isGrammar ? 'retryGrammarChapter' : 'retryChapter';
     actions.innerHTML = `
       <button class="btn-primary" onclick="${retryFn}()">
-        <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="#2B2118" stroke-width="2.4"><path d="M1 4v6h6M23 20v-6h-6"/><path d="M20.5 9A9 9 0 0 0 5 5.3L1 10m22 4-4 4.7A9 9 0 0 1 3.5 15"/></svg>
+        <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="#16323A" stroke-width="2.4"><path d="M1 4v6h6M23 20v-6h-6"/><path d="M20.5 9A9 9 0 0 0 5 5.3L1 10m22 4-4 4.7A9 9 0 0 1 3.5 15"/></svg>
         Nochmal versuchen
       </button>`;
   } else {
@@ -5229,10 +5365,10 @@ function renderResult() {
     actions.innerHTML = `
       <button class="btn-primary mint" onclick="goToPath('${level.id}')">
         Weiter auf der Route
-        <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="#2B2118" stroke-width="2.4"><path d="M5 12h14M13 5l7 7-7 7"/></svg>
+        <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="#16323A" stroke-width="2.4"><path d="M5 12h14M13 5l7 7-7 7"/></svg>
       </button>
       ${levelJustCompleted ? `<button class="btn-primary gold" onclick="showCertificate('${state.mode}','${level.id}')">
-        <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="#2B2118" stroke-width="2.2"><circle cx="12" cy="8" r="5"/><path d="M8.5 12.5 7 22l5-3 5 3-1.5-9.5"/></svg>
+        <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="#16323A" stroke-width="2.2"><circle cx="12" cy="8" r="5"/><path d="M8.5 12.5 7 22l5-3 5 3-1.5-9.5"/></svg>
         Zertifikat ansehen
       </button>` : ''}
       ${unlockedNextLevel ? `<button class="btn-secondary" onclick="goToLevels()">Niveaus ansehen</button>` : ''}`;
@@ -5348,7 +5484,7 @@ function goToCertList() { renderCertList(); showScreen('screen-certlist'); }
 const STORAGE_KEY = 'caminoEspanol_profile_v1';
 const AVATAR_COLORS = [
   { id: 'coral', hex: '#FF6B54' }, { id: 'gold', hex: '#F2A705' }, { id: 'mint', hex: '#2FBA88' },
-  { id: 'plum', hex: '#A873E0' }, { id: 'ink', hex: '#2B2118' }, { id: 'blue', hex: '#4A90D9' },
+  { id: 'plum', hex: '#A873E0' }, { id: 'ink', hex: '#16323A' }, { id: 'blue', hex: '#4A90D9' },
 ];
 let selectedAvatar = AVATAR_COLORS[0].hex;
 const CHECK_MINI_SVG = '<svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3"><path d="M20 6 9 17l-5-5"/></svg>';

@@ -146,6 +146,30 @@
   }
   .profile-footnote { font-size: 11.5px; color: var(--cream-dim); text-align: center; padding: 18px 28px 24px; line-height: 1.5; }
 
+  .sync-card {
+    margin: 4px 24px 0; padding: 18px 20px; border-radius: 20px; border: 1.5px solid var(--line);
+    background: var(--panel); box-shadow: 0 3px 10px rgba(22,80,90,0.05);
+  }
+  .sync-card-title { font-family: 'Fraunces', serif; font-weight: 700; font-size: 16px; color: var(--ink); margin: 0 0 4px; }
+  .sync-card-desc { font-size: 12.5px; color: var(--cream-dim); line-height: 1.45; margin: 0 0 14px; }
+  .sync-code-row { display: flex; gap: 8px; align-items: center; margin-bottom: 12px; }
+  .sync-code-box {
+    flex: 1; padding: 11px 12px; border-radius: 13px; border: 1.5px solid var(--line); background: var(--panel-light);
+    color: var(--ink); font-family: 'Work Sans', sans-serif; font-size: 14px; font-weight: 600; letter-spacing: 0.5px;
+    overflow-x: auto; white-space: nowrap;
+  }
+  .sync-btn-small {
+    padding: 11px 16px; border-radius: 13px; border: none; background: var(--ink); color: var(--panel);
+    font-family: 'Work Sans', sans-serif; font-weight: 600; font-size: 13px; cursor: pointer; white-space: nowrap;
+  }
+  .sync-input-row { display: flex; gap: 8px; }
+  .sync-input {
+    flex: 1; min-width: 0; padding: 11px 12px; border-radius: 13px; border: 1.5px solid var(--line);
+    background: var(--panel); color: var(--ink); font-family: 'Work Sans', sans-serif; font-size: 14px;
+  }
+  .sync-input:focus { outline: 2px solid var(--coral); outline-offset: 1px; }
+  .sync-status { font-size: 11.5px; color: var(--cream-dim); margin-top: 10px; text-align: center; min-height: 14px; }
+
   .lang-switch { display: flex; flex-wrap: wrap; gap: 7px; margin: 14px 24px 0; }
   .lang-btn {
     flex: 1 1 28%; min-width: 88px; display: flex; align-items: center; justify-content: center; gap: 5px; padding: 9px 4px;
@@ -781,12 +805,203 @@
       <button class="btn-secondary gold" onclick="goToQuranList()" id="profile-btn-quran" style="display:none;">القرآن الكريم</button>
       <button class="btn-danger" onclick="confirmResetProgress()" id="profile-btn-reset">Fortschritt zurücksetzen</button>
     </div>
+
+    <div class="sync-card">
+      <p class="sync-card-title" id="sync-title">Cloud-Sync</p>
+      <p class="sync-card-desc" id="sync-desc">Erstelle einen Sync-Code, um deinen Fortschritt auf einem anderen Gerät oder Browser zu laden.</p>
+      <div class="sync-code-row" id="sync-code-row" style="display:none;">
+        <span class="sync-code-box" id="sync-code-box"></span>
+        <button class="sync-btn-small" id="sync-copy-btn" onclick="copySyncCode()">Kopieren</button>
+      </div>
+      <button class="btn-secondary" id="sync-create-btn" onclick="enableSyncForThisDevice()">Sync-Code erstellen</button>
+      <div class="sync-input-row" style="margin-top:12px;">
+        <input type="text" id="sync-code-input" class="sync-input" placeholder="Code eingeben" maxlength="19" autocomplete="off" autocapitalize="characters" />
+        <button class="sync-btn-small" id="sync-load-btn" onclick="loadFromSyncCodeInput()">Laden</button>
+      </div>
+      <p class="sync-status" id="sync-status"></p>
+    </div>
+
     <p class="profile-footnote" id="profile-footnote">Dein Fortschritt wird nur lokal in diesem Browser gespeichert (localStorage) — auf einem anderen Gerät oder in einem anderen Browser beginnst du neu.</p>
   </section>
 
 </div>
 
+<script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore-compat.js"></script>
 <script>
+/* ---------------------------------------------------------
+   Cloud-Sync (optional): Fortschritt geraeteuebergreifend per Sync-Code laden.
+   ---------------------------------------------------------
+   So richtest du es ein (einmalig, kostenlos, ca. 5 Minuten):
+   1. Gehe auf https://console.firebase.google.com und erstelle ein kostenloses Projekt.
+   2. Klicke in der Projektuebersicht auf das Web-Symbol ("</>") und registriere eine Web-App.
+   3. Kopiere das angezeigte "firebaseConfig"-Objekt und ersetze FIREBASE_CONFIG weiter unten damit.
+   4. Aktiviere im Menue "Firestore Database" eine neue Datenbank (Produktionsmodus reicht).
+   5. Setze unter Firestore -> "Regeln" folgende Regeln und veroeffentliche sie:
+        rules_version = '2';
+        service cloud.firestore {
+          match /databases/{database}/documents {
+            match /syncStates/{code} {
+              allow read, write: if true;
+            }
+          }
+        }
+      (Das erlaubt Lesen/Schreiben nur an wer den langen, zufaelligen Sync-Code kennt -
+       vergleichbar mit einem nicht gelisteten Freigabe-Link.)
+   6. Speichere die Datei neu ab - fertig. Ohne ausgefuellte Konfiguration bleibt die App
+      wie bisher rein lokal (localStorage) nutzbar, der Sync-Bereich zeigt dann einen Hinweis.
+--------------------------------------------------------- */
+const FIREBASE_CONFIG = {
+  apiKey: "AIzaSyAVFyFnfbTtGI4qDhKVW2y3XZEXWa6BP-M",
+  authDomain: "spanischapp-75a3f.firebaseapp.com",
+  projectId: "spanischapp-75a3f",
+  storageBucket: "spanischapp-75a3f.firebasestorage.app",
+  messagingSenderId: "733643089029",
+  appId: "1:733643089029:web:27e28ba9638e34a338f5ec",
+  measurementId: "G-HH82E9ZN6P",
+};
+
+let cloudDb = null;
+let syncPushTimer = null;
+let syncPending = false;
+
+function syncConfigured() {
+  return FIREBASE_CONFIG.apiKey && FIREBASE_CONFIG.apiKey.indexOf('DEIN_') !== 0;
+}
+
+function getCloudDb() {
+  if (!syncConfigured()) return null;
+  if (cloudDb) return cloudDb;
+  try {
+    if (typeof firebase === 'undefined') return null;
+    if (!firebase.apps || !firebase.apps.length) firebase.initializeApp(FIREBASE_CONFIG);
+    cloudDb = firebase.firestore();
+    return cloudDb;
+  } catch (e) { return null; }
+}
+
+// Crockford-Base32-Alphabet (ohne I, L, O, U - vermeidet Verwechslungen beim Abtippen)
+const SYNC_CODE_ALPHABET = "0123456789ABCDEFGHJKMNPQRSTVWXYZ";
+function generateSyncCode() {
+  const randVals = new Uint32Array(16);
+  if (window.crypto && window.crypto.getRandomValues) window.crypto.getRandomValues(randVals);
+  else for (let i = 0; i < 16; i++) randVals[i] = Math.floor(Math.random() * 4294967295);
+  let raw = '';
+  for (let i = 0; i < 16; i++) raw += SYNC_CODE_ALPHABET[randVals[i] % SYNC_CODE_ALPHABET.length];
+  return raw.match(/.{1,4}/g).join('-'); // z.B. "AB3K-9F2Q-XX7M-2QRT"
+}
+function normalizeSyncCode(code) { return (code || '').toUpperCase().replace(/[^0-9A-Z]/g, '').match(/.{1,4}/g)?.join('-') || ''; }
+
+function buildSyncPayload() {
+  return {
+    name: state.profile.name, avatar: state.profile.avatar, createdAt: state.profile.createdAt,
+    lang: state.lang, source: state.source, xp: state.xp, streak: state.streak,
+    progress: state.progress, gProgress: state.gProgress, quranProgress: state.quranProgress,
+    savedAt: Date.now(),
+  };
+}
+
+function setSyncStatus(msg) { const el = document.getElementById('sync-status'); if (el) el.textContent = msg || ''; }
+
+// Schreibt den aktuellen Stand in die Cloud (gebuendelt, damit nicht bei jeder einzelnen
+// Antwort sofort ein Netzwerk-Request ausgeloest wird).
+function pushStateToCloud() {
+  if (!state.syncCode || !state.profile) return;
+  const db = getCloudDb();
+  if (!db) return;
+  syncPending = true;
+  clearTimeout(syncPushTimer);
+  syncPushTimer = setTimeout(() => {
+    db.collection('syncStates').doc(state.syncCode).set(buildSyncPayload())
+      .then(() => { syncPending = false; setSyncStatus(t('syncSavedMsg')); })
+      .catch(() => { syncPending = false; setSyncStatus(t('syncErrorMsg')); });
+  }, 1500);
+}
+
+function enableSyncForThisDevice() {
+  if (!syncConfigured()) { setSyncStatus(t('syncUnavailableMsg')); return; }
+  if (!state.syncCode) state.syncCode = generateSyncCode();
+  saveProfile();
+  setSyncStatus(t('syncSavingMsg'));
+  pushStateToCloud();
+  renderSyncSection();
+}
+
+function copySyncCode() {
+  if (!state.syncCode) return;
+  const finish = () => { setSyncStatus(t('syncCopiedMsg')); };
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard.writeText(state.syncCode).then(finish).catch(finish);
+  } else { finish(); }
+}
+
+function loadFromSyncCodeInput() {
+  const input = document.getElementById('sync-code-input');
+  const code = normalizeSyncCode(input.value);
+  if (!code) return;
+  if (!syncConfigured()) { setSyncStatus(t('syncUnavailableMsg')); return; }
+  const ok = window.confirm(t('syncConfirmOverwrite'));
+  if (!ok) return;
+  const db = getCloudDb();
+  if (!db) { setSyncStatus(t('syncUnavailableMsg')); return; }
+  setSyncStatus(t('syncSavingMsg'));
+  db.collection('syncStates').doc(code).get().then(doc => {
+    if (!doc.exists) { setSyncStatus(t('syncNotFoundMsg')); return; }
+    applySyncPayload(doc.data(), code);
+    setSyncStatus(t('syncSuccessMsg'));
+  }).catch(() => { setSyncStatus(t('syncErrorMsg')); });
+}
+
+function applySyncPayload(data, code) {
+  if (!data) return;
+  state.syncCode = code;
+  state.profile = { name: data.name, avatar: data.avatar || AVATAR_COLORS[0].hex, createdAt: data.createdAt || new Date().toISOString() };
+  state.lang = (data.lang && LANGUAGES[data.lang]) ? data.lang : state.lang;
+  state.source = (data.source && LANGUAGES[data.source]) ? data.source : state.source;
+  state.xp = data.xp || 0;
+  state.streak = data.streak || 0;
+  state.progress = mergeProgress(state.progress, data.progress);
+  state.gProgress = mergeProgress(state.gProgress, data.gProgress);
+  state.quranProgress = mergeProgress(state.quranProgress, data.quranProgress);
+  saveProfile();
+  updateProfileBadge();
+  applyUILanguage();
+  updateLevelsHeaderText();
+  renderProfileScreen();
+}
+
+// Beim Start leise pruefen, ob in der Cloud ein neuerer Stand liegt (z.B. von einem anderen
+// Geraet aus gespeichert) - ohne den Nutzer zu unterbrechen, ausser es gibt tatsaechlich Neues.
+function trySilentCloudPull() {
+  if (!state.syncCode || !syncConfigured()) return;
+  const db = getCloudDb();
+  if (!db) return;
+  db.collection('syncStates').doc(state.syncCode).get().then(doc => {
+    if (!doc.exists) return;
+    const data = doc.data();
+    const localSavedAt = state.lastSyncedAt || 0;
+    if (data.savedAt && data.savedAt > localSavedAt) {
+      applySyncPayload(data, state.syncCode);
+      state.lastSyncedAt = data.savedAt;
+    }
+  }).catch(() => {});
+}
+
+function renderSyncSection() {
+  const row = document.getElementById('sync-code-row');
+  const box = document.getElementById('sync-code-box');
+  const createBtn = document.getElementById('sync-create-btn');
+  if (!row || !box || !createBtn) return;
+  if (state.syncCode) {
+    row.style.display = 'flex';
+    box.textContent = state.syncCode;
+    createBtn.style.display = 'none';
+  } else {
+    row.style.display = 'none';
+    createBtn.style.display = 'block';
+  }
+}
+
 /* ---------------------------------------------------------
    Vokabel-Daten: 3000 Wörter, 120 Kapitel, 4 Niveaustufen
 --------------------------------------------------------- */
@@ -112595,7 +112810,14 @@ const UI_STRINGS = {
     certGallerySub: "Schließe alle Kapitel eines Niveaus ab, um das passende Zertifikat freizuschalten.",
     xpTotalLabel: "XP gesamt", chaptersCompletedLabel: "Kapitel geschafft", certificatesLabel: "Zertifikate",
     changeNameBtn: "Namen ändern", viewMyCertsBtn: "Meine Zertifikate ansehen", resetProgressBtn: "Fortschritt zurücksetzen",
-    profileFootnote: "Dein Fortschritt wird nur lokal in diesem Browser gespeichert (localStorage) — auf einem anderen Gerät oder in einem anderen Browser beginnst du neu.",
+    profileFootnote: "Dein Fortschritt wird in diesem Browser gespeichert. Mit einem Sync-Code kannst du ihn auch auf einem anderen Gerät laden — siehe unten.",
+    syncSectionTitle: "Cloud-Sync", syncSectionDesc: "Erstelle einen Sync-Code, um deinen Fortschritt auf einem anderen Gerät oder Browser zu laden.",
+    syncCreateBtn: "Sync-Code erstellen", syncYourCodeLabel: "Dein Sync-Code:", syncCopyBtn: "Kopieren", syncCopiedMsg: "Kopiert!",
+    syncEnterPlaceholder: "Code eingeben", syncLoadBtn: "Fortschritt laden",
+    syncConfirmOverwrite: "Dadurch wird dein Fortschritt auf diesem Gerät durch den gespeicherten Stand ersetzt. Fortfahren?",
+    syncSuccessMsg: "Fortschritt erfolgreich geladen!", syncNotFoundMsg: "Code nicht gefunden. Bitte überprüfe die Eingabe.",
+    syncErrorMsg: "Verbindung fehlgeschlagen. Bitte versuche es später erneut.", syncSavingMsg: "Wird synchronisiert…", syncSavedMsg: "Synchronisiert",
+    syncUnavailableMsg: "Cloud-Sync ist in dieser Version nicht eingerichtet.",
     renamePromptText: "Neuer Name:", resetConfirmText: "Wirklich den gesamten Fortschritt (XP, Kapitel, Zertifikate) in allen Sprachen zurücksetzen? Das kann nicht rückgängig gemacht werden.",
     sinceLabel: "Dabei seit ", grammarChaptersTitle: "Grammatik-Kapitel",
     grammarPathSub: "Jede Station erklärt eine Regel und testet sie direkt mit Übungen.",
@@ -112633,7 +112855,14 @@ const UI_STRINGS = {
     certGallerySub: "Completa todos los capítulos de un nivel para desbloquear su certificado.",
     xpTotalLabel: "XP total", chaptersCompletedLabel: "Capítulos completados", certificatesLabel: "Certificados",
     changeNameBtn: "Cambiar nombre", viewMyCertsBtn: "Ver mis certificados", resetProgressBtn: "Restablecer progreso",
-    profileFootnote: "Tu progreso se guarda solo localmente en este navegador (localStorage) — en otro dispositivo o navegador empezarás de nuevo.",
+    profileFootnote: "Tu progreso se guarda en este navegador. Con un código de sincronización también puedes cargarlo en otro dispositivo — mira abajo.",
+    syncSectionTitle: "Sincronización en la nube", syncSectionDesc: "Crea un código de sincronización para cargar tu progreso en otro dispositivo o navegador.",
+    syncCreateBtn: "Crear código de sincronización", syncYourCodeLabel: "Tu código de sincronización:", syncCopyBtn: "Copiar", syncCopiedMsg: "¡Copiado!",
+    syncEnterPlaceholder: "Introducir código", syncLoadBtn: "Cargar progreso",
+    syncConfirmOverwrite: "Esto reemplazará tu progreso en este dispositivo con el progreso guardado. ¿Continuar?",
+    syncSuccessMsg: "¡Progreso cargado con éxito!", syncNotFoundMsg: "Código no encontrado. Comprueba que lo escribiste bien.",
+    syncErrorMsg: "Fallo de conexión. Inténtalo de nuevo más tarde.", syncSavingMsg: "Sincronizando…", syncSavedMsg: "Sincronizado",
+    syncUnavailableMsg: "La sincronización en la nube no está configurada en esta versión.",
     renamePromptText: "Nuevo nombre:", resetConfirmText: "¿Seguro que quieres restablecer todo el progreso (XP, capítulos, certificados) en todos los idiomas? Esto no se puede deshacer.",
     sinceLabel: "Miembro desde ", grammarChaptersTitle: "Capítulos de gramática",
     grammarPathSub: "Cada parada explica una regla y la pone a prueba con ejercicios.",
@@ -112671,7 +112900,14 @@ const UI_STRINGS = {
     certGallerySub: "Complete all chapters of a level to unlock its certificate.",
     xpTotalLabel: "Total XP", chaptersCompletedLabel: "Chapters completed", certificatesLabel: "Certificates",
     changeNameBtn: "Change name", viewMyCertsBtn: "View my certificates", resetProgressBtn: "Reset progress",
-    profileFootnote: "Your progress is only saved locally in this browser (localStorage) — on another device or browser you'll start fresh.",
+    profileFootnote: "Your progress is saved in this browser. With a sync code you can also load it on another device — see below.",
+    syncSectionTitle: "Cloud Sync", syncSectionDesc: "Create a sync code to load your progress on another device or browser.",
+    syncCreateBtn: "Create sync code", syncYourCodeLabel: "Your sync code:", syncCopyBtn: "Copy", syncCopiedMsg: "Copied!",
+    syncEnterPlaceholder: "Enter code", syncLoadBtn: "Load progress",
+    syncConfirmOverwrite: "This will replace your progress on this device with the saved progress. Continue?",
+    syncSuccessMsg: "Progress loaded successfully!", syncNotFoundMsg: "Code not found. Please check your entry.",
+    syncErrorMsg: "Connection failed. Please try again later.", syncSavingMsg: "Syncing…", syncSavedMsg: "Synced",
+    syncUnavailableMsg: "Cloud sync isn't set up in this version.",
     renamePromptText: "New name:", resetConfirmText: "Really reset all progress (XP, chapters, certificates) across all languages? This cannot be undone.",
     sinceLabel: "Member since ", grammarChaptersTitle: "Grammar chapters",
     grammarPathSub: "Each stop explains a rule and tests it right away with exercises.",
@@ -112709,7 +112945,14 @@ const UI_STRINGS = {
     certGallerySub: "Termine tous les chapitres d'un niveau pour débloquer le certificat correspondant.",
     xpTotalLabel: "XP total", chaptersCompletedLabel: "Chapitres terminés", certificatesLabel: "Certificats",
     changeNameBtn: "Changer de nom", viewMyCertsBtn: "Voir mes certificats", resetProgressBtn: "Réinitialiser la progression",
-    profileFootnote: "Ta progression n'est enregistrée que localement dans ce navigateur (localStorage) — sur un autre appareil ou navigateur, tu repartiras de zéro.",
+    profileFootnote: "Ta progression est enregistrée dans ce navigateur. Avec un code de synchronisation, tu peux aussi la charger sur un autre appareil — voir ci-dessous.",
+    syncSectionTitle: "Synchronisation cloud", syncSectionDesc: "Crée un code de synchronisation pour charger ta progression sur un autre appareil ou navigateur.",
+    syncCreateBtn: "Créer un code de synchronisation", syncYourCodeLabel: "Ton code de synchronisation :", syncCopyBtn: "Copier", syncCopiedMsg: "Copié !",
+    syncEnterPlaceholder: "Entrer le code", syncLoadBtn: "Charger la progression",
+    syncConfirmOverwrite: "Cela remplacera ta progression sur cet appareil par la progression enregistrée. Continuer ?",
+    syncSuccessMsg: "Progression chargée avec succès !", syncNotFoundMsg: "Code introuvable. Vérifie ta saisie.",
+    syncErrorMsg: "Échec de la connexion. Réessaie plus tard.", syncSavingMsg: "Synchronisation…", syncSavedMsg: "Synchronisé",
+    syncUnavailableMsg: "La synchronisation cloud n'est pas configurée dans cette version.",
     renamePromptText: "Nouveau nom :", resetConfirmText: "Vraiment réinitialiser toute la progression (XP, chapitres, certificats) dans toutes les langues ? Cette action est irréversible.",
     sinceLabel: "Membre depuis ", grammarChaptersTitle: "Chapitres de grammaire",
     grammarPathSub: "Chaque étape explique une règle et la teste directement avec des exercices.",
@@ -112747,7 +112990,14 @@ const UI_STRINGS = {
     certGallerySub: "Completa tutti i capitoli di un livello per sbloccare il certificato corrispondente.",
     xpTotalLabel: "XP totali", chaptersCompletedLabel: "Capitoli completati", certificatesLabel: "Certificati",
     changeNameBtn: "Cambia nome", viewMyCertsBtn: "Vedi i miei certificati", resetProgressBtn: "Reimposta progressi",
-    profileFootnote: "I tuoi progressi vengono salvati solo localmente in questo browser (localStorage) — su un altro dispositivo o browser ripartirai da zero.",
+    profileFootnote: "I tuoi progressi vengono salvati in questo browser. Con un codice di sincronizzazione puoi caricarli anche su un altro dispositivo — vedi sotto.",
+    syncSectionTitle: "Sincronizzazione cloud", syncSectionDesc: "Crea un codice di sincronizzazione per caricare i tuoi progressi su un altro dispositivo o browser.",
+    syncCreateBtn: "Crea codice di sincronizzazione", syncYourCodeLabel: "Il tuo codice di sincronizzazione:", syncCopyBtn: "Copia", syncCopiedMsg: "Copiato!",
+    syncEnterPlaceholder: "Inserisci codice", syncLoadBtn: "Carica progressi",
+    syncConfirmOverwrite: "Questo sostituirà i tuoi progressi su questo dispositivo con quelli salvati. Continuare?",
+    syncSuccessMsg: "Progressi caricati con successo!", syncNotFoundMsg: "Codice non trovato. Controlla di averlo digitato correttamente.",
+    syncErrorMsg: "Connessione fallita. Riprova più tardi.", syncSavingMsg: "Sincronizzazione…", syncSavedMsg: "Sincronizzato",
+    syncUnavailableMsg: "La sincronizzazione cloud non è configurata in questa versione.",
     renamePromptText: "Nuovo nome:", resetConfirmText: "Vuoi davvero azzerare tutti i progressi (XP, capitoli, certificati) in tutte le lingue? Non si può annullare.",
     sinceLabel: "Iscritto dal ", grammarChaptersTitle: "Capitoli di grammatica",
     grammarPathSub: "Ogni tappa spiega una regola e la mette subito alla prova con esercizi.",
@@ -112785,7 +113035,14 @@ const UI_STRINGS = {
     certGallerySub: "أكمل جميع فصول أحد المستويات لفتح الشهادة الخاصة به.",
     xpTotalLabel: "إجمالي نقاط الخبرة", chaptersCompletedLabel: "الفصول المكتملة", certificatesLabel: "الشهادات",
     changeNameBtn: "تغيير الاسم", viewMyCertsBtn: "عرض شهاداتي", resetProgressBtn: "إعادة تعيين التقدم",
-    profileFootnote: "يُحفظ تقدمك محليًا فقط في هذا المتصفح (localStorage) — ستبدأ من جديد على جهاز أو متصفح آخر.",
+    profileFootnote: "يُحفظ تقدمك في هذا المتصفح. باستخدام رمز المزامنة يمكنك أيضًا تحميله على جهاز آخر — انظر أدناه.",
+    syncSectionTitle: "المزامنة السحابية", syncSectionDesc: "أنشئ رمز مزامنة لتحميل تقدمك على جهاز أو متصفح آخر.",
+    syncCreateBtn: "إنشاء رمز مزامنة", syncYourCodeLabel: "رمز المزامنة الخاص بك:", syncCopyBtn: "نسخ", syncCopiedMsg: "تم النسخ!",
+    syncEnterPlaceholder: "أدخل الرمز", syncLoadBtn: "تحميل التقدم",
+    syncConfirmOverwrite: "سيؤدي هذا إلى استبدال تقدمك على هذا الجهاز بالتقدم المحفوظ. هل تريد المتابعة؟",
+    syncSuccessMsg: "تم تحميل التقدم بنجاح!", syncNotFoundMsg: "لم يتم العثور على الرمز. يرجى التحقق من إدخالك.",
+    syncErrorMsg: "فشل الاتصال. حاول مرة أخرى لاحقًا.", syncSavingMsg: "جارٍ المزامنة…", syncSavedMsg: "تمت المزامنة",
+    syncUnavailableMsg: "المزامنة السحابية غير مُعدة في هذا الإصدار.",
     renamePromptText: "الاسم الجديد:", resetConfirmText: "هل تريد حقًا إعادة تعيين كل التقدم (نقاط الخبرة، الفصول، الشهادات) في جميع اللغات؟ لا يمكن التراجع عن هذا.",
     sinceLabel: "عضو منذ ", grammarChaptersTitle: "فصول القواعد",
     grammarPathSub: "تشرح كل محطة قاعدة وتختبرها مباشرة بتمارين.",
@@ -112860,6 +113117,12 @@ function applyUILanguage() {
   setText('profile-btn-certs', t('viewMyCertsBtn'));
   setText('profile-btn-reset', t('resetProgressBtn'));
   setText('profile-footnote', t('profileFootnote'));
+  setText('sync-title', t('syncSectionTitle'));
+  setText('sync-desc', t('syncSectionDesc'));
+  setText('sync-create-btn', t('syncCreateBtn'));
+  setText('sync-copy-btn', t('syncCopyBtn'));
+  setText('sync-load-btn', t('syncLoadBtn'));
+  setPlaceholder('sync-code-input', t('syncEnterPlaceholder'));
 }
 
 const QURAN_CHAPTERS = [
@@ -122149,6 +122412,8 @@ let state = {
   gChapterId: null, gStep: 0, quizMode: "vocab",
   lastGain: 0, lastFailed: false,
   profile: null, // { name, avatar, createdAt }
+  syncCode: null, // Cloud-Sync-Code dieses Geraets (falls eingerichtet)
+  lastSyncedAt: 0, // Zeitstempel des zuletzt uebernommenen Cloud-Stands
 };
 
 /* ---------------------------------------------------------
@@ -123120,8 +123385,11 @@ function saveProfile() {
       streak: state.streak,
       progress: state.progress,
       gProgress: state.gProgress,
+      quranProgress: state.quranProgress,
+      syncCode: state.syncCode || null,
     }));
   } catch (e) { /* Speicher evtl. voll oder Privatmodus - Fortschritt bleibt nur in dieser Sitzung erhalten */ }
+  pushStateToCloud();
 }
 
 function loadSavedData() {
@@ -123211,15 +123479,18 @@ function confirmResetProgress() {
   state.xp = 0;
   state.streak = 0;
   state.progress = {
-    'es-de': emptyProgress(CHAPTERS_ES), 'es-en': emptyProgress(CHAPTERS_ES_EN), 'es-fr': emptyProgress(CHAPTERS_ES_FR),
-    'en-de': emptyProgress(CHAPTERS_EN), 'en-es': emptyProgress(CHAPTERS_EN_ES), 'en-fr': emptyProgress(CHAPTERS_EN_FR),
-    'fr-de': emptyProgress(CHAPTERS_FR), 'fr-es': emptyProgress(CHAPTERS_FR_ES), 'fr-en': emptyProgress(CHAPTERS_FR_EN),
-    'de-es': emptyProgress(CHAPTERS_DE_ES), 'de-en': emptyProgress(CHAPTERS_DE_EN), 'de-fr': emptyProgress(CHAPTERS_DE_FR),
+    'es-de': emptyProgress(CHAPTERS_ES), 'es-en': emptyProgress(CHAPTERS_ES_EN), 'es-fr': emptyProgress(CHAPTERS_ES_FR), 'es-it': emptyProgress(CHAPTERS_ES_IT), 'es-ar': emptyProgress(CHAPTERS_ES_AR),
+    'en-de': emptyProgress(CHAPTERS_EN), 'en-es': emptyProgress(CHAPTERS_EN_ES), 'en-fr': emptyProgress(CHAPTERS_EN_FR), 'en-it': emptyProgress(CHAPTERS_EN_IT), 'en-ar': emptyProgress(CHAPTERS_EN_AR),
+    'fr-de': emptyProgress(CHAPTERS_FR), 'fr-es': emptyProgress(CHAPTERS_FR_ES), 'fr-en': emptyProgress(CHAPTERS_FR_EN), 'fr-it': emptyProgress(CHAPTERS_FR_IT), 'fr-ar': emptyProgress(CHAPTERS_FR_AR),
+    'de-es': emptyProgress(CHAPTERS_DE_ES), 'de-en': emptyProgress(CHAPTERS_DE_EN), 'de-fr': emptyProgress(CHAPTERS_DE_FR), 'de-it': emptyProgress(CHAPTERS_DE_IT), 'de-ar': emptyProgress(CHAPTERS_DE_AR),
+    'it-es': emptyProgress(CHAPTERS_IT_ES), 'it-en': emptyProgress(CHAPTERS_IT_EN), 'it-fr': emptyProgress(CHAPTERS_IT_FR), 'it-de': emptyProgress(CHAPTERS_IT_DE), 'it-ar': emptyProgress(CHAPTERS_IT_AR),
+    'ar-es': emptyProgress(CHAPTERS_AR_ES), 'ar-en': emptyProgress(CHAPTERS_AR_EN), 'ar-fr': emptyProgress(CHAPTERS_AR_FR), 'ar-it': emptyProgress(CHAPTERS_AR_IT), 'ar-de': emptyProgress(CHAPTERS_AR_DE),
   };
   state.gProgress = {
-    es: emptyProgress(GRAMMAR_CHAPTERS_ES), en: emptyProgress(GRAMMAR_CHAPTERS_EN), fr: emptyProgress(GRAMMAR_CHAPTERS_FR),
-    'de-es': emptyProgress(GRAMMAR_DE_ES), 'de-en': emptyProgress(GRAMMAR_DE_EN), 'de-fr': emptyProgress(GRAMMAR_DE_FR),
+    es: emptyProgress(GRAMMAR_CHAPTERS_ES), en: emptyProgress(GRAMMAR_CHAPTERS_EN), fr: emptyProgress(GRAMMAR_CHAPTERS_FR), it: emptyProgress(GRAMMAR_CHAPTERS_IT), ar: emptyProgress(GRAMMAR_CHAPTERS_AR),
+    'de-es': emptyProgress(GRAMMAR_DE_ES), 'de-en': emptyProgress(GRAMMAR_DE_EN), 'de-fr': emptyProgress(GRAMMAR_DE_FR), 'de-it': emptyProgress(GRAMMAR_DE_IT),
   };
+  state.quranProgress = emptyProgress(QURAN_CHAPTERS);
   saveProfile();
   updateProfileBadge();
   renderProfileScreen();
@@ -123257,6 +123528,7 @@ function renderProfileScreen() {
   });
   document.getElementById('profile-stat-chapters').textContent = (vocabDone + gramDone) + ' / ' + (vocabTotal + gramTotal);
   document.getElementById('profile-stat-certs').textContent = certsEarned + ' / ' + certsTotal;
+  renderSyncSection();
 }
 
 // Wie isLevelFullyDone, aber für eine explizit angegebene Sprachkombination (nicht nur die aktuell gewaehlte) -
@@ -123283,11 +123555,14 @@ function initApp() {
     state.streak = saved.streak || 0;
     state.progress = mergeProgress(state.progress, saved.progress);
     state.gProgress = mergeProgress(state.gProgress, saved.gProgress);
+    state.quranProgress = mergeProgress(state.quranProgress, saved.quranProgress);
+    state.syncCode = saved.syncCode || null;
     updateProfileBadge();
     applyUILanguage();
     updateLevelsHeaderText();
     renderLevels();
     showScreen('screen-levels');
+    trySilentCloudPull();
   } else {
     applyUILanguage();
     renderAvatarPicker();

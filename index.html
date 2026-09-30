@@ -121460,6 +121460,648 @@ const GRAMMAR_LEVEL_BY_ID_IT = Object.fromEntries(GRAMMAR_LEVELS_IT.map(l => [l.
 const GRAMMAR_CH_BY_ID_DE_IT = Object.fromEntries(GRAMMAR_DE_IT.map(c => [c.id, c]));
 const GRAMMAR_LEVEL_BY_ID_DE_IT = Object.fromEntries(GRAMMAR_LEVELS_DE_IT.map(l => [l.id, l]));
 
+const GRAMMAR_CHAPTERS_AR = [
+  {
+    id: "g-ar-nominalsatz", title: "الجملة الاسمية", subtitle: "Der Nominalsatz (Sätze ohne \"sein\")", tag: "Grundlagen",
+    icon: "<path d=\"M12 3v18M4 7h16M6 7l-3 8a4 4 0 0 0 6 0zM18 7l-3 8a4 4 0 0 0 6 0z\"/>",
+    rules: [
+      {title:"Kein Verb \"sein\" im Präsens", body:"Im Arabischen gibt es im Präsens kein Verb für \"sein\". Ein Satz wie \"Ich bin Lehrer\" besteht nur aus zwei Wörtern: Subjekt + Prädikat (Nominalsatz, الجملة الاسمية).", example:"أَنَا مُدَرِّسٌ.", exampleDe:"Ich [bin] Lehrer."},
+      {title:"Aufbau: Mubtada' und Khabar", body:"Der Nominalsatz besteht aus Mubtada' (المبتدأ, das Thema/Subjekt) und Khabar (الخبر, die Aussage darüber). Beide stehen meist im Nominativ (Marfū').", example:"البَيْتُ كَبِيرٌ.", exampleDe:"Das Haus [ist] groß."},
+      {title:"Mit Personalpronomen", body:"Auch mit Pronomen wie هُوَ (er) oder هِيَ (sie) wird kein \"sein\" eingefügt — das Pronomen selbst ist das Mubtada'.", example:"هِيَ طَالِبَةٌ.", exampleDe:"Sie [ist] Studentin."}
+    ],
+    practice: [
+      {prompt:"أَنَا ___. (Lehrer, m.)", options:["مُدَرِّسٌ","مُدَرِّسَةٌ","مُدَرِّسُونَ","مُدَرِّسَاتٌ"], correct:"مُدَرِّسٌ", explain:"Maskulines Prädikat für أَنَا (ich, m.)."},
+      {prompt:"هِيَ ___. (Studentin)", options:["طَالِبَةٌ","طَالِبٌ","طَالِبَاتٌ","طَالِبُونَ"], correct:"طَالِبَةٌ", explain:"Feminines Prädikat für هِيَ (sie)."},
+      {prompt:"Wie viele Wörter braucht ein Nominalsatz mindestens?", options:["2","3","4","1"], correct:"2", explain:"Subjekt + Prädikat, ohne \"sein\"."},
+      {prompt:"Welches deutsche Verb fehlt im arabischen Präsens?", options:["sein","haben","können","wollen"], correct:"sein", explain:"Es gibt kein Verb \"sein\" im Präsens."},
+      {prompt:"البَيْتُ ___. (groß)", options:["كَبِيرٌ","كَبِيرَةٌ","كَبِيرُونَ","كَبِيرَاتٌ"], correct:"كَبِيرٌ", explain:"بَيْتٌ ist maskulin, daher كَبِيرٌ."},
+      {prompt:"Wie heißt das Subjekt des Nominalsatzes?", options:["المبتدأ","الخبر","الفعل","الفاعل"], correct:"المبتدأ", explain:"Mubtada' = das Thema/Subjekt."}
+    ]
+  },
+  {
+    id: "g-ar-artikel", title: "أل التعريف", subtitle: "Der bestimmte Artikel (al-)", tag: "Grundlagen",
+    icon: "<path d=\"M20.6 12.4 12.4 20.6a2 2 0 0 1-2.8 0l-7.2-7.2a2 2 0 0 1 0-2.8L10.6 2.4A2 2 0 0 1 12 2H19a2 2 0 0 1 2 2v7a2 2 0 0 1-.4 1.4Z\"/><circle cx=\"15.5\" cy=\"8.5\" r=\"1.2\"/>",
+    rules: [
+      {title:"Der Artikel ال (al-)", body:"Anders als im Deutschen gibt es nur einen bestimmten Artikel: ال, unabhängig von Genus oder Numerus. Er wird direkt an das Wort angehängt.", example:"كِتَابٌ → الكِتَابُ", exampleDe:"ein Buch → das Buch"},
+      {title:"Keinen unbestimmten Artikel", body:"Einen unbestimmten Artikel (\"ein/eine\") gibt es nicht als eigenes Wort — die Unbestimmtheit wird durch die Endung ٌ (Tanwīn) ausgedrückt.", example:"بَيْتٌ = ein Haus, البَيْتُ = das Haus", exampleDe:"Tanwīn (-un) markiert \"unbestimmt\"."},
+      {title:"Sonnenbuchstaben (Al-Shamsiyya)", body:"Vor bestimmten Konsonanten (Sonnenbuchstaben wie ت, ث, د, ر, ز, س, ش, ص, ض, ط, ظ, ل, ن) wird das ل des Artikels nicht gesprochen, sondern der folgende Buchstabe verdoppelt.", example:"الشَّمْسُ (asch-schams)", exampleDe:"die Sonne — das ل wird zu sch assimiliert."}
+    ],
+    practice: [
+      {prompt:"Wie lautet der bestimmte Artikel?", options:["ال","أل","لا","إل"], correct:"ال", explain:"Der Artikel ist immer ال, unveränderlich."},
+      {prompt:"كِتَابٌ → \"das Buch\"?", options:["الكِتَابُ","كِتَابُال","الكِتَابٌ","كِتَابُ"], correct:"الكِتَابُ", explain:"Artikel direkt anhängen, Tanwīn entfällt."},
+      {prompt:"Was drückt die Endung ٌ aus?", options:["Unbestimmtheit","Plural","Vergangenheit","Frage"], correct:"Unbestimmtheit", explain:"Tanwīn markiert \"ein/eine\"."},
+      {prompt:"الشَّمْسُ — welcher Buchstabentyp ist ش?", options:["Sonnenbuchstabe","Mondbuchstabe","Halbvokal","Zahlwort"], correct:"Sonnenbuchstabe", explain:"Vor ش assimiliert das ل des Artikels."},
+      {prompt:"\"ein Haus\" (unbestimmt)?", options:["بَيْتٌ","البَيْتُ","بَيْتُ","البَيْت"], correct:"بَيْتٌ", explain:"Tanwīn ohne Artikel = unbestimmt."},
+      {prompt:"القَمَرُ — welcher Buchstabentyp ist ق؟", options:["Mondbuchstabe","Sonnenbuchstabe","Halbvokal","Dual"], correct:"Mondbuchstabe", explain:"Bei Mondbuchstaben bleibt ل hörbar."}
+    ]
+  },
+  {
+    id: "g-ar-genus", title: "المذكر والمؤنث", subtitle: "Genus: maskulin & feminin", tag: "Grundlagen",
+    icon: "<circle cx=\"12\" cy=\"12\" r=\"10\"/><path d=\"m16.2 7.8-2.2 6.2-6.2 2.2 2.2-6.2z\"/>",
+    rules: [
+      {title:"Zwei Genera", body:"Arabische Nomen sind entweder maskulin (مذكر) oder feminin (مؤنث). Es gibt kein Neutrum.", example:"مُعَلِّمٌ (Lehrer) / مُعَلِّمَةٌ (Lehrerin)", exampleDe:"Maskulin ohne Endung, Feminin meist mit Endung."},
+      {title:"Die Tāʾ marbūṭa (ة)", body:"Das häufigste feminine Merkmal ist die Endung ة (Tāʾ marbūṭa), gesprochen als kurzes -a. Sie wird an das maskuline Wort angehängt.", example:"طَالِبٌ → طَالِبَةٌ", exampleDe:"Student → Studentin"},
+      {title:"Natürlich feminine Wörter ohne ة", body:"Manche Wörter sind grammatisch feminin, obwohl sie keine ة haben — z. B. Körperteile, die paarweise vorkommen, oder bestimmte Ländernamen.", example:"يَدٌ (Hand), شَمْسٌ (Sonne)", exampleDe:"Beide sind feminin ohne sichtbare Endung."}
+    ],
+    practice: [
+      {prompt:"Wie wird Femininum meist markiert?", options:["Endung ة","Endung ون","Präfix أ","Verdopplung"], correct:"Endung ة", explain:"Tāʾ marbūṭa ist das häufigste feminine Suffix."},
+      {prompt:"طَالِبٌ (Student) → \"Studentin\"?", options:["طَالِبَةٌ","طَالِبُونَ","طَالِبَاتٌ","طَالِبِينَ"], correct:"طَالِبَةٌ", explain:"Feminin-Singular durch ة."},
+      {prompt:"Welches Wort ist feminin ohne ة-Endung?", options:["شَمْسٌ","كِتَابٌ","بَيْتٌ","قَلَمٌ"], correct:"شَمْسٌ", explain:"شَمْسٌ (Sonne) ist natürlich feminin."},
+      {prompt:"Wie viele Genera gibt es?", options:["2","3","1","4"], correct:"2", explain:"Nur maskulin und feminin."},
+      {prompt:"مُعَلِّمَةٌ bedeutet?", options:["Lehrerin","Lehrer","Schüler","Direktor"], correct:"Lehrerin", explain:"مُعَلِّم + ة = feminin."},
+      {prompt:"Wie spricht man ة am Wortende meist aus?", options:["kurzes -a","langes -ā","-t","stumm"], correct:"kurzes -a", explain:"In Pausa als -a."}
+    ]
+  },
+  {
+    id: "g-ar-plural-regular", title: "جمع المذكر والمؤنث السالم", subtitle: "Der regelmäßige Plural", tag: "Grundlagen",
+    icon: "<path d=\"M2 6a2 2 0 0 1 2-2h6v16H4a2 2 0 0 1-2-2Z\"/><path d=\"M22 6a2 2 0 0 0-2-2h-6v16h6a2 2 0 0 0 2-2Z\"/>",
+    rules: [
+      {title:"Maskuliner Sound-Plural", body:"Bei Personenbezeichnungen (meist Berufe, Nationalitäten) wird der maskuline Plural mit der Endung ونَ (Nominativ) bzw. ينَ (Akkusativ/Genitiv) gebildet.", example:"مُهَنْدِسٌ → مُهَنْدِسُونَ", exampleDe:"Ingenieur → Ingenieure"},
+      {title:"Femininer Sound-Plural", body:"Der feminine Plural wird meist gebildet, indem die Tāʾ marbūṭa entfernt und اتٌ angehängt wird.", example:"مُدَرِّسَةٌ → مُدَرِّسَاتٌ", exampleDe:"Lehrerin → Lehrerinnen"},
+      {title:"Wann der Sound-Plural gilt", body:"Der regelmäßige Plural funktioniert zuverlässig bei Berufs- und Personenbezeichnungen. Die meisten anderen Nomen bilden einen unregelmäßigen \"gebrochenen\" Plural (nächstes Kapitel).", example:"مُسْلِمٌ → مُسْلِمُونَ", exampleDe:"Muslim → Muslime"}
+    ],
+    practice: [
+      {prompt:"Maskuliner Plural, Nominativ-Endung?", options:["ونَ","اتٌ","ةٌ","يْنِ"], correct:"ونَ", explain:"مُدَرِّسٌ → مُدَرِّسُونَ."},
+      {prompt:"مُدَرِّسَةٌ (Lehrerin) → Plural?", options:["مُدَرِّسَاتٌ","مُدَرِّسُونَ","مُدَرِّسَةٌ","مُدَرِّسِينَ"], correct:"مُدَرِّسَاتٌ", explain:"ة entfernen, اتٌ anhängen."},
+      {prompt:"Sound-Plural gilt meist bei:", options:["Berufen/Personen","allen Nomen","Adjektiven","Zahlen"], correct:"Berufen/Personen", explain:"Andere Nomen: gebrochener Plural."},
+      {prompt:"مُهَنْدِسٌ → Plural (Nominativ)?", options:["مُهَنْدِسُونَ","مُهَنْدِسَاتٌ","مُهَنْدِسِينَ","مُهَنْدِسٌ"], correct:"مُهَنْدِسُونَ", explain:"Regelmäßig mit ونَ."},
+      {prompt:"Was passiert mit ة vor اتٌ?", options:["Sie wird entfernt","Sie bleibt","Sie verdoppelt sich","Sie wird zu و"], correct:"Sie wird entfernt", explain:"ة fällt weg, dann اتٌ."},
+      {prompt:"مُسْلِمُونَ ist Plural von:", options:["مُسْلِمٌ","مُسْلِمَةٌ","مُسْلِمَاتٌ","إِسْلَامٌ"], correct:"مُسْلِمٌ", explain:"مُسْلِمٌ → مُسْلِمُونَ."}
+    ]
+  },
+  {
+    id: "g-ar-plural-gebrochen", title: "جمع التكسير", subtitle: "Der gebrochene Plural", tag: "Grundlagen",
+    icon: "<path d=\"M4 4h16v16H4z\"/><path d=\"M4 12h16M12 4v16\"/>",
+    rules: [
+      {title:"Was ist der gebrochene Plural?", body:"Die meisten arabischen Nomen bilden ihren Plural nicht durch eine Endung, sondern durch eine innere Umformung des Wortmusters (\"gebrochener Plural\", جمع التكسير). Er muss für jedes Wort einzeln gelernt werden.", example:"كِتَابٌ → كُتُبٌ", exampleDe:"Buch → Bücher"},
+      {title:"Häufige Muster", body:"Es gibt wiederkehrende Muster, z. B. فُعُول oder أَفْعَال, die aber nicht immer vorhersagbar sind. Trotzdem hilft es, sie als Muster zu erkennen.", example:"وَلَدٌ → أَوْلَادٌ, بَيْتٌ → بُيُوتٌ", exampleDe:"Junge → Jungen, Haus → Häuser"},
+      {title:"Plural + Genus", body:"Ein gebrochener Plural von Sachen (nicht Personen) wird grammatisch oft wie ein feminines Singularwort behandelt — das ist eine arabische Besonderheit.", example:"الكُتُبُ الجَدِيدَةُ", exampleDe:"die neuen Bücher (Adjektiv steht im fem. Singular!)"}
+    ],
+    practice: [
+      {prompt:"كِتَابٌ (Buch) → Plural?", options:["كُتُبٌ","كِتَابُونَ","كِتَابَاتٌ","كُتَّابٌ"], correct:"كُتُبٌ", explain:"Gebrochener Plural, innerer Musterwechsel."},
+      {prompt:"Wie heißt diese Pluralart auf Arabisch?", options:["جمع التكسير","جمع المذكر السالم","جمع المؤنث السالم","المثنى"], correct:"جمع التكسير", explain:"\"Gebrochener Plural\"."},
+      {prompt:"بَيْتٌ (Haus) → Plural?", options:["بُيُوتٌ","بَيْتُونَ","بَيْتَاتٌ","بَيْتَانِ"], correct:"بُيُوتٌ", explain:"Häufiges unregelmäßiges Muster."},
+      {prompt:"Was ist am gebrochenen Plural schwierig?", options:["Kein festes Muster","Er existiert nicht","Nur im Koran","Nur bei Verben"], correct:"Kein festes Muster", explain:"Jedes Wort meist einzeln lernen."},
+      {prompt:"وَلَدٌ (Junge) → Plural?", options:["أَوْلَادٌ","وَلَدُونَ","وَلَدَاتٌ","وَالِدَاتٌ"], correct:"أَوْلَادٌ", explain:"Muster أَفْعَال."},
+      {prompt:"Sach-Plural + Adjektiv steht im:", options:["Femininum Singular","Maskulinum Plural","Dual","Femininum Plural"], correct:"Femininum Singular", explain:"Arabische Sonderregel bei Sachen."}
+    ]
+  },
+  {
+    id: "g-ar-personalpronomen", title: "الضمائر", subtitle: "Personalpronomen", tag: "Grundlagen",
+    icon: "<circle cx=\"12\" cy=\"8\" r=\"4\"/><path d=\"M4 20c0-4 4-6 8-6s8 2 8 6\"/>",
+    rules: [
+      {title:"Die Grundpronomen", body:"أَنَا (ich), أَنْتَ (du, m.), أَنْتِ (du, f.), هُوَ (er), هِيَ (sie), نَحْنُ (wir), أَنْتُمْ (ihr, m.), أَنْتُنَّ (ihr, f.), هُمْ (sie, m.pl.), هُنَّ (sie, f.pl.).", example:"أَنَا مِنْ أَلْمَانْيَا.", exampleDe:"Ich komme aus Deutschland."},
+      {title:"Genus bei \"du\" und \"ihr\"", body:"Anders als im Deutschen unterscheidet Arabisch bei der 2. Person immer zwischen maskulin und feminin — auch im Plural.", example:"أَنْتَ طَالِبٌ. / أَنْتِ طَالِبَةٌ.", exampleDe:"Du (m.) bist Student. / Du (f.) bist Studentin."},
+      {title:"Der Dual", body:"Es gibt auch eine eigene Form für \"wir zwei / ihr zwei / sie zwei\": أَنْتُمَا (ihr beide) und هُمَا (sie beide) — für \"wir beide\" nutzt man einfach نَحْنُ.", example:"هُمَا صَدِيقَانِ.", exampleDe:"Die beiden sind Freunde."}
+    ],
+    practice: [
+      {prompt:"\"ich\"?", options:["أَنَا","أَنْتَ","هُوَ","نَحْنُ"], correct:"أَنَا", explain:"أَنَا = ich."},
+      {prompt:"\"du\" für eine Frau?", options:["أَنْتِ","أَنْتَ","أَنْتُمَا","أَنْتُنَّ"], correct:"أَنْتِ", explain:"Feminine Form von \"du\"."},
+      {prompt:"هُمْ bedeutet?", options:["sie (m. Pl.)","sie (f. Pl.)","sie beide","er"], correct:"sie (m. Pl.)", explain:"هُمْ = maskuliner Plural."},
+      {prompt:"Was unterscheidet Arabisch bei \"du/ihr\"?", options:["Genus","nichts","Kasus","Tempus"], correct:"Genus", explain:"Deutsch unterscheidet das nicht."},
+      {prompt:"هُمَا bedeutet?", options:["sie beide","sie (Pl.)","er","wir beide"], correct:"sie beide", explain:"Dual-Form."},
+      {prompt:"نَحْنُ bedeutet?", options:["wir","ihr","sie","du"], correct:"wir", explain:"نَحْنُ = wir."}
+    ]
+  },
+  {
+    id: "g-ar-possessivsuffixe", title: "ضمائر الملكية", subtitle: "Possessivsuffixe", tag: "Grundlagen",
+    icon: "<path d=\"M12 2 2 7l10 5 10-5Z\"/><path d=\"M2 17l10 5 10-5M2 12l10 5 10-5\"/>",
+    rules: [
+      {title:"Angehängt statt eigenes Wort", body:"\"Mein, dein, sein...\" wird im Arabischen nicht als eigenes Wort ausgedrückt, sondern als Suffix an das Nomen angehängt.", example:"بَيْتٌ → بَيْتِي", exampleDe:"ein Haus → mein Haus"},
+      {title:"Die wichtigsten Suffixe", body:"-ي (mein), كَ- (dein, m.), كِ- (dein, f.), هُ- (sein), هَا- (ihr), نَا- (unser), كُمْ- (euer, m.), هُمْ- (ihr, m.pl.).", example:"كِتَابُهُ / كِتَابُهَا", exampleDe:"sein Buch / ihr Buch"},
+      {title:"Der Artikel entfällt", body:"Ein Nomen mit Possessivsuffix ist automatisch bestimmt — der Artikel ال wird deshalb nie zusätzlich benutzt.", example:"بَيْتِي (nicht: البَيْتِي)", exampleDe:"mein Haus"}
+    ],
+    practice: [
+      {prompt:"بَيْتٌ + \"mein\"?", options:["بَيْتِي","بَيْتُهُ","بَيْتُكَ","بَيْتُنَا"], correct:"بَيْتِي", explain:"Suffix ي = mein."},
+      {prompt:"كِتَابُهَا bedeutet?", options:["ihr Buch","sein Buch","unser Buch","dein Buch"], correct:"ihr Buch", explain:"Suffix هَا = ihr."},
+      {prompt:"Braucht بَيْتِي zusätzlich ال?", options:["Nein, nie","Ja, immer","Nur im Plural","Nur bei Frauen"], correct:"Nein, nie", explain:"Possessivsuffix macht das Wort bestimmt."},
+      {prompt:"\"euer\" (m. Pl.)?", options:["كُمْ-","كَ-","نَا-","هُمْ-"], correct:"كُمْ-", explain:"كُمْ = euer."},
+      {prompt:"كِتَابُنَا bedeutet?", options:["unser Buch","euer Buch","ihr Buch","mein Buch"], correct:"unser Buch", explain:"Suffix نَا = unser."},
+      {prompt:"\"sein Buch\"?", options:["كِتَابُهُ","كِتَابُهَا","كِتَابِي","كِتَابُكَ"], correct:"كِتَابُهُ", explain:"Suffix هُ = sein."}
+    ]
+  },
+  {
+    id: "g-ar-demonstrativ", title: "أسماء الإشارة", subtitle: "Demonstrativpronomen", tag: "Grundlagen",
+    icon: "<path d=\"M12 3v18M4 7h16M6 7l-3 8a4 4 0 0 0 6 0zM18 7l-3 8a4 4 0 0 0 6 0z\"/>",
+    rules: [
+      {title:"Nah: dieser/diese", body:"هَذَا (m., dieser), هَذِهِ (f., diese) werden für nahe Objekte benutzt und stehen wie ein eigenes Wort vor dem Nomen.", example:"هَذَا كِتَابٌ.", exampleDe:"Dies ist ein Buch."},
+      {title:"Fern: jener/jene", body:"ذَلِكَ (m., jener), تِلْكَ (f., jene) werden für entfernte Objekte benutzt.", example:"ذَلِكَ البَيْتُ كَبِيرٌ.", exampleDe:"Jenes Haus [ist] groß."},
+      {title:"Mit bestimmtem Nomen", body:"Steht das Demonstrativpronomen vor einem bestimmten Nomen (mit ال), entsteht ein Nominalsatz mit der Bedeutung \"dieser/diese ... ist\".", example:"هَذَا الوَلَدُ ذَكِيٌّ.", exampleDe:"Dieser Junge ist klug."}
+    ],
+    practice: [
+      {prompt:"\"dies\" (maskulin)?", options:["هَذَا","هَذِهِ","ذَلِكَ","تِلْكَ"], correct:"هَذَا", explain:"هَذَا = dieser (nah, m.)."},
+      {prompt:"هَذِهِ سَيَّارَةٌ. bedeutet?", options:["Dies ist ein Auto.","Jenes ist ein Auto.","Sein Auto.","Diese Autos."], correct:"Dies ist ein Auto.", explain:"هَذِهِ = diese (f., nah)."},
+      {prompt:"\"jener\" (fern, m.)?", options:["ذَلِكَ","هَذَا","تِلْكَ","هَذِهِ"], correct:"ذَلِكَ", explain:"ذَلِكَ = jener."},
+      {prompt:"تِلْكَ المَدْرَسَةُ قَدِيمَةٌ. bedeutet?", options:["Jene Schule ist alt.","Diese Schule ist alt.","Meine Schule.","Die Schulen sind alt."], correct:"Jene Schule ist alt.", explain:"تِلْكَ = jene (fern, f.)."},
+      {prompt:"هَذَا الوَلَدُ ذَكِيٌّ. — Demonstrativpronomen?", options:["هَذَا","الوَلَدُ","ذَكِيٌّ","keiner"], correct:"هَذَا", explain:"هَذَا leitet den Satz ein."},
+      {prompt:"هَذِهِ passt zu welchem Nomen?", options:["feminin, nah","maskulin, fern","jedem Nomen","nur Plural"], correct:"feminin, nah", explain:"هَذِهِ ist die feminine Form."}
+    ]
+  },
+  {
+    id: "g-ar-zahlen-grund", title: "الأعداد الأساسية", subtitle: "Grundzahlen & Genus-Umkehr", tag: "Grundlagen",
+    icon: "<path d=\"M4 9h16M4 15h16M10 3 8 21M16 3l-2 18\"/>",
+    rules: [
+      {title:"Zahlen 1 und 2 wie Adjektive", body:"Die Zahlen 1 (وَاحِد) und 2 (اِثْنَانِ) verhalten sich wie normale Adjektive und stimmen im Genus mit dem Nomen überein.", example:"وَلَدٌ وَاحِدٌ / بِنْتٌ وَاحِدَةٌ", exampleDe:"ein Junge / ein Mädchen"},
+      {title:"Die berühmte Genus-Umkehr (3–10)", body:"Bei den Zahlen 3 bis 10 gilt eine arabische Besonderheit: Die Zahl bekommt das entgegengesetzte Genus des gezählten Nomens (\"Polarität\").", example:"ثَلَاثَةُ أَوْلَادٍ / ثَلَاثُ بَنَاتٍ", exampleDe:"drei Jungen (Zahl mit ة, Nomen ohne) / drei Mädchen (Zahl ohne ة)"},
+      {title:"Nomen im Plural-Genitiv", body:"Nach den Zahlen 3–10 steht das gezählte Nomen im Plural und im Genitiv (Majrūr).", example:"خَمْسَةُ كُتُبٍ", exampleDe:"fünf Bücher (كُتُبٍ = Genitiv Plural)"}
+    ],
+    practice: [
+      {prompt:"Welche Zahlen gleichen Genus wie Adjektive?", options:["1 und 2","3 bis 10","nur 1","alle"], correct:"1 und 2", explain:"Nur وَاحِد und اِثْنَانِ."},
+      {prompt:"Was passiert bei Zahlen 3–10 mit dem Genus?", options:["Umkehrung (Polarität)","kein Unterschied","gleiches Genus","nur Plural-Form"], correct:"Umkehrung (Polarität)", explain:"Arabische Besonderheit: Genus-Umkehr."},
+      {prompt:"ثَلَاثَةُ أَوْلَادٍ — warum ة bei ثَلَاثَةُ?", options:["Polarität (Nomen ist m.)","Schreibfehler","Nomen ist f.","Dual"], correct:"Polarität (Nomen ist m.)", explain:"Maskulines Nomen → Zahl bekommt ة."},
+      {prompt:"Kasus des Nomens nach 3–10?", options:["Genitiv Plural","Nominativ Singular","Akkusativ Dual","Vokativ"], correct:"Genitiv Plural", explain:"خَمْسَةُ كُتُبٍ — Genitiv Plural."},
+      {prompt:"وَلَدٌ وَاحِدٌ bedeutet?", options:["ein Junge","zwei Jungen","drei Jungen","viele Jungen"], correct:"ein Junge", explain:"وَاحِدٌ stimmt im Genus überein."},
+      {prompt:"خَمْسُ بَنَاتٍ — warum keine ة bei خَمْسُ?", options:["Polarität (بَنَات ist f.)","Rechtschreibfehler","بَنَات ist m.","keine Endung nötig"], correct:"Polarität (بَنَات ist f.)", explain:"Feminines Nomen → Zahl ohne ة."}
+    ]
+  },
+  {
+    id: "g-ar-praesens", title: "الفعل المضارع", subtitle: "Präsens (al-Muḍāriʿ)", tag: "Verben",
+    icon: "<path d=\"M13 2 3 14h7l-1 8 10-12h-7z\"/>",
+    rules: [
+      {title:"Aufbau des Präsens", body:"Das arabische Präsens (Muḍāriʿ) wird mit Präfixen gebildet, die die Person markieren, plus dem Verbstamm.", example:"يَكْتُبُ (er schreibt), أَكْتُبُ (ich schreibe)", exampleDe:"Präfix + Stamm كتب (schreiben)"},
+      {title:"Die Präfixe", body:"أ- (ich), تَ- (du/sie), يَ- (er), نَ- (wir). Bei bestimmten Personen kommen zusätzlich Suffixe hinzu.", example:"أَنْتَ تَكْتُبُ. / هِيَ تَكْتُبُ.", exampleDe:"Du schreibst. / Sie schreibt. (beides mit تَ-, da gleiches Präfix)"},
+      {title:"Vollständige Konjugation", body:"أَكْتُبُ (ich), تَكْتُبُ (du m./sie), تَكْتُبِينَ (du f.), يَكْتُبُ (er), نَكْتُبُ (wir), تَكْتُبُونَ (ihr m.), يَكْتُبُونَ (sie m.pl.).", example:"نَحْنُ نَكْتُبُ رِسَالَةً.", exampleDe:"Wir schreiben einen Brief."}
+    ],
+    practice: [
+      {prompt:"أَنَا ___ (schreiben).", options:["أَكْتُبُ","تَكْتُبُ","يَكْتُبُ","نَكْتُبُ"], correct:"أَكْتُبُ", explain:"Präfix أ- = ich."},
+      {prompt:"هُوَ ___ (schreiben).", options:["يَكْتُبُ","أَكْتُبُ","نَكْتُبُ","تَكْتُبِينَ"], correct:"يَكْتُبُ", explain:"Präfix يَ- = er."},
+      {prompt:"Suffix für \"du (f.)\" im Präsens?", options:["ينَ","ونَ","ةٌ","تُ"], correct:"ينَ", explain:"تَكْتُبِينَ vs. تَكْتُبُ (m.)."},
+      {prompt:"نَحْنُ ___ (schreiben).", options:["نَكْتُبُ","تَكْتُبُونَ","يَكْتُبُونَ","أَكْتُبُ"], correct:"نَكْتُبُ", explain:"Präfix نَ- = wir."},
+      {prompt:"هُمْ ___ (schreiben).", options:["يَكْتُبُونَ","تَكْتُبُونَ","يَكْتُبُ","نَكْتُبُ"], correct:"يَكْتُبُونَ", explain:"يَ- + ونَ = sie (m.pl.)."},
+      {prompt:"أَنْتُمْ ___ (schreiben).", options:["تَكْتُبُونَ","يَكْتُبُونَ","تَكْتُبُ","نَكْتُبُ"], correct:"تَكْتُبُونَ", explain:"تَ- + ونَ = ihr (m.pl.)."}
+    ]
+  },
+  {
+    id: "g-ar-vergangenheit", title: "الفعل الماضي", subtitle: "Vergangenheit (al-Māḍī)", tag: "Verben",
+    icon: "<path d=\"M2 6a2 2 0 0 1 2-2h6v16H4a2 2 0 0 1-2-2Z\"/><path d=\"M22 6a2 2 0 0 0-2-2h-6v16h6a2 2 0 0 0 2-2Z\"/>",
+    rules: [
+      {title:"Aufbau mit Suffixen", body:"Das arabische Perfekt (Māḍī) wird mit Suffixen gebildet, die an den Verbstamm angehängt werden — anders als das Präsens, das Präfixe nutzt.", example:"كَتَبَ (er schrieb), كَتَبْتُ (ich schrieb)", exampleDe:"Stamm كتب + Suffix"},
+      {title:"Die wichtigsten Suffixe", body:"تُ- (ich), تَ- (du m.), تِ- (du f.), keine Endung (er), تْ- (sie), نَا- (wir).", example:"أَنَا كَتَبْتُ رِسَالَةً.", exampleDe:"Ich habe einen Brief geschrieben."},
+      {title:"Grundform = 3. Person maskulin", body:"Die Wörterbuchform eines arabischen Verbs ist immer die 3. Person Singular maskulin Perfekt — z. B. entspricht كَتَبَ dem Infinitiv \"schreiben\".", example:"كَتَبَ = die Grundform/das Lemma", exampleDe:"wörtlich: \"er schrieb\", aber als Nachschlageform gemeint"}
+    ],
+    practice: [
+      {prompt:"Wie wird das Perfekt gebildet?", options:["mit Suffixen","mit Präfixen","mit Hilfsverb","nur Vokalwechsel"], correct:"mit Suffixen", explain:"Anders als das Präsens (Präfixe)."},
+      {prompt:"أَنَا ___ (schrieb).", options:["كَتَبْتُ","كَتَبَ","كَتَبْتَ","كَتَبْنَا"], correct:"كَتَبْتُ", explain:"Suffix تُ- = ich."},
+      {prompt:"هُوَ ___ (schrieb).", options:["كَتَبَ","كَتَبْتُ","كَتَبْتَ","كَتَبْنَا"], correct:"كَتَبَ", explain:"3. Person Sg. m. hat keine Endung."},
+      {prompt:"Die Wörterbuchform ist:", options:["3. Pers. Sg. m. Perfekt","1. Pers. Präsens","der Infinitiv","der Imperativ"], correct:"3. Pers. Sg. m. Perfekt", explain:"z.B. كَتَبَ."},
+      {prompt:"نَحْنُ ___ (schrieben).", options:["كَتَبْنَا","كَتَبْتُمْ","كَتَبُوا","كَتَبْتُ"], correct:"كَتَبْنَا", explain:"Suffix نَا- = wir."},
+      {prompt:"أَنْتِ ___ (schriebst, f.).", options:["كَتَبْتِ","كَتَبْتَ","كَتَبَتْ","كَتَبْتُ"], correct:"كَتَبْتِ", explain:"Suffix تِ- = du, feminin."}
+    ]
+  },
+  {
+    id: "g-ar-verneinung", title: "النفي", subtitle: "Verneinung (لا، ما، لم، لن)", tag: "Verben",
+    icon: "<circle cx=\"12\" cy=\"12\" r=\"10\"/><path d=\"M6 6l12 12\"/>",
+    rules: [
+      {title:"Verneinung im Präsens: لا", body:"Das Präsens wird mit لَا vor dem Verb verneint.", example:"لَا أَفْهَمُ.", exampleDe:"Ich verstehe nicht."},
+      {title:"Verneinung im Perfekt: ما", body:"Das Perfekt wird umgangssprachlich mit مَا verneint, ohne dass sich die Verbform ändert.", example:"مَا فَهِمْتُ.", exampleDe:"Ich habe nicht verstanden."},
+      {title:"Formellere Verneinung: لم + Jussiv", body:"Im formellen/klassischen Arabisch wird die Vergangenheit mit لَمْ + Jussiv (kurze Präsensform) verneint — eine wichtige arabische Besonderheit.", example:"لَمْ أَفْهَمْ.", exampleDe:"Ich habe nicht verstanden. (formeller als مَا)"},
+      {title:"Zukunft verneinen: لن", body:"Die Zukunft wird mit لَنْ + Konjunktiv (Subjunktiv) verneint.", example:"لَنْ أَذْهَبَ.", exampleDe:"Ich werde nicht gehen."}
+    ],
+    practice: [
+      {prompt:"Präsens verneinen?", options:["لا","ما","لن","لم"], correct:"لا", explain:"لَا + Präsensverb."},
+      {prompt:"___ أَفْهَمُ. (Ich verstehe nicht.)", options:["لا","لن","لم","ما"], correct:"لا", explain:"لَا verneint das Präsens."},
+      {prompt:"Zukunft verneinen?", options:["لن","لا","ما","لم"], correct:"لن", explain:"لَنْ + Konjunktiv."},
+      {prompt:"Nach لَمْ steht der:", options:["Jussiv","Perfekt","Indikativ","Imperativ"], correct:"Jussiv", explain:"لَمْ verlangt den Jussiv."},
+      {prompt:"مَا فَهِمْتُ. bedeutet?", options:["Ich habe nicht verstanden.","Ich verstehe nicht.","Verstehst du?","Wir verstehen nicht."], correct:"Ich habe nicht verstanden.", explain:"مَا + Perfekt = Vergangenheitsverneinung."},
+      {prompt:"لَنْ أَذْهَبَ. bedeutet?", options:["Ich werde nicht gehen.","Ich ging nicht.","Geh nicht!","Ich gehe nicht."], correct:"Ich werde nicht gehen.", explain:"لَنْ verneint die Zukunft."}
+    ]
+  },
+  {
+    id: "g-ar-fragen", title: "أدوات الاستفهام", subtitle: "Fragewörter", tag: "Grundlagen",
+    icon: "<path d=\"M9 9a3 3 0 1 1 4 2.8c-.9.5-1.4 1-1.4 2.2\"/><path d=\"M12 17h.01\"/><circle cx=\"12\" cy=\"12\" r=\"10\"/>",
+    rules: [
+      {title:"Ja/Nein-Fragen mit هل", body:"Eine einfache Ja/Nein-Frage wird mit هَلْ am Satzanfang gebildet — die Wortstellung ändert sich sonst nicht.", example:"هَلْ أَنْتَ طَالِبٌ؟", exampleDe:"Bist du Student?"},
+      {title:"W-Fragewörter", body:"مَنْ (wer), مَاذَا/مَا (was), مَتَى (wann), أَيْنَ (wo), كَيْفَ (wie), لِمَاذَا (warum), كَمْ (wie viel/e).", example:"أَيْنَ تَسْكُنُ؟", exampleDe:"Wo wohnst du?"},
+      {title:"كَمْ + Singular", body:"Nach كَمْ (wie viele) steht das gezählte Nomen im unbestimmten Akkusativ Singular — nicht im Plural wie im Deutschen.", example:"كَمْ كِتَابًا عِنْدَكَ؟", exampleDe:"Wie viele Bücher hast du? (wörtl.: wie viel Buch)"}
+    ],
+    practice: [
+      {prompt:"Ja/Nein-Frage einleiten?", options:["هَلْ","مَاذَا","أَيْنَ","كَيْفَ"], correct:"هَلْ", explain:"هَلْ steht am Satzanfang."},
+      {prompt:"\"wo\"?", options:["أَيْنَ","مَتَى","مَنْ","كَمْ"], correct:"أَيْنَ", explain:"أَيْنَ = wo."},
+      {prompt:"\"warum\"?", options:["لِمَاذَا","مَتَى","كَمْ","مَنْ"], correct:"لِمَاذَا", explain:"لِمَاذَا = warum."},
+      {prompt:"Nach كَمْ steht das Nomen im:", options:["Akk. Sg. unbestimmt","Nom. Plural","Gen. Plural","Dual"], correct:"Akk. Sg. unbestimmt", explain:"z.B. كَمْ كِتَابًا."},
+      {prompt:"\"wann\"?", options:["مَتَى","أَيْنَ","مَنْ","كَيْفَ"], correct:"مَتَى", explain:"مَتَى = wann."},
+      {prompt:"\"wie\"?", options:["كَيْفَ","مَنْ","مَاذَا","كَمْ"], correct:"كَيْفَ", explain:"كَيْفَ = wie."}
+    ]
+  },
+  {
+    id: "g-ar-idafa", title: "الإضافة", subtitle: "Die Idafa-Konstruktion", tag: "Satzbau",
+    icon: "<path d=\"M12 2 2 7l10 5 10-5Z\"/><path d=\"M2 17l10 5 10-5M2 12l10 5 10-5\"/>",
+    rules: [
+      {title:"Genitivverbindung ohne Präposition", body:"Die Idafa (الإضافة) verbindet zwei Nomen ohne Präposition, ähnlich dem deutschen Genitiv oder \"von\": das erste Nomen (Besitz) steht ohne Artikel und ohne Tanwīn, das zweite (Besitzer) im Genitiv.", example:"بَيْتُ الرَّجُلِ", exampleDe:"das Haus des Mannes"},
+      {title:"Bestimmtheit durch das zweite Wort", body:"Die ganze Idafa gilt als bestimmt, wenn das zweite Nomen bestimmt ist (mit ال oder Eigenname) — der Artikel steht dann nur beim zweiten Wort.", example:"كِتَابُ الطَّالِبِ", exampleDe:"das Buch des Studenten"},
+      {title:"Ketten von Idafa", body:"Mehrere Nomen können hintereinander verbunden werden — nur das letzte Wort trägt den Artikel oder Tanwīn.", example:"بَابُ بَيْتِ المُدَرِّسِ", exampleDe:"die Tür des Hauses des Lehrers"}
+    ],
+    practice: [
+      {prompt:"بَيْتُ الرَّجُلِ bedeutet?", options:["das Haus des Mannes","ein Haus für ihn","der Mann im Haus","Häuser der Männer"], correct:"das Haus des Mannes", explain:"Idafa = Genitivverbindung."},
+      {prompt:"Wo steht der Artikel in einer Idafa?", options:["nur beim letzten Wort","beim ersten Wort","bei beiden","nirgends"], correct:"nur beim letzten Wort", explain:"Das erste Wort trägt nie ال."},
+      {prompt:"Kasus des zweiten Idafa-Worts?", options:["Genitiv","Nominativ","Akkusativ","Vokativ"], correct:"Genitiv", explain:"Der \"Besitzer\" steht im Genitiv."},
+      {prompt:"كِتَابُ الطَّالِبِ bedeutet?", options:["das Buch des Studenten","ein Buch für Studenten","Bücher der Studenten","der Student mit Buch"], correct:"das Buch des Studenten", explain:"Idafa-Grundmuster."},
+      {prompt:"Warum kein Tanwīn bei بَيْتُ hier?", options:["Erstes Wort einer Idafa","Fehler","feminin","Plural"], correct:"Erstes Wort einer Idafa", explain:"Grundregel der Idafa."},
+      {prompt:"بَابُ بَيْتِ المُدَرِّسِ — wie viele Nomen?", options:["3","2","4","1"], correct:"3", explain:"بَابُ + بَيْتِ + المُدَرِّسِ."}
+    ]
+  },
+  {
+    id: "g-ar-adjektive", title: "الصفة والموصوف", subtitle: "Adjektive & Übereinstimmung", tag: "Grundlagen",
+    icon: "<path d=\"m16.2 7.8-2.2 6.2-6.2 2.2 2.2-6.2z\"/><circle cx=\"12\" cy=\"12\" r=\"10\"/>",
+    rules: [
+      {title:"Adjektiv nach dem Nomen", body:"Anders als im Deutschen steht das Adjektiv im Arabischen immer nach dem Nomen, das es beschreibt.", example:"بَيْتٌ كَبِيرٌ", exampleDe:"ein großes Haus (wörtlich: Haus groß)"},
+      {title:"Vierfache Übereinstimmung", body:"Das Adjektiv stimmt mit dem Nomen in Genus, Numerus, Kasus und Bestimmtheit überein.", example:"البَيْتُ الكَبِيرُ", exampleDe:"das große Haus (beide bestimmt, maskulin, Singular, Nominativ)"},
+      {title:"Sach-Plural + Adjektiv im Femininum Singular", body:"Bezieht sich das Adjektiv auf einen Plural von Sachen (nicht Personen), steht es im Femininum Singular — eine wichtige arabische Ausnahme.", example:"الكُتُبُ الجَدِيدَةُ", exampleDe:"die neuen Bücher (Adjektiv fem. Singular, obwohl Bücher Plural sind)"}
+    ],
+    practice: [
+      {prompt:"Wo steht das Adjektiv?", options:["nach dem Nomen","vor dem Nomen","am Satzanfang","egal wo"], correct:"nach dem Nomen", explain:"بَيْتٌ كَبِيرٌ = Haus groß."},
+      {prompt:"طَالِبَةٌ ذَكِيَّةٌ. — warum ة bei ذَكِيَّةٌ?", options:["Kongruenz mit طَالِبَةٌ (f.)","Zufall","Plural-Marker","Fehler"], correct:"Kongruenz mit طَالِبَةٌ (f.)", explain:"Adjektiv stimmt im Genus überein."},
+      {prompt:"In wie vielen Merkmalen stimmen Nomen/Adjektiv überein?", options:["4","2","1","3"], correct:"4", explain:"Genus, Numerus, Kasus, Bestimmtheit."},
+      {prompt:"Sach-Plural + Adjektiv steht im:", options:["Femininum Singular","Maskulinum Plural","Dual","Femininum Plural"], correct:"Femininum Singular", explain:"Arabische Sonderregel."},
+      {prompt:"بَيْتٌ كَبِيرٌ (ohne Artikel) bedeutet?", options:["ein großes Haus","das große Haus","große Häuser","das Haus ist groß"], correct:"ein großes Haus", explain:"Ohne Artikel = unbestimmt."},
+      {prompt:"Welches Adjektiv passt zu طَالِبَةٌ?", options:["ذَكِيَّةٌ","ذَكِيٌّ","ذَكِيُّونَ","ذَكِيَّاتٌ"], correct:"ذَكِيَّةٌ", explain:"Feminines Adjektiv."}
+    ]
+  },
+  {
+    id: "g-ar-dual", title: "المثنى", subtitle: "Der Dual (Zweizahl)", tag: "Grundlagen",
+    icon: "<circle cx=\"8\" cy=\"12\" r=\"5\"/><circle cx=\"16\" cy=\"12\" r=\"5\"/>",
+    rules: [
+      {title:"Eine eigene Form für \"zwei\"", body:"Arabisch hat neben Singular und Plural eine eigene Form für genau zwei Dinge/Personen: den Dual (المثنى). Er wird mit اَنِ (Nominativ) bzw. يْنِ (Akkusativ/Genitiv) gebildet.", example:"كِتَابٌ → كِتَابَانِ", exampleDe:"ein Buch → zwei Bücher"},
+      {title:"Dual bei Verben und Pronomen", body:"Auch Verben und Pronomen haben eigene Dual-Formen: هُمَا (sie beide), أَنْتُمَا (ihr beide).", example:"الوَلَدَانِ يَلْعَبَانِ.", exampleDe:"Die zwei Jungen spielen (beide)."},
+      {title:"Keine Zahl nötig", body:"Steht ein Nomen im Dual, braucht man die Zahl \"zwei\" nicht extra dazuzusagen — die Form allein drückt es aus.", example:"عِنْدِي كِتَابَانِ.", exampleDe:"Ich habe zwei Bücher."}
+    ],
+    practice: [
+      {prompt:"Dual-Endung im Nominativ?", options:["انِ","ونَ","اتٌ","ةٌ"], correct:"انِ", explain:"كِتَابٌ → كِتَابَانِ."},
+      {prompt:"كِتَابَانِ bedeutet?", options:["zwei Bücher","viele Bücher","ein Buch","kein Buch"], correct:"zwei Bücher", explain:"Dual = genau zwei."},
+      {prompt:"هُمَا bedeutet?", options:["sie beide","sie (Pl.)","wir beide","ihr beide"], correct:"sie beide", explain:"Dual-Pronomen, 3. Person."},
+      {prompt:"Braucht der Dual zusätzlich \"zwei\"?", options:["Nein","Ja, immer","nur bei Personen","nur bei Verben"], correct:"Nein", explain:"Die Form allein reicht."},
+      {prompt:"الوَلَدَانِ يَلْعَبَانِ. bedeutet?", options:["Die zwei Jungen spielen.","Der Junge spielt.","Viele Jungen spielen.","Zwei Mädchen spielen."], correct:"Die zwei Jungen spielen.", explain:"Nomen und Verb im Dual."},
+      {prompt:"أَنْتُمَا bedeutet?", options:["ihr beide","sie beide","wir beide","du"], correct:"ihr beide", explain:"Dual-Pronomen für \"ihr zwei\"."}
+    ]
+  },
+  {
+    id: "g-ar-praepositionen", title: "حروف الجر", subtitle: "Präpositionen", tag: "Grundlagen",
+    icon: "<path d=\"M4 4h16v16H4z\"/><path d=\"M4 12h16M12 4v16\"/>",
+    rules: [
+      {title:"Häufige Präpositionen", body:"فِي (in), عَلَى (auf), إِلَى (zu, nach), مِنْ (von, aus), مَعَ (mit), عَنْ (über, von), لِ- (für, zu — wird angehängt).", example:"أَنَا فِي البَيْتِ.", exampleDe:"Ich bin im Haus."},
+      {title:"Präposition + Genitiv", body:"Nach jeder Präposition steht das Nomen im Genitiv (Majrūr) — erkennbar an der Kasra-Endung.", example:"مِنَ المَدْرَسَةِ", exampleDe:"von der Schule (المَدْرَسَةِ = Genitiv)"},
+      {title:"لِ- als angehängte Präposition", body:"لِ- (für/zu) wird nicht als eigenes Wort geschrieben, sondern direkt an das folgende Nomen angehängt.", example:"هَذَا الكِتَابُ لِلطَّالِبِ.", exampleDe:"Dieses Buch ist für den Studenten."}
+    ],
+    practice: [
+      {prompt:"\"in\"?", options:["فِي","عَلَى","إِلَى","مَعَ"], correct:"فِي", explain:"فِي = in."},
+      {prompt:"Kasus nach einer Präposition?", options:["Genitiv","Nominativ","Akkusativ","Dual"], correct:"Genitiv", explain:"Präpositionen + Genitiv (Majrūr)."},
+      {prompt:"\"von/aus\"?", options:["مِنْ","إِلَى","عَلَى","مَعَ"], correct:"مِنْ", explain:"مِنْ = von/aus."},
+      {prompt:"Wie wird لِ- (für) geschrieben?", options:["angehängt","eigenständig","nur vor Verben","gar nicht"], correct:"angehängt", explain:"z.B. لِلطَّالِبِ."},
+      {prompt:"\"mit\"?", options:["مَعَ","عَنْ","فِي","إِلَى"], correct:"مَعَ", explain:"مَعَ = mit."},
+      {prompt:"\"zu/nach\" (Richtung)?", options:["إِلَى","مِنْ","عَلَى","عَنْ"], correct:"إِلَى", explain:"إِلَى = zu/nach."}
+    ]
+  },
+  {
+    id: "g-ar-hal-koerper", title: "لغة الحال", subtitle: "Zahlen & Zählen im Satz", tag: "Grundlagen",
+    icon: "<path d=\"M4 9h16M4 15h16M10 3 8 21M16 3l-2 18\"/>",
+    rules: [
+      {title:"Reihenfolge in Zahlwörtern", body:"Bei zusammengesetzten Zahlen (21, 32...) steht im Arabischen zuerst die Einerstelle, dann \"und\" (وَ), dann die Zehnerstelle — wie im Deutschen (\"einundzwanzig\").", example:"وَاحِدٌ وَعِشْرُونَ", exampleDe:"einundzwanzig (wörtlich: eins-und-zwanzig)"},
+      {title:"Zahlen als Adjektiv nach dem Nomen", body:"Bei zweistelligen Zahlen (11 aufwärts) steht das gezählte Nomen im Singular Akkusativ, unabhängig vom Genus der Zahl.", example:"وَاحِدٌ وَعِشْرُونَ كِتَابًا", exampleDe:"21 Bücher (كِتَابًا = Singular Akkusativ)"},
+      {title:"Ordnungszahlen", body:"Ordnungszahlen (der erste, die zweite...) verhalten sich wie normale Adjektive und stehen nach dem Nomen, mit Genus-Übereinstimmung.", example:"الدَّرْسُ الأَوَّلُ / السَّنَةُ الأُولَى", exampleDe:"die erste Lektion / das erste Jahr"}
+    ],
+    practice: [
+      {prompt:"Reihenfolge bei \"21\"?", options:["eins-und-zwanzig","zwanzig-und-eins","zwanzig-eins","eins-zwanzig"], correct:"eins-und-zwanzig", explain:"Wie im Deutschen \"einundzwanzig\"."},
+      {prompt:"Nomenform nach Zahlen ab 11?", options:["Singular Akkusativ","Plural Genitiv","Dual","Plural Nominativ"], correct:"Singular Akkusativ", explain:"z.B. كِتَابًا."},
+      {prompt:"الدَّرْسُ الأَوَّلُ bedeutet?", options:["die erste Lektion","die letzte Lektion","eine Lektion","die zweite Lektion"], correct:"die erste Lektion", explain:"الأَوَّلُ = der erste."},
+      {prompt:"Ordnungszahlen verhalten sich wie:", options:["Adjektive","Verben","Präpositionen","Zahlwörter 3-10"], correct:"Adjektive", explain:"Sie stehen nach dem Nomen."},
+      {prompt:"السَّنَةُ الأُولَى bedeutet?", options:["das erste Jahr","das letzte Jahr","zwei Jahre","viele Jahre"], correct:"das erste Jahr", explain:"الأُولَى = feminine Form von \"der erste\"."},
+      {prompt:"\"und\" in Zahlwörtern wie \"21\"?", options:["وَ","فِي","مِنْ","لِ"], correct:"وَ", explain:"وَاحِدٌ وَعِشْرُونَ."}
+    ]
+  },
+  {
+    id: "g-ar-schwache-verben", title: "الأفعال المعتلة", subtitle: "Schwache Verben (hohl & defektiv)", tag: "Verben",
+    icon: "<path d=\"M4 4h16v16H4z\"/><path d=\"M4 12h16M12 4v16\"/>",
+    rules: [
+      {title:"Was macht ein Verb \"schwach\"?", body:"Enthält eine der drei Wurzelkonsonanten ein و oder ي, spricht man von einem \"schwachen\" Verb (مُعْتَلّ) — diese Buchstaben verändern sich je nach Form oft stark oder verschwinden ganz.", example:"قَالَ (sagen), وَجَدَ (finden)", exampleDe:"Wurzeln ق-و-ل und و-ج-د enthalten schwache Buchstaben."},
+      {title:"Hohle Verben (Wurzel-Mitte)", body:"Bei \"hohlen\" Verben (أَجْوَف) steht der schwache Buchstabe in der Wurzelmitte und wird oft zu einem langen Vokal.", example:"قَالَ (er sagte) ← Wurzel ق-و-ل", exampleDe:"das و der Wurzel wird zu ا im Perfekt."},
+      {title:"Defektive Verben (Wurzel-Ende)", body:"Bei \"defektiven\" Verben (نَاقِص) steht der schwache Buchstabe am Wurzelende und fällt in bestimmten Formen weg.", example:"مَشَى (er ging) ← Wurzel م-ش-ي", exampleDe:"das ي der Wurzel erscheint als ى am Wortende."}
+    ],
+    practice: [
+      {prompt:"\"Schwaches Verb\" (مُعْتَلّ) heißt:", options:["mit و/ي in der Wurzel","sehr selten","ohne Vokale","nur im Passiv"], correct:"mit و/ي in der Wurzel", explain:"Halbvokale verändern sich stark."},
+      {prompt:"قَالَ — wo steht der schwache Buchstabe?", options:["in der Mitte (hohl)","am Anfang","am Ende (defektiv)","es gibt keinen"], correct:"in der Mitte (hohl)", explain:"Hohle Verben: schwacher Radikal in der Mitte."},
+      {prompt:"مَشَى ist ein Beispiel für:", options:["ein defektives Verb","ein hohles Verb","ein reguläres Verb","ein Passivverb"], correct:"ein defektives Verb", explain:"Wurzel م-ش-ي endet auf ي."},
+      {prompt:"Welche zwei Buchstaben sind \"schwach\"?", options:["و und ي","ب und ت","ل und ن","ء und ه"], correct:"و und ي", explain:"Sie verhalten sich wie lange Vokale."},
+      {prompt:"وَجَدَ — welcher Radikal ist schwach?", options:["der erste (و)","der zweite","der dritte","keiner"], correct:"der erste (و)", explain:"Wurzel و-ج-د."},
+      {prompt:"Warum sind schwache Verben wichtig?", options:["sehr häufig, unregelmäßig","nur im Koran","nie benutzt","kein Präsens"], correct:"sehr häufig, unregelmäßig", explain:"z.B. قَالَ, رَأَى, وَجَدَ."}
+    ]
+  },
+  {
+    id: "g-ar-verbstaemme", title: "أوزان الفعل", subtitle: "Die Verbstämme (Formen I–X)", tag: "Vertiefung",
+    icon: "<path d=\"M13 2 3 14h7l-1 8 10-12h-7z\"/>",
+    rules: [
+      {title:"Ein Wurzelsystem, viele Bedeutungen", body:"Arabische Verben basieren auf einer 3-Konsonanten-Wurzel (z. B. ك-ت-ب, \"schreiben\"). Aus derselben Wurzel entstehen durch feste Muster (\"Formen\" I–X) verwandte Verben mit veränderter Bedeutung.", example:"كَتَبَ (I, schreiben) → كَاتَبَ (III, korrespondieren)", exampleDe:"Form III oft: \"etwas mit jemandem tun\""},
+      {title:"Häufige Muster", body:"Form II (فَعَّلَ, verdoppelt) macht oft ein Verb kausativ/intensiv; Form V/VI (تَفَعَّلَ/تَفَاعَلَ) machen es oft reflexiv; Form X (اِسْتَفْعَلَ) bedeutet oft \"um etwas bitten/etwas als... betrachten\".", example:"عَلِمَ (I, wissen) → عَلَّمَ (II, lehren) → تَعَلَّمَ (V, lernen)", exampleDe:"wissen → lehren (kausativ) → lernen (reflexiv)"},
+      {title:"Warum das wichtig ist", body:"Wer die Formen erkennt, kann die Bedeutung neuer Verben oft erschließen, ohne sie einzeln auswendig zu lernen — ein zentrales Werkzeug beim Vokabelaufbau.", example:"كَتَبَ / اِكْتَتَبَ (VIII, sich einschreiben)", exampleDe:"Grundverb vs. abgeleitete Bedeutung"}
+    ],
+    practice: [
+      {prompt:"Arabische Verben basieren auf:", options:["einer 3-Konsonanten-Wurzel","lateinischen Wurzeln","zufälligen Silben","festem Infinitiv"], correct:"einer 3-Konsonanten-Wurzel", explain:"z.B. ك-ت-ب."},
+      {prompt:"عَلَّمَ (Form II) bedeutet:", options:["lehren","wissen","lernen","fragen"], correct:"lehren", explain:"Form II macht oft kausativ."},
+      {prompt:"تَعَلَّمَ (Form V) bedeutet:", options:["lernen","lehren","wissen","fragen"], correct:"lernen", explain:"Form V ist oft reflexiv."},
+      {prompt:"Nutzen der Verbformen?", options:["Bedeutung erschließen","rein dekorativ","nur Aussprache","nur bei Nomen"], correct:"Bedeutung erschließen", explain:"Muster erkennen hilft beim Vokabelaufbau."},
+      {prompt:"Wie viele Konsonanten hat die Grundwurzel?", options:["3","2","4","5"], correct:"3", explain:"Klassische Wurzel = 3 Radikale."},
+      {prompt:"كَاتَبَ (Form III) bedeutet oft:", options:["korrespondieren","schreiben lassen","geschrieben werden","nie schreiben"], correct:"korrespondieren", explain:"Form III: Handlung mit jemandem."}
+    ]
+  },
+  {
+    id: "g-ar-imperativ", title: "فعل الأمر", subtitle: "Der Imperativ", tag: "Vertiefung",
+    icon: "<path d=\"M12 2v20M4 12h16\"/>",
+    rules: [
+      {title:"Bildung aus dem Präsensstamm", body:"Der Imperativ wird aus der \"du\"-Form des Präsens gebildet, indem das Präfix تَ- entfernt wird und ggf. ein Hilfsvokal (Hamza) vorangestellt wird.", example:"تَكْتُبُ → اُكْتُبْ!", exampleDe:"du schreibst → Schreib!"},
+      {title:"Genus- und Numerusformen", body:"Wie das Präsens unterscheidet der Imperativ zwischen maskulin/feminin und Singular/Plural.", example:"اُكْتُبْ! (m.) / اُكْتُبِي! (f.) / اُكْتُبُوا! (m.pl.)", exampleDe:"Schreib! (m.) / Schreib! (f.) / Schreibt! (m.pl.)"},
+      {title:"Negativer Imperativ = لا + Jussiv", body:"Ein Verbot (\"Tu das nicht!\") wird nicht mit dem Imperativ gebildet, sondern mit لَا + Jussiv-Präsens.", example:"لَا تَكْتُبْ!", exampleDe:"Schreib nicht!"}
+    ],
+    practice: [
+      {prompt:"Der Imperativ wird gebildet aus:", options:["der \"du\"-Präsensform","dem Perfekt","dem Verbalnomen","dem Passiv"], correct:"der \"du\"-Präsensform", explain:"تَ- wird entfernt."},
+      {prompt:"اُكْتُبْ! bedeutet?", options:["Schreib! (m.)","Schreibt! (Pl.)","Ich schreibe.","Schreib nicht!"], correct:"Schreib! (m.)", explain:"Maskuline Singularform."},
+      {prompt:"Verbot (\"Tu das nicht!\") bildet man mit:", options:["لَا + Jussiv","Imperativ + لا","نَعَمْ + Verb","مَا + Perfekt"], correct:"لَا + Jussiv", explain:"Der Imperativ hat keine verneinte Form."},
+      {prompt:"لَا تَكْتُبْ! bedeutet?", options:["Schreib nicht!","Schreib!","Ich schreibe nicht.","Schreibt nicht!"], correct:"Schreib nicht!", explain:"Verneinter Imperativ."},
+      {prompt:"اُكْتُبِي! richtet sich an:", options:["eine Frau","einen Mann","mehrere Männer","mehrere Frauen"], correct:"eine Frau", explain:"Suffix ي = feminine Singularform."},
+      {prompt:"اُكْتُبُوا! bedeutet?", options:["Schreibt! (m. Pl.)","Schreib! (Sg.)","Schreibt! (f. Pl.)","Ich schreibe."], correct:"Schreibt! (m. Pl.)", explain:"Suffix وا = maskuliner Plural."}
+    ]
+  },
+  {
+    id: "g-ar-jussiv-konjunktiv", title: "المجزوم والمنصوب", subtitle: "Jussiv & Konjunktiv", tag: "Vertiefung",
+    icon: "<circle cx=\"12\" cy=\"12\" r=\"3\"/><path d=\"M12 2v4M12 18v4M4.9 4.9l2.8 2.8M16.3 16.3l2.8 2.8M2 12h4M18 12h4M4.9 19.1l2.8-2.8M16.3 7.7l2.8-2.8\"/>",
+    rules: [
+      {title:"Drei Präsens-Modi", body:"Das arabische Präsens hat drei Modi mit unterschiedlichen Endungen: Indikativ (مرفوع, Normalform), Konjunktiv (منصوب) und Jussiv (مجزوم).", example:"يَكْتُبُ (Ind.) / أَنْ يَكْتُبَ (Konj.) / لَمْ يَكْتُبْ (Juss.)", exampleDe:"er schreibt / dass er schreibe / er schrieb nicht"},
+      {title:"Konjunktiv nach bestimmten Partikeln", body:"Nach Partikeln wie أَنْ (dass), لِـ (um zu), لَنْ (nicht werden) steht das Verb im Konjunktiv, erkennbar an der Fatha-Endung.", example:"أُرِيدُ أَنْ أَذْهَبَ.", exampleDe:"Ich möchte gehen. (wörtl.: ich will, dass ich gehe)"},
+      {title:"Jussiv nach لَمْ und im Imperativ", body:"Der Jussiv (kurze Form ohne Endvokal) wird nach لَمْ (Vergangenheitsverneinung) und als Grundlage des Imperativs verwendet.", example:"لَمْ يَذْهَبْ.", exampleDe:"Er ist nicht gegangen."}
+    ],
+    practice: [
+      {prompt:"Wie viele Modi hat das Präsens?", options:["3","2","4","1"], correct:"3", explain:"Indikativ, Konjunktiv, Jussiv."},
+      {prompt:"أُرِيدُ أَنْ ___. (gehen)", options:["أَذْهَبَ","أَذْهَبُ","أَذْهَبْ","ذَهَبْتُ"], correct:"أَذْهَبَ", explain:"أَنْ verlangt den Konjunktiv (-a)."},
+      {prompt:"لَمْ يَذْهَبْ. bedeutet?", options:["Er ist nicht gegangen.","Er geht nicht.","Er wird nicht gehen.","Geh nicht!"], correct:"Er ist nicht gegangen.", explain:"لَمْ + Jussiv = Vergangenheit."},
+      {prompt:"Konjunktiv-Endung am Verb?", options:["-a (Fatha)","-u (Damma)","keine Endung","-i (Kasra)"], correct:"-a (Fatha)", explain:"z.B. يَذْهَبَ statt يَذْهَبُ."},
+      {prompt:"Welche Partikel verlangt den Jussiv?", options:["لَمْ","أَنْ","لِـ","كَيْ"], correct:"لَمْ", explain:"لَمْ + Jussiv."},
+      {prompt:"Der Indikativ endet auf:", options:["-u (Damma)","-a (Fatha)","keine Endung","-i (Kasra)"], correct:"-u (Damma)", explain:"z.B. يَكْتُبُ."}
+    ]
+  },
+  {
+    id: "g-ar-partizipien", title: "اسم الفاعل والمفعول", subtitle: "Partizipien (Aktiv & Passiv)", tag: "Vertiefung",
+    icon: "<path d=\"M20.6 12.4 12.4 20.6a2 2 0 0 1-2.8 0l-7.2-7.2a2 2 0 0 1 0-2.8L10.6 2.4A2 2 0 0 1 12 2H19a2 2 0 0 1 2 2v7a2 2 0 0 1-.4 1.4Z\"/>",
+    rules: [
+      {title:"Aktivpartizip (Ism al-Fāʿil)", body:"Das Aktivpartizip (\"der Tuende\") wird bei Form-I-Verben nach dem Muster فَاعِل gebildet und bedeutet \"der/die ...-ende\" oder wird oft wie ein Adjektiv/Nomen benutzt.", example:"كَتَبَ → كَاتِبٌ", exampleDe:"schreiben → Schreibender / Schriftsteller"},
+      {title:"Passivpartizip (Ism al-Mafʿūl)", body:"Das Passivpartizip (\"das Getane\") wird bei Form-I-Verben nach dem Muster مَفْعُول gebildet.", example:"كَتَبَ → مَكْتُوبٌ", exampleDe:"schreiben → geschrieben"},
+      {title:"Verwendung wie Adjektive", body:"Partizipien verhalten sich grammatisch wie Adjektive: Sie stehen nach dem Nomen und stimmen in Genus/Numerus überein.", example:"رِسَالَةٌ مَكْتُوبَةٌ", exampleDe:"ein geschriebener Brief"}
+    ],
+    practice: [
+      {prompt:"Muster des Aktivpartizips (Form I)?", options:["فَاعِل","مَفْعُول","فَعَّل","اِفْتَعَل"], correct:"فَاعِل", explain:"z.B. كَاتِبٌ."},
+      {prompt:"مَكْتُوبٌ bedeutet?", options:["geschrieben","schreibend","schreiben","er schreibt"], correct:"geschrieben", explain:"Passivpartizip-Muster مَفْعُول."},
+      {prompt:"كَاتِبٌ kann als Beruf bedeuten:", options:["Schriftsteller","Buch","Brief","Stift"], correct:"Schriftsteller", explain:"Aktivpartizip als Berufsbezeichnung."},
+      {prompt:"رِسَالَةٌ ___. (geschrieben)", options:["مَكْتُوبَةٌ","مَكْتُوبٌ","كَاتِبَةٌ","كِتَابَةٌ"], correct:"مَكْتُوبَةٌ", explain:"Feminines Passivpartizip, kongruent."},
+      {prompt:"Muster des Passivpartizips (Form I)?", options:["مَفْعُول","فَاعِل","مُفَعَّل","مُتَفَاعِل"], correct:"مَفْعُول", explain:"Grundmuster für \"das Getane\"."},
+      {prompt:"طَالِبٌ ist grammatisch ein:", options:["Aktivpartizip","Passivpartizip","Verbalnomen","Imperativ"], correct:"Aktivpartizip", explain:"Von طَلَبَ, Muster فَاعِل."}
+    ]
+  },
+  {
+    id: "g-ar-passiv", title: "المبني للمجهول", subtitle: "Das Passiv (Majhūl)", tag: "Vertiefung",
+    icon: "<path d=\"M4 4h16v16H4z\"/><circle cx=\"12\" cy=\"12\" r=\"4\"/>",
+    rules: [
+      {title:"Passiv durch Vokalwechsel", body:"Das arabische Passiv wird nicht mit einem Hilfsverb gebildet, sondern durch reinen Vokalwechsel innerhalb des Verbs — die Konsonanten bleiben gleich.", example:"كَتَبَ (er schrieb) → كُتِبَ (es wurde geschrieben)", exampleDe:"Perfekt Passiv: erster Vokal Damma, letzter Kasra"},
+      {title:"Kein Agens (\"von wem\")", body:"Da im klassischen Arabisch der Täter im Passivsatz grammatisch nicht genannt wird, entspricht es dem deutschen \"es wurde getan\" ohne \"von jemandem\".", example:"كُتِبَتِ الرِّسَالَةُ.", exampleDe:"Der Brief wurde geschrieben. (Täter bleibt ungenannt)"},
+      {title:"Präsens Passiv", body:"Im Präsens Passiv wird der erste Vokal zu Damma und der vorletzte zu Fatha.", example:"يَكْتُبُ → يُكْتَبُ", exampleDe:"er schreibt → es wird geschrieben"}
+    ],
+    practice: [
+      {prompt:"Wie wird das Perfekt-Passiv gebildet?", options:["innerer Vokalwechsel","Hilfsverb \"werden\"","Präfix","Verdopplung"], correct:"innerer Vokalwechsel", explain:"Konsonanten bleiben gleich."},
+      {prompt:"كُتِبَ bedeutet?", options:["es wurde geschrieben","er schreibt","schreib!","geschrieben (Adj.)"], correct:"es wurde geschrieben", explain:"Perfekt Passiv von كَتَبَ."},
+      {prompt:"Wird der Täter im Passivsatz genannt?", options:["meist nicht","immer mit مِنْ","immer mit بِـ","nur im Perfekt"], correct:"meist nicht", explain:"Klassisches Passiv lässt Täter weg."},
+      {prompt:"يُكْتَبُ bedeutet?", options:["es wird geschrieben","es wurde geschrieben","er schreibt","schreib!"], correct:"es wird geschrieben", explain:"Präsens Passiv von يَكْتُبُ."},
+      {prompt:"كُتِبَتِ الرِّسَالَةُ. bedeutet?", options:["Der Brief wurde geschrieben.","Der Brief schreibt.","Schreib den Brief!","Der Brief wird geschrieben."], correct:"Der Brief wurde geschrieben.", explain:"Perfekt Passiv."},
+      {prompt:"Was passiert mit den Konsonanten im Passiv?", options:["bleiben unverändert","werden verdoppelt","werden entfernt","werden vertauscht"], correct:"bleiben unverändert", explain:"Nur die Vokale ändern sich."}
+    ]
+  },
+  {
+    id: "g-ar-relativsatz", title: "الاسم الموصول", subtitle: "Relativsätze", tag: "Satzbau",
+    icon: "<path d=\"M9 9a3 3 0 1 1 4 2.8c-.9.5-1.4 1-1.4 2.2\"/><path d=\"M12 17h.01\"/><circle cx=\"12\" cy=\"12\" r=\"10\"/>",
+    rules: [
+      {title:"Relativpronomen nur bei bestimmten Nomen", body:"Ein Relativsatz braucht im Arabischen nur dann ein Relativpronomen (الَّذِي/الَّتِي), wenn sich der Relativsatz auf ein bestimmtes Nomen bezieht.", example:"الرَّجُلُ الَّذِي يَكْتُبُ", exampleDe:"der Mann, der schreibt"},
+      {title:"Kein Relativpronomen bei unbestimmten Nomen", body:"Bezieht sich der Relativsatz auf ein unbestimmtes Nomen, entfällt das Relativpronomen komplett.", example:"رَجُلٌ يَكْتُبُ", exampleDe:"ein Mann, der schreibt (wörtlich: ein Mann schreibt)"},
+      {title:"Rückverweisendes Pronomen", body:"Im Relativsatz selbst steht oft ein rückverweisendes Pronomensuffix, das sich auf das Bezugswort zurückbezieht.", example:"الكِتَابُ الَّذِي قَرَأْتُهُ", exampleDe:"das Buch, das ich gelesen habe (وهُ = \"es\", verweist auf das Buch)"}
+    ],
+    practice: [
+      {prompt:"Wann braucht man ein Relativpronomen?", options:["bei bestimmtem Nomen","immer","nie","nur bei Personen"], correct:"bei bestimmtem Nomen", explain:"Bei unbestimmten Nomen entfällt es."},
+      {prompt:"رَجُلٌ يَكْتُبُ bedeutet?", options:["ein Mann, der schreibt","der Mann schreibt","der Mann schrieb","Männer schreiben"], correct:"ein Mann, der schreibt", explain:"Unbestimmt → kein Relativpronomen."},
+      {prompt:"Relativpronomen für feminin Singular?", options:["الَّتِي","الَّذِي","الَّذِينَ","اللَّاتِي"], correct:"الَّتِي", explain:"الَّتِي = die (f., Sg.)."},
+      {prompt:"Suffix هُ in قَرَأْتُهُ verweist auf:", options:["das Buch","nichts","die Vergangenheit","den Plural"], correct:"das Buch", explain:"Rückverweis auf الكِتَابُ."},
+      {prompt:"الرَّجُلُ الَّذِي يَكْتُبُ bedeutet?", options:["der Mann, der schreibt","ein Mann schreibt","Männer schreiben","der Mann schrieb"], correct:"der Mann, der schreibt", explain:"Bestimmtes Nomen + الَّذِي."},
+      {prompt:"Relativpronomen für maskulin Plural (Pers.)?", options:["الَّذِينَ","الَّتِي","الَّذِي","اللَّاتِي"], correct:"الَّذِينَ", explain:"الَّذِينَ = die (m. Pl.)."}
+    ]
+  },
+  {
+    id: "g-ar-hal-satz", title: "الحال", subtitle: "Der Hal-Satz (Zustandssatz)", tag: "Satzbau",
+    icon: "<path d=\"M13 2 3 14h7l-1 8 10-12h-7z\"/>",
+    rules: [
+      {title:"Was ist ein Hal-Satz?", body:"Der Hal (الحال) beschreibt den Zustand oder die Begleitumstände des Subjekts/Objekts während der Haupthandlung — vergleichbar mit deutschen Partizipialkonstruktionen (\"lachend kam er herein\").", example:"دَخَلَ ضَاحِكًا.", exampleDe:"Er kam lachend herein."},
+      {title:"Form: Akkusativ oder Verbalsatz", body:"Der Hal steht entweder als unbestimmtes Aktivpartizip im Akkusativ oder als ganzer Präsenssatz (oft mit وَ eingeleitet).", example:"خَرَجَ وَهُوَ يَبْكِي.", exampleDe:"Er ging hinaus, während er weinte."},
+      {title:"Abgrenzung zum Adjektiv", body:"Anders als ein Adjektiv beschreibt der Hal keine dauerhafte Eigenschaft, sondern eine Momentaufnahme während der Handlung.", example:"رَأَيْتُهُ رَاكِبًا.", exampleDe:"Ich sah ihn reitend. (im Moment des Sehens)"}
+    ],
+    practice: [
+      {prompt:"Was beschreibt der Hal-Satz?", options:["den Begleitzustand","den Besitzer","eine feste Eigenschaft","eine Frage"], correct:"den Begleitzustand", explain:"Wie deutsche Partizipialkonstruktionen."},
+      {prompt:"دَخَلَ ضَاحِكًا. bedeutet?", options:["Er kam lachend herein.","Er lachte danach.","Er lachte gestern.","Er wird lachen."], correct:"Er kam lachend herein.", explain:"ضَاحِكًا als Hal im Akkusativ."},
+      {prompt:"Kasus des einwortigen Hal?", options:["Akkusativ","Nominativ","Genitiv","Vokativ"], correct:"Akkusativ", explain:"Der Hal steht im unbestimmten Akkusativ."},
+      {prompt:"خَرَجَ وَهُوَ يَبْكِي. — Hal-Form hier?", options:["ganzer Präsenssatz","ein Adjektiv","eine Idafa","ein Relativsatz"], correct:"ganzer Präsenssatz", explain:"Mit وَ eingeleitet."},
+      {prompt:"Was unterscheidet Hal von Adjektiv?", options:["nur ein Moment (situativ)","steht immer vorn","Adjektive gibt's nicht","kein Unterschied"], correct:"nur ein Moment (situativ)", explain:"Der Hal ist situativ, kein Dauermerkmal."},
+      {prompt:"رَأَيْتُهُ رَاكِبًا. bedeutet?", options:["Ich sah ihn reitend.","Ich sah sein Pferd.","Er sah mich reiten.","Ich werde reiten."], correct:"Ich sah ihn reitend.", explain:"رَاكِبًا beschreibt den Moment."}
+    ]
+  },
+  {
+    id: "g-ar-elativ", title: "اسم التفضيل", subtitle: "Komparativ & Superlativ (Elativ)", tag: "Vergleiche",
+    icon: "<path d=\"m16.2 7.8-2.2 6.2-6.2 2.2 2.2-6.2z\"/><circle cx=\"12\" cy=\"12\" r=\"10\"/>",
+    rules: [
+      {title:"Eine Form für beides", body:"Anders als im Deutschen (\"größer\" vs. \"am größten\") nutzt Arabisch eine einzige Form, den Elativ (أَفْعَل), sowohl für Komparativ als auch Superlativ — der Kontext entscheidet.", example:"كَبِيرٌ → أَكْبَرُ", exampleDe:"groß → größer / am größten"},
+      {title:"Komparativ mit مِنْ", body:"Für den Vergleich (\"größer als\") wird der Elativ mit مِنْ (\"als\") verbunden.", example:"هُوَ أَكْبَرُ مِنِّي.", exampleDe:"Er ist größer als ich."},
+      {title:"Superlativ mit Idafa oder Artikel", body:"Für den Superlativ (\"der größte\") wird der Elativ entweder in eine Idafa-Konstruktion gesetzt oder mit dem Artikel versehen.", example:"أَكْبَرُ البُيُوتِ / البَيْتُ الأَكْبَرُ", exampleDe:"das größte der Häuser / das größte Haus"}
+    ],
+    practice: [
+      {prompt:"Wie viele Formen für Komparativ+Superlativ?", options:["1","2","3","4"], correct:"1", explain:"أَفْعَل deckt beides ab."},
+      {prompt:"كَبِيرٌ (groß) → Elativ?", options:["أَكْبَرُ","كَبِيرَةٌ","كِبَارٌ","كُبَرَاءُ"], correct:"أَكْبَرُ", explain:"Muster أَفْعَل."},
+      {prompt:"هُوَ أَكْبَرُ ___ي. (als ich)", options:["مِنِّ","فِ","عَلَ","إِلَ"], correct:"مِنِّ", explain:"مِنْ nach dem Elativ = \"als\"."},
+      {prompt:"Superlativ-Konstruktion?", options:["Elativ + Idafa/Artikel","Elativ + مِنْ immer","Elativ + Plural","Elativ + Dual"], correct:"Elativ + Idafa/Artikel", explain:"z.B. أَكْبَرُ البُيُوتِ."},
+      {prompt:"البَيْتُ الأَكْبَرُ bedeutet?", options:["das größte Haus","ein großes Haus","das Haus ist größer","größere Häuser"], correct:"das größte Haus", explain:"Elativ mit Artikel = Superlativ."},
+      {prompt:"Was entscheidet Komparativ vs. Superlativ?", options:["Kontext/Konstruktion","Aussprache","Genus","kein Unterschied"], correct:"Kontext/Konstruktion", explain:"مِنْ → Komparativ; Idafa/Artikel → Superlativ."}
+    ]
+  },
+  {
+    id: "g-ar-laysa", title: "ليس", subtitle: "Verneinung mit Laysa", tag: "Feinheiten",
+    icon: "<circle cx=\"12\" cy=\"12\" r=\"10\"/><path d=\"M6 6l12 12\"/>",
+    rules: [
+      {title:"Laysa als \"Schwester von Kāna\"", body:"لَيْسَ (\"ist nicht\") verneint einen Nominalsatz im Präsens und funktioniert grammatisch wie كَانَ: es setzt den Khabar in den Akkusativ.", example:"البَيْتُ كَبِيرٌ. → لَيْسَ البَيْتُ كَبِيرًا.", exampleDe:"Das Haus ist groß. → Das Haus ist nicht groß."},
+      {title:"Feste, unveränderliche Form", body:"Anders als ein normales Verb wird لَيْسَ nur in dieser einen Form konjugiert (mit Personalendungen), hat aber kein Präsens oder Perfekt-Gegenstück — es ist grammatisch fixiert.", example:"لَسْتُ طَبِيبًا.", exampleDe:"Ich bin kein Arzt."},
+      {title:"Vorteil gegenüber لا", body:"لَيْسَ wird oft bevorzugt, wenn man einen kompletten Nominalsatz elegant und eindeutig verneinen will, während لَا im Nominalsatz seltener und stilistisch einfacher ist.", example:"لَيْسَتِ الطَّالِبَةُ حَاضِرَةً.", exampleDe:"Die Studentin ist nicht anwesend."}
+    ],
+    practice: [
+      {prompt:"Wie funktioniert لَيْسَ grammatisch?", options:["wie كَانَ","wie eine Präposition","wie ein Fragewort","wie ein Plural-Suffix"], correct:"wie كَانَ", explain:"Khabar steht im Akkusativ."},
+      {prompt:"لَيْسَ البَيْتُ ___. (groß)", options:["كَبِيرًا","كَبِيرٌ","كَبِيرَةٌ","كَبِيرَاتٌ"], correct:"كَبِيرًا", explain:"Nach لَيْسَ steht der Khabar im Akkusativ."},
+      {prompt:"لَسْتُ طَبِيبًا. bedeutet?", options:["Ich bin kein Arzt.","Ich war kein Arzt.","Er ist kein Arzt.","Wir sind keine Ärzte."], correct:"Ich bin kein Arzt.", explain:"لَسْتُ = لَيْسَ + Suffix تُ."},
+      {prompt:"Hat لَيْسَ ein eigenes Präsens/Perfekt?", options:["nein, fixiert","ja, beides","nur Perfekt","nur Präsens"], correct:"nein, fixiert", explain:"لَيْسَ existiert nur in dieser Form."},
+      {prompt:"لَيْسَتِ الطَّالِبَةُ حَاضِرَةً. — warum ـتِ?", options:["Subjekt ist feminin","Plural","Zufall","Befehl"], correct:"Subjekt ist feminin", explain:"لَيْسَ kongruiert im Genus."},
+      {prompt:"Zu welcher Verbgruppe gehört لَيْسَ?", options:["كان وأخواتها","إنّ وأخواتها","حروف الجر","أدوات الاستفهام"], correct:"كان وأخواتها", explain:"لَيْسَ = \"Schwester von كَانَ\"."}
+    ]
+  },
+  {
+    id: "g-ar-kaana", title: "كان وأخواتها", subtitle: "Kāna und ihre Schwestern", tag: "Feinheiten",
+    icon: "<path d=\"M12 2v20M4 12h16\"/>",
+    rules: [
+      {title:"Kāna verändert den Nominalsatz", body:"Das Verb كَانَ (\"sein/war\") und seine \"Schwestern\" (ähnliche Verben) werden vor einen Nominalsatz gestellt und versetzen ihn in die Vergangenheit oder verändern seine Bedeutung.", example:"البَيْتُ كَبِيرٌ. → كَانَ البَيْتُ كَبِيرًا.", exampleDe:"Das Haus ist groß. → Das Haus war groß."},
+      {title:"Khabar wird zum Akkusativ", body:"Nach كَانَ wechselt der Khabar (die Aussage) vom Nominativ in den Akkusativ — eine zentrale Regel dieser Verbgruppe.", example:"كَانَ الطَّقْسُ جَمِيلًا.", exampleDe:"Das Wetter war schön. (جَمِيلًا = Akkusativ)"},
+      {title:"Weitere Schwestern", body:"Zu كَانَ gehören u. a. أَصْبَحَ (werden, morgens sein), ظَلَّ (bleiben), مَا زَالَ (immer noch sein) — sie funktionieren alle nach demselben Muster.", example:"مَا زَالَ الجَوُّ بَارِدًا.", exampleDe:"Das Wetter ist immer noch kalt."}
+    ],
+    practice: [
+      {prompt:"Was bewirkt كَانَ vor einem Nominalsatz?", options:["Vergangenheit","Frage","Verneinung","nichts"], correct:"Vergangenheit", explain:"كَانَ = \"war\"."},
+      {prompt:"كَانَ الطَّقْسُ ___. (schön)", options:["جَمِيلًا","جَمِيلٌ","جَمِيلَةٌ","جَمِيلَاتٌ"], correct:"جَمِيلًا", explain:"Khabar nach كَانَ im Akkusativ."},
+      {prompt:"كَانَ البَيْتُ كَبِيرًا. bedeutet?", options:["Das Haus war groß.","Das Haus ist groß.","Das Haus wird groß.","Das große Haus."], correct:"Das Haus war groß.", explain:"Kāna + Nominalsatz = Vergangenheit."},
+      {prompt:"\"immer noch sein\"?", options:["مَا زَالَ","أَصْبَحَ","ظَلَّ","كَانَ"], correct:"مَا زَالَ", explain:"مَا زَالَ = Andauer."},
+      {prompt:"أَصْبَحَ الجَوُّ بَارِدًا. bedeutet?", options:["Das Wetter wurde kalt.","war schon immer kalt","wird nie kalt","ist heiß"], correct:"Das Wetter wurde kalt.", explain:"أَصْبَحَ = \"werden\"."},
+      {prompt:"Name dieser Verbgruppe?", options:["كان وأخواتها","إنّ وأخواتها","حروف الجر","أفعال المقاربة"], correct:"كان وأخواتها", explain:"\"Kāna und ihre Schwestern\"."}
+    ]
+  },
+  {
+    id: "g-ar-inna", title: "إنّ وأخواتها", subtitle: "Inna und ihre Schwestern", tag: "Feinheiten",
+    icon: "<path d=\"M13 2 3 14h7l-1 8 10-12h-7z\"/>",
+    rules: [
+      {title:"Partikeln vor dem Nominalsatz", body:"إِنَّ (\"wahrlich, dass\") und ihre Schwestern sind Partikeln (keine Verben), die vor einen Nominalsatz treten und dessen Aussage betonen oder verknüpfen.", example:"إِنَّ الوَلَدَ ذَكِيٌّ.", exampleDe:"Der Junge ist [wahrlich] klug."},
+      {title:"Mubtada' wird zum Akkusativ", body:"Nach إِنَّ steht das Subjekt (Mubtada', jetzt \"Ism inna\" genannt) im Akkusativ, während der Khabar im Nominativ bleibt — umgekehrt wie bei كَانَ.", example:"إِنَّ البَيْتَ كَبِيرٌ.", exampleDe:"Das Haus ist [wirklich] groß. (البَيْتَ = Akkusativ)"},
+      {title:"Weitere Schwestern", body:"أَنَّ (dass, in Nebensätzen), لَكِنَّ (aber), لِأَنَّ (weil), كَأَنَّ (als ob) — alle verlangen dieselbe Kasus-Struktur.", example:"أَعْرِفُ أَنَّ الجَوَّ بَارِدٌ.", exampleDe:"Ich weiß, dass das Wetter kalt ist."}
+    ],
+    practice: [
+      {prompt:"Was ist إِنَّ grammatisch?", options:["eine Partikel","ein Verb wie كَانَ","ein Nomen","eine Präposition"], correct:"eine Partikel", explain:"Keine Verbform, sondern حرف."},
+      {prompt:"إِنَّ البَيْتَ ___. (Nominativ bleibt: groß)", options:["كَبِيرٌ","كَبِيرًا","كَبِيرَةٌ","كَبِيرَاتٌ"], correct:"كَبِيرٌ", explain:"Der Khabar bleibt im Nominativ."},
+      {prompt:"\"weil\" (Inna-Schwester)?", options:["لِأَنَّ","لَكِنَّ","كَأَنَّ","أَنَّ"], correct:"لِأَنَّ", explain:"لِأَنَّ leitet einen Grund ein."},
+      {prompt:"أَعْرِفُ أَنَّ الجَوَّ بَارِدٌ. bedeutet?", options:["Ich weiß, dass es kalt ist.","Ich weiß es nicht.","Es ist wohl kalt.","Ich mag Kälte."], correct:"Ich weiß, dass es kalt ist.", explain:"أَنَّ leitet einen dass-Satz ein."},
+      {prompt:"\"aber\" (Inna-Schwester)?", options:["لَكِنَّ","وَ","أَمْ","ثُمَّ"], correct:"لَكِنَّ", explain:"لَكِنَّ funktioniert wie إِنَّ."},
+      {prompt:"In welchen Kasus wechselt das Subjekt nach إِنَّ?", options:["Akkusativ","Nominativ","Genitiv","Dual"], correct:"Akkusativ", explain:"Ism inna steht im Akkusativ."}
+    ]
+  },
+  {
+    id: "g-ar-bedingungssaetze", title: "أسلوب الشرط", subtitle: "Bedingungssätze (إن / لو)", tag: "Feinheiten",
+    icon: "<path d=\"M9 9a3 3 0 1 1 4 2.8c-.9.5-1.4 1-1.4 2.2\"/><path d=\"M12 17h.01\"/><circle cx=\"12\" cy=\"12\" r=\"10\"/>",
+    rules: [
+      {title:"Reale Bedingung: إِنْ", body:"إِنْ (\"wenn/falls\") leitet reale, mögliche Bedingungen ein und wird meist mit dem Jussiv in beiden Satzteilen konstruiert.", example:"إِنْ تَدْرُسْ تَنْجَحْ.", exampleDe:"Wenn du lernst, wirst du bestehen."},
+      {title:"Irreale Bedingung: لَوْ", body:"لَوْ (\"wenn... wäre\") leitet irreale oder unerfüllte Bedingungen ein, meist mit Perfekt in beiden Satzteilen und oft لَـ vor dem Hauptsatz.", example:"لَوْ دَرَسْتَ لَنَجَحْتَ.", exampleDe:"Wenn du gelernt hättest, hättest du bestanden."},
+      {title:"Unterschied zu deutschen Konditionalsätzen", body:"Anders als im Deutschen gibt es keinen eigenen Konjunktiv-II-Modus — die Irrealität wird allein durch لَوْ und die Perfektform ausgedrückt.", example:"لَوْ كُنْتُ غَنِيًّا...", exampleDe:"Wenn ich reich wäre... (wörtlich: \"wenn ich war reich\")"}
+    ],
+    practice: [
+      {prompt:"Reale/mögliche Bedingung?", options:["إِنْ","لَوْ","لَكِنَّ","أَنَّ"], correct:"إِنْ", explain:"إِنْ = \"wenn/falls\"."},
+      {prompt:"إِنْ تَدْرُسْ ___. (bestehen)", options:["تَنْجَحْ","تَنْجَحُ","نَجَحْتَ","تَنْجَحَ"], correct:"تَنْجَحْ", explain:"إِنْ + Jussiv in beiden Teilen."},
+      {prompt:"Irreale Bedingung?", options:["لَوْ","إِنْ","هَلْ","مَا"], correct:"لَوْ", explain:"لَوْ = \"wenn... wäre\"."},
+      {prompt:"لَوْ دَرَسْتَ لَنَجَحْتَ. bedeutet?", options:["Hättest du gelernt, bestanden.","Wenn du lernst, bestehst du.","Du lernst gerade.","Lerne jetzt!"], correct:"Hättest du gelernt, bestanden.", explain:"لَوْ + Perfekt = irreal."},
+      {prompt:"Verbform nach إِنْ meist?", options:["Jussiv","Perfekt nur","Konjunktiv","Partizip"], correct:"Jussiv", explain:"In beiden Satzteilen."},
+      {prompt:"Wie drückt لَوْ Irrealität aus?", options:["mit Perfektform","eigener Modus","Imperativ","gar nicht"], correct:"mit Perfektform", explain:"Kein eigener Konjunktiv-II nötig."}
+    ]
+  },
+  {
+    id: "g-ar-maadi-kaana-mudari", title: "كان يفعل", subtitle: "Zusammengesetzte Zeiten", tag: "Feinheiten",
+    icon: "<circle cx=\"12\" cy=\"12\" r=\"10\"/><path d=\"M12 6v6l4 2\"/>",
+    rules: [
+      {title:"Vergangenheitsverlauf: كَانَ + Präsens", body:"Um eine andauernde oder wiederholte Handlung in der Vergangenheit auszudrücken (\"pflegte zu tun\", \"tat gerade\"), wird كَانَ mit dem Präsens desselben Verbs kombiniert.", example:"كَانَ يَكْتُبُ رِسَالَةً.", exampleDe:"Er schrieb gerade einen Brief. / Er pflegte zu schreiben."},
+      {title:"Vorzeitigkeit: قَدْ + Perfekt", body:"قَدْ vor dem Perfekt betont, dass eine Handlung bereits abgeschlossen ist — ähnlich dem deutschen Perfekt/Plusquamperfekt.", example:"قَدْ كَتَبْتُ الرِّسَالَةَ.", exampleDe:"Ich habe den Brief bereits geschrieben."},
+      {title:"Plusquamperfekt: كَانَ قَدْ + Perfekt", body:"Für die Vorvergangenheit (\"hatte bereits getan\") kombiniert man كَانَ mit قَدْ + Perfekt.", example:"كَانَ قَدْ كَتَبَ الرِّسَالَةَ قَبْلَ أَنْ أَصِلَ.", exampleDe:"Er hatte den Brief bereits geschrieben, bevor ich ankam."}
+    ],
+    practice: [
+      {prompt:"\"er pflegte zu schreiben\"?", options:["كَانَ + Präsens","كَانَ + Perfekt","قَدْ + Präsens","لَنْ + Perfekt"], correct:"كَانَ + Präsens", explain:"Vergangenheitsverlauf."},
+      {prompt:"كَانَ ___ رِسَالَةً. (schreiben, Präsens)", options:["يَكْتُبُ","كَتَبَ","يَكْتُبَ","كَتَبْتُ"], correct:"يَكْتُبُ", explain:"كَانَ + Präsensform."},
+      {prompt:"Was bewirkt قَدْ vor dem Perfekt?", options:["betont Abschluss","verneint","macht zur Frage","nichts"], correct:"betont Abschluss", explain:"≈ deutsches Perfekt."},
+      {prompt:"قَدْ كَتَبْتُ الرِّسَالَةَ. bedeutet?", options:["Ich habe es schon geschrieben.","Ich schreibe es gerade.","Ich werde es schreiben.","Schreib es!"], correct:"Ich habe es schon geschrieben.", explain:"قَدْ betont die Abgeschlossenheit."},
+      {prompt:"Plusquamperfekt bildet man mit:", options:["كَانَ قَدْ + Perfekt","قَدْ + Präsens","لَنْ + Perfekt","كَانَ + Imperativ"], correct:"كَانَ قَدْ + Perfekt", explain:"Für die Vorvergangenheit."},
+      {prompt:"كَانَ قَدْ كَتَبَ... bedeutet?", options:["Er hatte bereits geschrieben.","Er schreibt gerade.","Er wird schreiben.","Ich schrieb vor ihm."], correct:"Er hatte bereits geschrieben.", explain:"Plusquamperfekt-Konstruktion."}
+    ]
+  },
+  {
+    id: "g-ar-taajjub", title: "أسلوب التعجب", subtitle: "Der Ausruf des Erstaunens", tag: "Feinheiten",
+    icon: "<path d=\"M12 2v4M12 18v4M4.9 4.9l2.8 2.8M16.3 16.3l2.8 2.8M2 12h4M18 12h4M4.9 19.1l2.8-2.8M16.3 7.7l2.8-2.8\"/><circle cx=\"12\" cy=\"12\" r=\"3\"/>",
+    rules: [
+      {title:"Die feste Formel مَا أَفْعَلَ", body:"Erstaunen (\"Wie ...!\") wird mit der festen Formel مَا أَفْعَلَ + Nomen im Akkusativ ausgedrückt — ähnlich dem Elativ-Muster.", example:"مَا أَجْمَلَ هَذَا المَنْظَرَ!", exampleDe:"Wie schön diese Aussicht ist!"},
+      {title:"Alternative: أَفْعِلْ بِـ", body:"Eine zweite, seltenere Konstruktion ist der Imperativ-ähnliche Ausdruck أَفْعِلْ بِـ + Genitiv.", example:"أَجْمِلْ بِهَذَا المَنْظَرِ!", exampleDe:"Wie schön ist diese Aussicht! (wörtlich: mach diese Aussicht schön!)"},
+      {title:"Bedeutungsunterschied zu einer Frage", body:"Obwohl مَا wie ein Fragewort aussieht, ist der Satz hier ein Ausruf, kein Fragesatz — der Kontext und die Betonung machen den Unterschied.", example:"مَا أَطْوَلَهُ!", exampleDe:"Wie groß/lang er ist! (nicht: Was ist er lang?)"}
+    ],
+    practice: [
+      {prompt:"Formel für Erstaunen (\"Wie ...!\")?", options:["مَا أَفْعَلَ","هَلْ فَعَلَ","لَوْ فَعَلَ","إِنَّ فَعَلَ"], correct:"مَا أَفْعَلَ", explain:"Grundformel für Ausrufesätze."},
+      {prompt:"مَا أَجْمَلَ هَذَا ___! (Aussicht, Akk.)", options:["المَنْظَرَ","المَنْظَرُ","المَنْظَرِ","مَنْظَرًا"], correct:"المَنْظَرَ", explain:"Nomen nach مَا أَفْعَلَ im Akkusativ."},
+      {prompt:"Kasus nach مَا أَفْعَلَ?", options:["Akkusativ","Nominativ","Genitiv","Vokativ"], correct:"Akkusativ", explain:"Wie beim Elativ-Muster."},
+      {prompt:"Ist مَا أَجْمَلَ هَذَا! Frage oder Ausruf?", options:["Ausruf","Frage","Befehl","Verneinung"], correct:"Ausruf", explain:"Trotz مَا kein Fragesatz."},
+      {prompt:"Alternative Ausrufskonstruktion?", options:["أَفْعِلْ بِـ","هَلْ + Perfekt","لَنْ + Konjunktiv","لَمْ + Jussiv"], correct:"أَفْعِلْ بِـ", explain:"z.B. أَجْمِلْ بِهَذَا!"},
+      {prompt:"مَا أَطْوَلَهُ! bedeutet?", options:["Wie groß er ist!","Ist er groß?","Er ist nicht groß.","Mach ihn groß!"], correct:"Wie groß er ist!", explain:"Suffix هُ = er, als Objekt."}
+    ]
+  },
+  {
+    id: "g-ar-tamyiz", title: "التمييز", subtitle: "Der Tamyiz (Spezifizierung)", tag: "Feinheiten",
+    icon: "<path d=\"M4 9h16M4 15h16M10 3 8 21M16 3l-2 18\"/>",
+    rules: [
+      {title:"Was ist der Tamyiz?", body:"Der Tamyiz (\"Spezifizierung\") ist ein unbestimmtes Akkusativ-Nomen, das eine vorangehende mehrdeutige Aussage (oft eine Zahl oder ein Maß) genauer bestimmt.", example:"عِنْدِي عِشْرُونَ كِتَابًا.", exampleDe:"Ich habe zwanzig Bücher. (كِتَابًا spezifiziert \"zwanzig [wovon]\")"},
+      {title:"Tamyiz bei Maßangaben", body:"Auch bei Maßen, Gewichten und Vergleichen wird der Tamyiz verwendet, um zu klären, worauf sich die Angabe bezieht.", example:"عِنْدِي كِيلُو تُفَّاحٍ. / هُوَ أَكْثَرُ عِلْمًا.", exampleDe:"Ich habe ein Kilo Äpfel. / Er hat mehr Wissen (wörtl.: er ist mehr an Wissen)."},
+      {title:"Warum das wichtig ist", body:"Der Tamyiz löst im Arabischen viele Fälle, in denen das Deutsche eine Präposition (\"von, an\") braucht — im Arabischen reicht der bloße Akkusativ.", example:"مَلَأْتُ الكَأْسَ مَاءً.", exampleDe:"Ich füllte das Glas mit Wasser. (وَاءً = Tamyiz, kein \"mit\" nötig)"}
+    ],
+    practice: [
+      {prompt:"Funktion des Tamyiz?", options:["Aussage genauer bestimmen","Frage einleiten","verneinen","Relativsatz einleiten"], correct:"Aussage genauer bestimmen", explain:"Spezifiziert z.B. Zahlen/Maße."},
+      {prompt:"عِنْدِي عِشْرُونَ ___. (Bücher, Tamyiz)", options:["كِتَابًا","كِتَابٌ","كُتُبٌ","كِتَابٍ"], correct:"كِتَابًا", explain:"Tamyiz = unbestimmter Akkusativ Singular."},
+      {prompt:"Kasus des Tamyiz?", options:["unbestimmter Akkusativ","bestimmter Nominativ","Genitiv","Dual"], correct:"unbestimmter Akkusativ", explain:"Grundregel des Tamyiz."},
+      {prompt:"مَلَأْتُ الكَأْسَ مَاءً. — مَاءً ersetzt welche Präposition?", options:["mit","von","gar keine","für"], correct:"mit", explain:"Arabisch braucht hier keine Präposition."},
+      {prompt:"هُوَ أَكْثَرُ عِلْمًا. bedeutet?", options:["Er hat mehr Wissen.","Er weiß alles.","Er lernt gerade.","Er ist klug."], correct:"Er hat mehr Wissen.", explain:"عِلْمًا spezifiziert \"mehr [woran]\"."},
+      {prompt:"Wo tritt der Tamyiz besonders häufig auf?", options:["Zahlen/Maßangaben","Fragewörtern","Verben im Passiv","Demonstrativa"], correct:"Zahlen/Maßangaben", explain:"z.B. عِشْرُونَ كِتَابًا."}
+    ]
+  },
+  {
+    id: "g-ar-masdar", title: "المصدر", subtitle: "Der Masdar (Verbalnomen)", tag: "Feinheiten",
+    icon: "<path d=\"M20.6 12.4 12.4 20.6a2 2 0 0 1-2.8 0l-7.2-7.2a2 2 0 0 1 0-2.8L10.6 2.4A2 2 0 0 1 12 2H19a2 2 0 0 1 2 2v7a2 2 0 0 1-.4 1.4Z\"/>",
+    rules: [
+      {title:"Was ist der Masdar?", body:"Der Masdar (المصدر) ist das Verbalnomen — die Substantivform, die die reine Handlung/den Vorgang eines Verbs ausdrückt, vergleichbar mit deutschen Wörtern auf \"-ung\" oder dem substantivierten Infinitiv.", example:"كَتَبَ (schreiben) → كِتَابَةٌ (das Schreiben)", exampleDe:"Verb → Verbalnomen"},
+      {title:"Unregelmäßig bei Form I", body:"Bei Form-I-Verben gibt es kein festes Muster für den Masdar — er muss für jedes Verb einzeln gelernt werden. Ab Form II sind die Muster dagegen sehr regelmäßig.", example:"دَرَسَ → دِرَاسَةٌ (Studium), فَهِمَ → فَهْمٌ (Verständnis)", exampleDe:"Zwei Form-I-Verben mit unterschiedlichen Masdar-Mustern."},
+      {title:"Verwendung anstelle von Nebensätzen", body:"Der Masdar wird oft benutzt, um einen Nebensatz zu vermeiden, ähnlich der deutschen Nominalisierung.", example:"بَعْدَ وُصُولِي، ...", exampleDe:"Nach meiner Ankunft, ... (statt: \"nachdem ich ankam\")"}
+    ],
+    practice: [
+      {prompt:"Was drückt der Masdar aus?", options:["die Handlung als Nomen","eine Frage","eine Verneinung","einen Vergleich"], correct:"die Handlung als Nomen", explain:"Wie deutsche Wörter auf \"-ung\"."},
+      {prompt:"كِتَابَةٌ ist Masdar von:", options:["كَتَبَ","كِتَابٌ","كَاتِبٌ","مَكْتُوبٌ"], correct:"كَتَبَ", explain:"كِتَابَةٌ = \"das Schreiben\"."},
+      {prompt:"Ist das Form-I-Masdar-Muster vorhersagbar?", options:["nein, einzeln lernen","ja, immer gleich","nur feminin","nur im Perfekt"], correct:"nein, einzeln lernen", explain:"Ab Form II regelmäßig."},
+      {prompt:"بَعْدَ وُصُولِي bedeutet?", options:["Nach meiner Ankunft","Vor meiner Ankunft","Während ich ankomme","Ich bin angekommen"], correct:"Nach meiner Ankunft", explain:"وُصُولِي = Masdar mit Suffix."},
+      {prompt:"فَهْمٌ ist Verbalnomen von:", options:["فَهِمَ","فَاهِمٌ","مَفْهُومٌ","أَفْهَمَ"], correct:"فَهِمَ", explain:"فَهْمٌ = \"das Verstehen\"."},
+      {prompt:"Wofür nutzt man den Masdar oft?", options:["statt Nebensatz","statt Adjektiv","statt Zahl","statt Artikel"], correct:"statt Nebensatz", explain:"Ähnlich deutscher Nominalisierung."}
+    ]
+  },
+  {
+    id: "g-ar-koran-stil", title: "أسلوب القرآن", subtitle: "Klassisches / Koranisches Arabisch", tag: "Feinheiten",
+    icon: "<path d=\"M4 19.5A2.5 2.5 0 0 1 6.5 17H20V4a1 1 0 0 0-1-1H6.5A2.5 2.5 0 0 0 4 5.5v14Z\"/><path d=\"M4 19.5V22h14a2 2 0 0 0 2-2v-1H6.5a2.5 2.5 0 0 0-2.5 2.5Z\"/>",
+    rules: [
+      {title:"Vokative Partikel يَا", body:"Das klassische Arabisch nutzt يَا als Anrede-Partikel (Vokativ), sehr häufig im Koran, um jemanden direkt anzusprechen.", example:"يَا أَيُّهَا النَّاسُ", exampleDe:"O ihr Menschen! (eine typisch koranische Anrede)"},
+      {title:"Häufige Schwureinleitung وَ", body:"Ein vorangestelltes وَ vor einem Nomen kann im klassischen Stil einen Schwur einleiten (\"bei ...\"), nicht nur \"und\" bedeuten.", example:"وَالْعَصْرِ", exampleDe:"Bei der Zeit / Beim Nachmittag (Schwurformel, Sure 103)"},
+      {title:"Ausgeprägte Kasusendungen (Iʿrāb)", body:"Klassisches/koranisches Arabisch verwendet die vollen Kasusendungen (Iʿrāb) konsequent, die in der gesprochenen Umgangssprache heute meist wegfallen — wer die Kasus dieses Kurses beherrscht, kann sie im Koran wiedererkennen.", example:"الْحَمْدُ لِلَّهِ رَبِّ الْعَالَمِينَ", exampleDe:"Alles Lob gebührt Gott, dem Herrn der Welten (رَبِّ = Genitiv in einer Idafa-Kette)"}
+    ],
+    practice: [
+      {prompt:"Partikel für die direkte Anrede?", options:["يَا","هَلْ","إِنَّ","لَوْ"], correct:"يَا", explain:"يَا leitet eine Anrede ein."},
+      {prompt:"يَا أَيُّهَا النَّاسُ bedeutet?", options:["O ihr Menschen!","Die Menschen sind da.","Wo sind die Menschen?","Die Menschen sagen..."], correct:"O ihr Menschen!", explain:"Typische koranische Anrede."},
+      {prompt:"وَالْعَصْرِ — welche Funktion hat وَ hier?", options:["Schwur (\"bei...\")","nur \"und\"","Frage","Verneinung"], correct:"Schwur (\"bei...\")", explain:"= \"Bei der Zeit\"."},
+      {prompt:"Was sind Iʿrāb?", options:["die Kasusendungen","ein Name für den Koran","ein Verbstamm","ein Pluraltyp"], correct:"die Kasusendungen", explain:"Grammatische Endvokale."},
+      {prompt:"رَبِّ العَالَمِينَ ist grammatisch eine:", options:["Idafa","Verneinung","Frage","Dual-Form"], correct:"Idafa", explain:"رَبِّ + العَالَمِينَ (Genitiv)."},
+      {prompt:"Warum lohnt sich Iʿrāb für Koran-Lektüre?", options:["Koran nutzt sie konsequent","sie fehlen im Koran","nur Umgangssprache","spielt keine Rolle"], correct:"Koran nutzt sie konsequent", explain:"Anders als die Umgangssprache."}
+    ]
+  }
+];
+
+const GRAMMAR_LEVELS_AR = [
+  {
+    id: "g-beginner", name: "Anfänger", tag: "A1 · Grundlagen", accent: "coral",
+    icon: "<path d=\"M12 2v4M12 18v4M4.9 4.9l2.8 2.8M16.3 16.3l2.8 2.8M2 12h4M18 12h4M4.9 19.1l2.8-2.8M16.3 7.7l2.8-2.8\"/><circle cx=\"12\" cy=\"12\" r=\"3\"/>",
+    chapters: ["g-ar-nominalsatz","g-ar-artikel","g-ar-genus","g-ar-plural-regular","g-ar-plural-gebrochen","g-ar-personalpronomen","g-ar-possessivsuffixe","g-ar-demonstrativ","g-ar-zahlen-grund"],
+  },
+  {
+    id: "g-intermediate", name: "Fortgeschritten", tag: "A2–B1 · Verben & Satzbau", accent: "gold",
+    icon: "<circle cx=\"12\" cy=\"12\" r=\"10\"/><path d=\"m16.2 7.8-2.2 6.2-6.2 2.2 2.2-6.2z\"/>",
+    chapters: ["g-ar-praesens","g-ar-vergangenheit","g-ar-verneinung","g-ar-fragen","g-ar-idafa","g-ar-adjektive","g-ar-dual","g-ar-praepositionen","g-ar-hal-koerper"],
+  },
+  {
+    id: "g-advanced", name: "Erfahren", tag: "B1–B2 · Vertiefung", accent: "mint",
+    icon: "<path d=\"M2 6a2 2 0 0 1 2-2h6v16H4a2 2 0 0 1-2-2Z\"/><path d=\"M22 6a2 2 0 0 0-2-2h-6v16h6a2 2 0 0 0 2-2Z\"/>",
+    chapters: ["g-ar-schwache-verben","g-ar-verbstaemme","g-ar-imperativ","g-ar-jussiv-konjunktiv","g-ar-partizipien","g-ar-passiv","g-ar-relativsatz","g-ar-hal-satz","g-ar-elativ"],
+  },
+  {
+    id: "g-master", name: "Profi", tag: "B2–C1 · Feinheiten & Koran-Stil", accent: "plum",
+    icon: "<path d=\"M2 18h20l-2-9-5 4-3-7-3 7-5-4Z\"/>",
+    chapters: ["g-ar-laysa","g-ar-kaana","g-ar-inna","g-ar-bedingungssaetze","g-ar-maadi-kaana-mudari","g-ar-taajjub","g-ar-tamyiz","g-ar-masdar","g-ar-koran-stil"],
+  }
+];
+
+const GRAMMAR_CH_BY_ID_AR = Object.fromEntries(GRAMMAR_CHAPTERS_AR.map(c => [c.id, c]));
+const GRAMMAR_LEVEL_BY_ID_AR = Object.fromEntries(GRAMMAR_LEVELS_AR.map(l => [l.id, l]));
+
 const LANG_GRAMMAR = {
   es: { chapters: GRAMMAR_CHAPTERS_ES, chById: GRAMMAR_CH_BY_ID_ES, levels: GRAMMAR_LEVELS_ES, levelById: GRAMMAR_LEVEL_BY_ID_ES },
   en: { chapters: GRAMMAR_CHAPTERS_EN, chById: GRAMMAR_CH_BY_ID_EN, levels: GRAMMAR_LEVELS_EN, levelById: GRAMMAR_LEVEL_BY_ID_EN },
@@ -121469,6 +122111,7 @@ const LANG_GRAMMAR = {
   'de-en': { chapters: GRAMMAR_DE_EN, chById: GRAMMAR_CH_BY_ID_DE_EN, levels: GRAMMAR_LEVELS_DE_EN, levelById: GRAMMAR_LEVEL_BY_ID_DE_EN },
   'de-fr': { chapters: GRAMMAR_DE_FR, chById: GRAMMAR_CH_BY_ID_DE_FR, levels: GRAMMAR_LEVELS_DE_FR, levelById: GRAMMAR_LEVEL_BY_ID_DE_FR },
   'de-it': { chapters: GRAMMAR_DE_IT, chById: GRAMMAR_CH_BY_ID_DE_IT, levels: GRAMMAR_LEVELS_DE_IT, levelById: GRAMMAR_LEVEL_BY_ID_DE_IT },
+  ar: { chapters: GRAMMAR_CHAPTERS_AR, chById: GRAMMAR_CH_BY_ID_AR, levels: GRAMMAR_LEVELS_AR, levelById: GRAMMAR_LEVEL_BY_ID_AR },
 };
 
 /* ---------------------------------------------------------
@@ -121494,10 +122137,10 @@ let state = {
     'it-es': emptyProgress(CHAPTERS_IT_ES), 'it-en': emptyProgress(CHAPTERS_IT_EN), 'it-fr': emptyProgress(CHAPTERS_IT_FR), 'it-de': emptyProgress(CHAPTERS_IT_DE), 'it-ar': emptyProgress(CHAPTERS_IT_AR),
     'ar-es': emptyProgress(CHAPTERS_AR_ES), 'ar-en': emptyProgress(CHAPTERS_AR_EN), 'ar-fr': emptyProgress(CHAPTERS_AR_FR), 'ar-it': emptyProgress(CHAPTERS_AR_IT), 'ar-de': emptyProgress(CHAPTERS_AR_DE),
   },
-  // Grammatik-Fortschritt: Spanisch/Englisch/Franzoesisch/Italienisch aktuell nur auf Deutsch erklaert (bare keys),
-  // Deutsch ist von allen 4 Sprachen aus verfuegbar (de-es/de-en/de-fr/de-it). Arabische Grammatik folgt separat.
+  // Grammatik-Fortschritt: Spanisch/Englisch/Franzoesisch/Italienisch/Arabisch aktuell nur auf Deutsch erklaert (bare keys),
+  // Deutsch ist von allen 4 romanischen Sprachen aus verfuegbar (de-es/de-en/de-fr/de-it).
   gProgress: {
-    es: emptyProgress(GRAMMAR_CHAPTERS_ES), en: emptyProgress(GRAMMAR_CHAPTERS_EN), fr: emptyProgress(GRAMMAR_CHAPTERS_FR), it: emptyProgress(GRAMMAR_CHAPTERS_IT),
+    es: emptyProgress(GRAMMAR_CHAPTERS_ES), en: emptyProgress(GRAMMAR_CHAPTERS_EN), fr: emptyProgress(GRAMMAR_CHAPTERS_FR), it: emptyProgress(GRAMMAR_CHAPTERS_IT), ar: emptyProgress(GRAMMAR_CHAPTERS_AR),
     'de-es': emptyProgress(GRAMMAR_DE_ES), 'de-en': emptyProgress(GRAMMAR_DE_EN), 'de-fr': emptyProgress(GRAMMAR_DE_FR), 'de-it': emptyProgress(GRAMMAR_DE_IT),
   },
   // Fortschritt fuer den Koran-Begleiter (nur Arabisch, nach Abschluss aller 4 Vokabel-Niveaus freigeschaltet)

@@ -105,10 +105,33 @@
   .profile-name { font-family: 'Work Sans', sans-serif; font-weight: 600; font-size: 14px; color: var(--ink); }
   .profile-xp { font-size: 11.5px; color: var(--cream-dim); }
 
+  /* --- Language select screen (Sprachwahl vor dem Onboarding) --- */
+  .langselect-body { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 40px 26px; text-align: center; }
+  .langselect-icon { font-size: 42px; margin-bottom: 14px; }
+  .langselect-hint { font-size: 12px; line-height: 1.6; color: var(--cream-dim); margin: 0 0 26px; }
+  .langselect-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; width: 100%; }
+  .langselect-btn {
+    display: flex; align-items: center; gap: 10px; padding: 15px 14px; border-radius: 16px;
+    border: 1.5px solid var(--line); background: var(--panel); cursor: pointer;
+    font-family: 'Work Sans', sans-serif; font-weight: 600; font-size: 14.5px; color: var(--ink);
+    box-shadow: 0 3px 10px rgba(22,80,90,0.06);
+    transition: transform 0.12s ease, border-color 0.15s ease, background 0.15s ease;
+  }
+  .langselect-btn .flag { font-size: 22px; line-height: 1; flex-shrink: 0; }
+  .langselect-btn:hover { transform: translateY(-2px); border-color: var(--coral); }
+  .langselect-btn:active { transform: scale(0.97); }
+
   /* --- Onboarding screen --- */
   .onboarding-hero { width: 100%; height: 150px; overflow: hidden; }
   .onboarding-hero svg { width: 100%; height: 100%; display: block; }
-  .onboarding-body { padding: 26px 26px 32px; flex: 1; display: flex; flex-direction: column; }
+  .onboarding-body { padding: 26px 26px 32px; flex: 1; display: flex; flex-direction: column; position: relative; }
+  .onboarding-lang-back {
+    position: absolute; top: 26px; right: 26px; width: 34px; height: 34px; border-radius: 50%;
+    border: 1.5px solid var(--line); background: var(--panel); font-size: 16px; cursor: pointer;
+    display: flex; align-items: center; justify-content: center; box-shadow: 0 3px 10px rgba(22,80,90,0.06);
+  }
+  .onboarding-lang-back:hover { transform: translateY(-1px); }
+  .onboarding-lang-back:active { transform: scale(0.95); }
   .onboarding-input {
     width: 100%; margin-top: 18px; padding: 14px 16px; border-radius: 16px; border: 1.5px solid var(--line);
     background: var(--panel); color: var(--ink); font-family: 'Work Sans', sans-serif; font-size: 16px;
@@ -458,6 +481,15 @@
 
 <div id="app">
 
+  <!-- ================= LANGUAGE SELECT SCREEN (Sprachwahl vor dem Onboarding) ================= -->
+  <section class="screen" id="screen-lang-select">
+    <div class="langselect-body">
+      <div class="langselect-icon">🌍</div>
+      <p class="langselect-hint">Sprache wählen · Choose your language · Elige tu idioma · Choisis ta langue · Scegli la lingua · اختر لغتك · Выбери язык</p>
+      <div class="langselect-grid" id="lang-select-grid"></div>
+    </div>
+  </section>
+
   <!-- ================= ONBOARDING SCREEN (Profil anlegen) ================= -->
   <section class="screen" id="screen-onboarding">
     <div class="onboarding-hero">
@@ -496,6 +528,7 @@
       </svg>
     </div>
     <div class="onboarding-body">
+      <button class="onboarding-lang-back" id="onboarding-lang-back-btn" onclick="backToLangSelect()" title="Sprache ändern / Change language">🌍</button>
       <p class="eyebrow" id="onboarding-eyebrow">¡Bienvenido!</p>
       <h1 class="big-title font-display" id="onboarding-title">Wie dürfen wir dich nennen?</h1>
       <p class="sub-text" id="onboarding-sub">Leg dir ein kurzes Profil an — dein Fortschritt, deine XP und deine Zertifikate werden dann automatisch in diesem Browser gespeichert.</p>
@@ -574,6 +607,7 @@
     <div class="lang-switch" id="lang-switch"></div>
     <div class="de-source-switch" id="de-source-switch"></div>
     <div class="mode-toggle">
+      <button class="mode-btn" data-mode="alphabet" onclick="setMode('alphabet')" id="mode-btn-alphabet" style="display:none;">Alphabet</button>
       <button class="mode-btn active" data-mode="vocab" onclick="setMode('vocab')" id="mode-btn-vocab">Vokabeln</button>
       <button class="mode-btn" data-mode="grammar" onclick="setMode('grammar')" id="mode-btn-grammar">Grammatik</button>
       <button class="mode-btn" onclick="goToCertList()" id="certs-tooltip-btn" title="Meine Zertifikate" style="flex:0 0 auto; padding:9px 12px;">
@@ -897,7 +931,7 @@ function buildSyncPayload() {
   return {
     name: state.profile.name, avatar: state.profile.avatar, createdAt: state.profile.createdAt,
     lang: state.lang, source: state.source, xp: state.xp, streak: state.streak,
-    progress: state.progress, gProgress: state.gProgress, quranProgress: state.quranProgress,
+    progress: state.progress, gProgress: state.gProgress, aProgress: state.aProgress, quranProgress: state.quranProgress,
     savedAt: Date.now(),
   };
 }
@@ -977,6 +1011,7 @@ function applySyncPayload(data, code) {
   state.streak = data.streak || 0;
   state.progress = mergeProgress(state.progress, data.progress);
   state.gProgress = mergeProgress(state.gProgress, data.gProgress);
+  state.aProgress = mergeProgress(state.aProgress, data.aProgress);
   state.quranProgress = mergeProgress(state.quranProgress, data.quranProgress);
   saveProfile();
   updateProfileBadge();
@@ -157505,8 +157540,8 @@ const UI_STRINGS = {
     backLevels: "Niveaus", backRoute: "Route", backCertificates: "Zertifikate", backBack: "Zurück",
     nextLabel: "Weiter", toQuiz: "Zum Quiz", startExercise: "Übung starten", checkLabel: "Prüfen",
     typeAnswerPlaceholder: "Antwort eingeben …",
-    quizPromptMCVocab: "Was bedeutet dieses Wort?", quizPromptMCGrammar: "Ergänze die Lücke:",
-    quizPromptTypeVocab: (lang) => `Wie heißt das auf ${lang}?`, quizPromptTypeGrammar: "Ergänze die Lücke (tippen):",
+    quizPromptMCVocab: "Was bedeutet dieses Wort?", quizPromptMCGrammar: "Ergänze die Lücke:", quizPromptMCAlphabet: "Beantworte die Frage:",
+    quizPromptTypeVocab: (lang) => `Wie heißt das auf ${lang}?`, quizPromptTypeGrammar: "Ergänze die Lücke (tippen):", quizPromptTypeAlphabet: "Tippe die Antwort:",
     correctLabel: "Richtig!", correctAnswerLabel: "Richtige Antwort:",
     resultFailTitle: "Fast geschafft!", resultFailText: "Die Herzen sind aufgebraucht. Versuch es noch einmal.",
     retryBtn: "Nochmal versuchen", masteredSuffix: " gemeistert!", reachedSuffix: " erreicht!",
@@ -157531,6 +157566,7 @@ const UI_STRINGS = {
     renamePromptText: "Neuer Name:", resetConfirmText: "Wirklich den gesamten Fortschritt (XP, Kapitel, Zertifikate) in allen Sprachen zurücksetzen? Das kann nicht rückgängig gemacht werden.",
     sinceLabel: "Dabei seit ", grammarChaptersTitle: "Grammatik-Kapitel",
     grammarPathSub: "Jede Station erklärt eine Regel und testet sie direkt mit Übungen.",
+    alphabetChaptersTitle: "Alphabet-Kapitel", alphabetPathSub: "Jede Station stellt dir ein paar neue Buchstaben vor und testet sie direkt.",
     vocabPathSub: "Jede Station ist eine Stadt, jedes Kapitel ein neuer Stempel im Reisepass.",
     routeThroughTemplate: (lang) => `Deine Route durchs ${lang}`,
     chooseLevelTitle: "Wähle dein Niveau", grammarRulesTitle: "Grammatik-Regeln lernen",
@@ -157541,6 +157577,9 @@ const UI_STRINGS = {
     quranLockedText: "Schließe alle 4 Niveaus des arabischen Wortschatzes ab, um den Koran-Begleiter freizuschalten.",
     grammarLevelsEyebrowTemplate: (lang, src) => `Grammatik · ${lang} (von ${src})`,
     vocabLevelsEyebrowTemplate: (appName, src) => `${appName} · von ${src}`,
+    alphabetTab: "Alphabet", alphabetTitle: "Das Alphabet",
+    alphabetLevelsEyebrowTemplate: (lang) => `Alphabet · ${lang}`,
+    alphabetLevelsSubTemplate: (lang) => `Lerne zuerst die Buchstaben, bevor du mit der ${lang}-Grammatik loslegst.`,
   },
   es: {
     welcome: "¡Bienvenido!", onboardingTitle: "¿Cómo te llamas?",
@@ -157550,8 +157589,8 @@ const UI_STRINGS = {
     backLevels: "Niveles", backRoute: "Ruta", backCertificates: "Certificados", backBack: "Atrás",
     nextLabel: "Siguiente", toQuiz: "Ir al test", startExercise: "Empezar ejercicio", checkLabel: "Comprobar",
     typeAnswerPlaceholder: "Escribe la respuesta …",
-    quizPromptMCVocab: "¿Qué significa esta palabra?", quizPromptMCGrammar: "Completa el espacio:",
-    quizPromptTypeVocab: (lang) => `¿Cómo se dice esto en ${lang}?`, quizPromptTypeGrammar: "Completa el espacio (escribiendo):",
+    quizPromptMCVocab: "¿Qué significa esta palabra?", quizPromptMCGrammar: "Completa el espacio:", quizPromptMCAlphabet: "Responde la pregunta:",
+    quizPromptTypeVocab: (lang) => `¿Cómo se dice esto en ${lang}?`, quizPromptTypeGrammar: "Completa el espacio (escribiendo):", quizPromptTypeAlphabet: "Escribe la respuesta:",
     correctLabel: "¡Correcto!", correctAnswerLabel: "Respuesta correcta:",
     resultFailTitle: "¡Casi lo logras!", resultFailText: "Se han agotado las vidas. Inténtalo de nuevo.",
     retryBtn: "Intentar de nuevo", masteredSuffix: " dominado!", reachedSuffix: " alcanzado!",
@@ -157576,6 +157615,7 @@ const UI_STRINGS = {
     renamePromptText: "Nuevo nombre:", resetConfirmText: "¿Seguro que quieres restablecer todo el progreso (XP, capítulos, certificados) en todos los idiomas? Esto no se puede deshacer.",
     sinceLabel: "Miembro desde ", grammarChaptersTitle: "Capítulos de gramática",
     grammarPathSub: "Cada parada explica una regla y la pone a prueba con ejercicios.",
+    alphabetChaptersTitle: "Capítulos del alfabeto", alphabetPathSub: "Cada parada te presenta algunas letras nuevas y las pone a prueba.",
     vocabPathSub: "Cada parada es una ciudad, cada capítulo un nuevo sello en el pasaporte.",
     routeThroughTemplate: (lang) => `Tu ruta por el ${lang}`,
     chooseLevelTitle: "Elige tu nivel", grammarRulesTitle: "Aprender reglas de gramática",
@@ -157586,6 +157626,9 @@ const UI_STRINGS = {
     quranLockedText: "Completa los 4 niveles de vocabulario árabe para desbloquear el compañero del Corán.",
     grammarLevelsEyebrowTemplate: (lang, src) => `Gramática · ${lang} (desde ${src})`,
     vocabLevelsEyebrowTemplate: (appName, src) => `${appName} · desde ${src}`,
+    alphabetTab: "Alfabeto", alphabetTitle: "El alfabeto",
+    alphabetLevelsEyebrowTemplate: (lang) => `Alfabeto · ${lang}`,
+    alphabetLevelsSubTemplate: (lang) => `Aprende primero las letras antes de empezar con la gramática de ${lang}.`,
   },
   en: {
     welcome: "Welcome!", onboardingTitle: "What should we call you?",
@@ -157595,8 +157638,8 @@ const UI_STRINGS = {
     backLevels: "Levels", backRoute: "Route", backCertificates: "Certificates", backBack: "Back",
     nextLabel: "Next", toQuiz: "To quiz", startExercise: "Start exercise", checkLabel: "Check",
     typeAnswerPlaceholder: "Type your answer …",
-    quizPromptMCVocab: "What does this word mean?", quizPromptMCGrammar: "Fill in the blank:",
-    quizPromptTypeVocab: (lang) => `How do you say this in ${lang}?`, quizPromptTypeGrammar: "Fill in the blank (type it):",
+    quizPromptMCVocab: "What does this word mean?", quizPromptMCGrammar: "Fill in the blank:", quizPromptMCAlphabet: "Answer the question:",
+    quizPromptTypeVocab: (lang) => `How do you say this in ${lang}?`, quizPromptTypeGrammar: "Fill in the blank (type it):", quizPromptTypeAlphabet: "Type the answer:",
     correctLabel: "Correct!", correctAnswerLabel: "Correct answer:",
     resultFailTitle: "So close!", resultFailText: "You're out of hearts. Give it another try.",
     retryBtn: "Try again", masteredSuffix: " mastered!", reachedSuffix: " reached!",
@@ -157621,6 +157664,7 @@ const UI_STRINGS = {
     renamePromptText: "New name:", resetConfirmText: "Really reset all progress (XP, chapters, certificates) across all languages? This cannot be undone.",
     sinceLabel: "Member since ", grammarChaptersTitle: "Grammar chapters",
     grammarPathSub: "Each stop explains a rule and tests it right away with exercises.",
+    alphabetChaptersTitle: "Alphabet chapters", alphabetPathSub: "Each stop introduces a few new letters and tests them right away.",
     vocabPathSub: "Each stop is a city, each chapter a new stamp in your passport.",
     routeThroughTemplate: (lang) => `Your route through ${lang}`,
     chooseLevelTitle: "Choose your level", grammarRulesTitle: "Learn grammar rules",
@@ -157631,6 +157675,9 @@ const UI_STRINGS = {
     quranLockedText: "Complete all 4 Arabic vocabulary levels to unlock the Quran companion.",
     grammarLevelsEyebrowTemplate: (lang, src) => `Grammar · ${lang} (from ${src})`,
     vocabLevelsEyebrowTemplate: (appName, src) => `${appName} · from ${src}`,
+    alphabetTab: "Alphabet", alphabetTitle: "The Alphabet",
+    alphabetLevelsEyebrowTemplate: (lang) => `Alphabet · ${lang}`,
+    alphabetLevelsSubTemplate: (lang) => `Learn the letters first, before you start ${lang} grammar.`,
   },
   fr: {
     welcome: "Bienvenue !", onboardingTitle: "Comment devons-nous t'appeler ?",
@@ -157640,8 +157687,8 @@ const UI_STRINGS = {
     backLevels: "Niveaux", backRoute: "Parcours", backCertificates: "Certificats", backBack: "Retour",
     nextLabel: "Suivant", toQuiz: "Au quiz", startExercise: "Commencer l'exercice", checkLabel: "Vérifier",
     typeAnswerPlaceholder: "Écris ta réponse …",
-    quizPromptMCVocab: "Que signifie ce mot ?", quizPromptMCGrammar: "Complète le blanc :",
-    quizPromptTypeVocab: (lang) => `Comment dit-on cela en ${lang} ?`, quizPromptTypeGrammar: "Complète le blanc (en tapant) :",
+    quizPromptMCVocab: "Que signifie ce mot ?", quizPromptMCGrammar: "Complète le blanc :", quizPromptMCAlphabet: "Réponds à la question :",
+    quizPromptTypeVocab: (lang) => `Comment dit-on cela en ${lang} ?`, quizPromptTypeGrammar: "Complète le blanc (en tapant) :", quizPromptTypeAlphabet: "Tape la réponse :",
     correctLabel: "Correct !", correctAnswerLabel: "Bonne réponse :",
     resultFailTitle: "Presque !", resultFailText: "Tu n'as plus de vies. Réessaie.",
     retryBtn: "Réessayer", masteredSuffix: " maîtrisé !", reachedSuffix: " atteint !",
@@ -157666,6 +157713,7 @@ const UI_STRINGS = {
     renamePromptText: "Nouveau nom :", resetConfirmText: "Vraiment réinitialiser toute la progression (XP, chapitres, certificats) dans toutes les langues ? Cette action est irréversible.",
     sinceLabel: "Membre depuis ", grammarChaptersTitle: "Chapitres de grammaire",
     grammarPathSub: "Chaque étape explique une règle et la teste directement avec des exercices.",
+    alphabetChaptersTitle: "Chapitres de l'alphabet", alphabetPathSub: "Chaque étape présente quelques nouvelles lettres et les teste directement.",
     vocabPathSub: "Chaque étape est une ville, chaque chapitre un nouveau tampon dans ton passeport.",
     routeThroughTemplate: (lang) => `Ton parcours à travers le ${lang}`,
     chooseLevelTitle: "Choisis ton niveau", grammarRulesTitle: "Apprendre les règles de grammaire",
@@ -157676,6 +157724,9 @@ const UI_STRINGS = {
     quranLockedText: "Termine les 4 niveaux de vocabulaire arabe pour débloquer le compagnon du Coran.",
     grammarLevelsEyebrowTemplate: (lang, src) => `Grammaire · ${lang} (depuis le ${src})`,
     vocabLevelsEyebrowTemplate: (appName, src) => `${appName} · depuis le ${src}`,
+    alphabetTab: "Alphabet", alphabetTitle: "L'alphabet",
+    alphabetLevelsEyebrowTemplate: (lang) => `Alphabet · ${lang}`,
+    alphabetLevelsSubTemplate: (lang) => `Apprends d'abord les lettres, avant de commencer la grammaire ${lang}.`,
   },
   it: {
     welcome: "Benvenuto!", onboardingTitle: "Come dobbiamo chiamarti?",
@@ -157685,8 +157736,8 @@ const UI_STRINGS = {
     backLevels: "Livelli", backRoute: "Percorso", backCertificates: "Certificati", backBack: "Indietro",
     nextLabel: "Avanti", toQuiz: "Vai al quiz", startExercise: "Inizia l'esercizio", checkLabel: "Verifica",
     typeAnswerPlaceholder: "Scrivi la risposta …",
-    quizPromptMCVocab: "Cosa significa questa parola?", quizPromptMCGrammar: "Completa lo spazio:",
-    quizPromptTypeVocab: (lang) => `Come si dice in ${lang}?`, quizPromptTypeGrammar: "Completa lo spazio (scrivendo):",
+    quizPromptMCVocab: "Cosa significa questa parola?", quizPromptMCGrammar: "Completa lo spazio:", quizPromptMCAlphabet: "Rispondi alla domanda:",
+    quizPromptTypeVocab: (lang) => `Come si dice in ${lang}?`, quizPromptTypeGrammar: "Completa lo spazio (scrivendo):", quizPromptTypeAlphabet: "Scrivi la risposta:",
     correctLabel: "Corretto!", correctAnswerLabel: "Risposta corretta:",
     resultFailTitle: "Quasi fatto!", resultFailText: "Hai esaurito le vite. Riprova.",
     retryBtn: "Riprova", masteredSuffix: " padroneggiato!", reachedSuffix: " raggiunta!",
@@ -157711,6 +157762,7 @@ const UI_STRINGS = {
     renamePromptText: "Nuovo nome:", resetConfirmText: "Vuoi davvero azzerare tutti i progressi (XP, capitoli, certificati) in tutte le lingue? Non si può annullare.",
     sinceLabel: "Iscritto dal ", grammarChaptersTitle: "Capitoli di grammatica",
     grammarPathSub: "Ogni tappa spiega una regola e la mette subito alla prova con esercizi.",
+    alphabetChaptersTitle: "Capitoli dell'alfabeto", alphabetPathSub: "Ogni tappa presenta alcune nuove lettere e le mette subito alla prova.",
     vocabPathSub: "Ogni tappa è una città, ogni capitolo un nuovo timbro sul passaporto.",
     routeThroughTemplate: (lang) => `Il tuo percorso nell'${lang}`,
     chooseLevelTitle: "Scegli il tuo livello", grammarRulesTitle: "Impara le regole di grammatica",
@@ -157721,6 +157773,9 @@ const UI_STRINGS = {
     quranLockedText: "Completa tutti e 4 i livelli di vocabolario arabo per sbloccare il compagno del Corano.",
     grammarLevelsEyebrowTemplate: (lang, src) => `Grammatica · ${lang} (da ${src})`,
     vocabLevelsEyebrowTemplate: (appName, src) => `${appName} · da ${src}`,
+    alphabetTab: "Alfabeto", alphabetTitle: "L'alfabeto",
+    alphabetLevelsEyebrowTemplate: (lang) => `Alfabeto · ${lang}`,
+    alphabetLevelsSubTemplate: (lang) => `Impara prima le lettere, prima di iniziare la grammatica ${lang}.`,
   },
   ar: {
     welcome: "أهلًا بك!", onboardingTitle: "بماذا نناديك؟",
@@ -157730,8 +157785,8 @@ const UI_STRINGS = {
     backLevels: "المستويات", backRoute: "المسار", backCertificates: "الشهادات", backBack: "رجوع",
     nextLabel: "التالي", toQuiz: "إلى الاختبار", startExercise: "ابدأ التمرين", checkLabel: "تحقق",
     typeAnswerPlaceholder: "اكتب إجابتك …",
-    quizPromptMCVocab: "ماذا تعني هذه الكلمة؟", quizPromptMCGrammar: "أكمل الفراغ:",
-    quizPromptTypeVocab: (lang) => `كيف تقول هذا بال${lang}؟`, quizPromptTypeGrammar: "أكمل الفراغ (بالكتابة):",
+    quizPromptMCVocab: "ماذا تعني هذه الكلمة؟", quizPromptMCGrammar: "أكمل الفراغ:", quizPromptMCAlphabet: "أجب عن السؤال:",
+    quizPromptTypeVocab: (lang) => `كيف تقول هذا بال${lang}؟`, quizPromptTypeGrammar: "أكمل الفراغ (بالكتابة):", quizPromptTypeAlphabet: "اكتب الإجابة:",
     correctLabel: "صحيح!", correctAnswerLabel: "الإجابة الصحيحة:",
     resultFailTitle: "أوشكت على النجاح!", resultFailText: "لقد نفدت قلوبك. حاول مرة أخرى.",
     retryBtn: "حاول مرة أخرى", masteredSuffix: " تم إتقانه!", reachedSuffix: " تم الوصول إليها!",
@@ -157756,6 +157811,7 @@ const UI_STRINGS = {
     renamePromptText: "الاسم الجديد:", resetConfirmText: "هل تريد حقًا إعادة تعيين كل التقدم (نقاط الخبرة، الفصول، الشهادات) في جميع اللغات؟ لا يمكن التراجع عن هذا.",
     sinceLabel: "عضو منذ ", grammarChaptersTitle: "فصول القواعد",
     grammarPathSub: "تشرح كل محطة قاعدة وتختبرها مباشرة بتمارين.",
+    alphabetChaptersTitle: "فصول الأبجدية", alphabetPathSub: "تقدّم كل محطة بضعة حروف جديدة وتختبرها مباشرة.",
     vocabPathSub: "كل محطة مدينة، وكل فصل ختم جديد في جواز السفر.",
     routeThroughTemplate: (lang) => `مسارك عبر ${lang}`,
     chooseLevelTitle: "اختر مستواك", grammarRulesTitle: "تعلم قواعد اللغة",
@@ -157766,6 +157822,9 @@ const UI_STRINGS = {
     quranLockedText: "أكمل جميع مستويات المفردات العربية الأربعة لفتح رفيق القرآن.",
     grammarLevelsEyebrowTemplate: (lang, src) => `القواعد · ${lang} (من ${src})`,
     vocabLevelsEyebrowTemplate: (appName, src) => `${appName} · من ${src}`,
+    alphabetTab: "الأبجدية", alphabetTitle: "الأبجدية",
+    alphabetLevelsEyebrowTemplate: (lang) => `الأبجدية · ${lang}`,
+    alphabetLevelsSubTemplate: (lang) => `تعلّم الحروف أولاً قبل أن تبدأ قواعد ${lang}.`,
   },
   ru: {
     welcome: "Добро пожаловать!", onboardingTitle: "Как мы можем тебя называть?",
@@ -157775,8 +157834,8 @@ const UI_STRINGS = {
     backLevels: "Уровни", backRoute: "Маршрут", backCertificates: "Сертификаты", backBack: "Назад",
     nextLabel: "Далее", toQuiz: "К тесту", startExercise: "Начать упражнение", checkLabel: "Проверить",
     typeAnswerPlaceholder: "Введи ответ…",
-    quizPromptMCVocab: "Что означает это слово?", quizPromptMCGrammar: "Заполни пропуск:",
-    quizPromptTypeVocab: (lang) => `Как это будет на ${lang}?`, quizPromptTypeGrammar: "Заполни пропуск (напиши ответ):",
+    quizPromptMCVocab: "Что означает это слово?", quizPromptMCGrammar: "Заполни пропуск:", quizPromptMCAlphabet: "Ответь на вопрос:",
+    quizPromptTypeVocab: (lang) => `Как это будет на ${lang}?`, quizPromptTypeGrammar: "Заполни пропуск (напиши ответ):", quizPromptTypeAlphabet: "Напиши ответ:",
     correctLabel: "Правильно!", correctAnswerLabel: "Правильный ответ:",
     resultFailTitle: "Почти получилось!", resultFailText: "Сердечки закончились. Попробуй ещё раз.",
     retryBtn: "Попробовать снова", masteredSuffix: " — тема освоена!", reachedSuffix: " — цель достигнута!",
@@ -157801,6 +157860,7 @@ const UI_STRINGS = {
     renamePromptText: "Новое имя:", resetConfirmText: "Точно сбросить весь прогресс (XP, главы, сертификаты) по всем языкам? Это нельзя отменить.",
     sinceLabel: "С нами с ", grammarChaptersTitle: "Главы по грамматике",
     grammarPathSub: "Каждая остановка объясняет правило и сразу проверяет его упражнениями.",
+    alphabetChaptersTitle: "Главы алфавита", alphabetPathSub: "Каждая остановка знакомит с несколькими новыми буквами и сразу их проверяет.",
     vocabPathSub: "Каждая остановка — город, каждая глава — новый штамп в паспорте.",
     routeThroughTemplate: (lang) => `Твой маршрут по языку ${lang}`,
     chooseLevelTitle: "Выбери свой уровень", grammarRulesTitle: "Изучай правила грамматики",
@@ -157811,6 +157871,9 @@ const UI_STRINGS = {
     quranLockedText: "Пройди все 4 уровня арабского словаря, чтобы открыть помощника по Корану.",
     grammarLevelsEyebrowTemplate: (lang, src) => `Грамматика · ${lang} (с ${src})`,
     vocabLevelsEyebrowTemplate: (appName, src) => `${appName} · с ${src}`,
+    alphabetTab: "Алфавит", alphabetTitle: "Алфавит",
+    alphabetLevelsEyebrowTemplate: (lang) => `Алфавит · ${lang}`,
+    alphabetLevelsSubTemplate: (lang) => `Сначала выучи буквы, прежде чем начинать грамматику ${lang}.`,
   },
 };
 
@@ -157847,6 +157910,9 @@ function applyUILanguage() {
 
   setText('mode-btn-vocab', t('vocabTab'));
   setText('mode-btn-grammar', t('grammarTab'));
+  setText('mode-btn-alphabet', t('alphabetTab'));
+  const alphaBtn = document.getElementById('mode-btn-alphabet');
+  if (alphaBtn) alphaBtn.style.display = (state.lang === 'ar' || state.lang === 'ru') ? '' : 'none';
   const certsBtn = document.getElementById('certs-tooltip-btn'); if (certsBtn) certsBtn.title = t('myCertificatesTooltip');
 
   setText('path-back-btn', '\u2190 ' + t('backLevels'));
@@ -167766,6 +167832,263 @@ const GRAMMAR_LEVELS_RU = [
 const GRAMMAR_CH_BY_ID_RU = Object.fromEntries(GRAMMAR_CHAPTERS_RU.map(c => [c.id, c]));
 const GRAMMAR_LEVEL_BY_ID_RU = Object.fromEntries(GRAMMAR_LEVELS_RU.map(l => [l.id, l]));
 
+/* Alphabet-Modus: eigener Reiter fuer Arabisch und Russisch, vor der Grammatik zu absolvieren.
+   Struktur identisch zu LANG_GRAMMAR (rules[]+practice[] je Kapitel), aber eigene Datenquelle. */
+const ALPHABET_CHAPTERS_RU = [
+  {
+    id: "a-ru-1", title: "Buchstaben А–Е", subtitle: "Deine ersten sechs kyrillischen Buchstaben.", tag: "Teil 1 von 6",
+    icon: "<path d=\"M6 20 12 4l6 16M8 14h8\"/>",
+    rules: [
+      {title:"А а", body:"Der Buchstabe А heißt „а“ und wird wie das deutsche offene „a“ in „Mann“ ausgesprochen. Er sieht dem lateinischen A sehr ähnlich und ist daher ein leichter Einstieg.", example:"арбуз", exampleDe:"Wassermelone"},
+      {title:"Б б", body:"Б heißt „бэ“ und klingt genauso wie das deutsche „b“ in „Ball“. Ein ganz unkomplizierter Buchstabe zum Warmwerden.", example:"банан", exampleDe:"Banane"},
+      {title:"В в", body:"В heißt „вэ“ und klingt wie das deutsche „w“ in „Wasser“ – NICHT wie ein „v“! Achtung: В sieht aus wie ein lateinisches B, klingt aber völlig anders – ein klassischer falscher Freund.", example:"вода", exampleDe:"Wasser"},
+      {title:"Г г", body:"Г heißt „гэ“ und wird wie das deutsche „g“ in „gut“ ausgesprochen.", example:"город", exampleDe:"Stadt"},
+      {title:"Д д", body:"Д heißt „дэ“ und klingt wie das deutsche „d“ in „danke“.", example:"дом", exampleDe:"Haus"},
+      {title:"Е е", body:"Е heißt „е“ und wird am Wortanfang wie „je“ ausgesprochen, ähnlich wie der Beginn von „jetzt“. Merke dir: Е klingt so gut wie nie wie ein einfaches deutsches „e“.", example:"еда", exampleDe:"Essen"},
+    ],
+    practice: [
+      {prompt:"Welcher Laut passt zum Buchstaben А?", options:["a wie in Mann", "o wie in Sonne", "e wie in Bett", "i wie in mit"], correct:"a wie in Mann", explain:"А wird wie ein offenes deutsches „a“ ausgesprochen."},
+      {prompt:"Wie heißt der Buchstabe Б auf Russisch?", options:["бэ", "вэ", "гэ", "дэ"], correct:"бэ", explain:"Der Buchstabe Б trägt den Namen „бэ“ und klingt wie deutsches B."},
+      {prompt:"Welcher Buchstabe sieht aus wie ein lateinisches B, klingt aber wie deutsches „w“?", options:["В", "Б", "Г", "Д"], correct:"В", explain:"В ist ein klassischer Fallstrick: Es sieht aus wie B, klingt aber wie W."},
+      {prompt:"Wie schreibt man den Laut „g“ auf Kyrillisch?", options:["Г", "Б", "Д", "В"], correct:"Г", explain:"Der Buchstabe Г steht für den deutschen Laut „g“."},
+      {prompt:"Was bedeutet das russische Wort „дом“?", options:["Haus", "Wasser", "Stadt", "Essen"], correct:"Haus", explain:"„Дом“ heißt „Haus“ und beginnt mit dem Buchstaben Д."},
+      {prompt:"Wie wird der Buchstabe Е am Wortanfang ausgesprochen?", options:["je", "e", "ja", "jo"], correct:"je", explain:"Е klingt am Wortanfang wie „je“, ähnlich wie zu Beginn von „jetzt“."},
+    ]
+  },
+  {
+    id: "a-ru-2", title: "Buchstaben Ё–К", subtitle: "Neue Laute und der erste Halbvokal.", tag: "Teil 2 von 6",
+    icon: "<path d=\"M6 20 12 4l6 16M8 14h8\"/>",
+    rules: [
+      {title:"Ё ё", body:"Ё heißt „ё“ und wird immer betont – ein Sonderfall, denn bei fast allen anderen Buchstaben kann die Betonung wandern! Es klingt wie „jo“, zum Beispiel im deutschen Wort „Yoga“.", example:"ёлка", exampleDe:"Weihnachtsbaum"},
+      {title:"Ж ж", body:"Ж heißt „жэ“ und klingt wie das französische „j“ in „Journal“ – ein stimmhaftes, weiches „sch“. Im Deutschen gibt es diesen Laut nicht direkt, aber das „j“ in Fremdwörtern wie „Jalousie“ kommt nahe heran.", example:"жираф", exampleDe:"Giraffe"},
+      {title:"З з", body:"З heißt „зэ“ und klingt wie das stimmhafte deutsche „s“ in „Sonne“, nicht wie ein scharfes „ß“.", example:"зима", exampleDe:"Winter"},
+      {title:"И и", body:"И heißt „и“ und klingt wie das deutsche „i“ in „mir“.", example:"игра", exampleDe:"Spiel"},
+      {title:"Й й", body:"Й heißt „и краткое“ (kurzes И) und klingt wie ein kurzes „j“, ähnlich wie im deutschen Wort „Mai“. Er steht fast nie allein am Wortanfang.", example:"йогурт", exampleDe:"Joghurt"},
+      {title:"К к", body:"К heißt „ка“ und wird wie das deutsche „k“ ausgesprochen.", example:"кот", exampleDe:"Kater"},
+    ],
+    practice: [
+      {prompt:"Welche Besonderheit hat der Buchstabe Ё?", options:["Er ist immer betont", "Er hat keinen Laut", "Er kommt nie am Wortanfang vor", "Er klingt wie deutsches h"], correct:"Er ist immer betont", explain:"Ё trägt in jedem Wort die Betonung – ein nützlicher Merkpunkt."},
+      {prompt:"Wie klingt der Buchstabe Ж?", options:["wie das j in Journal", "wie deutsches sch", "wie deutsches z", "wie deutsches ch"], correct:"wie das j in Journal", explain:"Ж klingt wie das weiche, stimmhafte „j“ im französischen Wort „Journal“."},
+      {prompt:"Was bedeutet das russische Wort „зима“?", options:["Winter", "Sommer", "Spiel", "Katze"], correct:"Winter", explain:"„Зима“ heißt „Winter“ und beginnt mit dem Buchstaben З."},
+      {prompt:"Welcher Buchstabe passt zum deutschen Laut „i“?", options:["И", "Й", "Е", "Ё"], correct:"И", explain:"И klingt wie ein einfaches deutsches „i“."},
+      {prompt:"Wie heißt der Buchstabe Й?", options:["и краткое", "ка", "зэ", "жэ"], correct:"и краткое", explain:"Й wird „и краткое“, also „kurzes И“, genannt."},
+      {prompt:"Was bedeutet das russische Wort „кот“?", options:["Kater", "Hund", "Vogel", "Fisch"], correct:"Kater", explain:"„Кот“ heißt „Kater“ bzw. „Katze“ und beginnt mit dem Buchstaben К."},
+    ]
+  },
+  {
+    id: "a-ru-3", title: "Buchstaben Л–Р", subtitle: "Vorsicht, hier lauern die nächsten falschen Freunde!", tag: "Teil 3 von 6",
+    icon: "<path d=\"M6 20 12 4l6 16M8 14h8\"/>",
+    rules: [
+      {title:"Л л", body:"Л heißt „эль“ und klingt wie das deutsche „l“, wird aber etwas dunkler und weiter hinten im Mund gesprochen.", example:"лес", exampleDe:"Wald"},
+      {title:"М м", body:"М heißt „эм“ und wird wie das deutsche „m“ ausgesprochen.", example:"мама", exampleDe:"Mama"},
+      {title:"Н н", body:"Н heißt „эн“ und klingt wie das deutsche „n“. Achtung: Н sieht aus wie ein lateinisches H, klingt aber wie N – ein klassischer falscher Freund!", example:"небо", exampleDe:"Himmel"},
+      {title:"О о", body:"О heißt „о“ und klingt wie das deutsche „o“ in „Sonne“. Unbetont wird es oft eher wie ein „a“ gesprochen.", example:"окно", exampleDe:"Fenster"},
+      {title:"П п", body:"П heißt „пэ“ und wird wie ein deutsches „p“ ausgesprochen, allerdings ohne den Hauch, den man im Deutschen oft hört.", example:"парк", exampleDe:"Park"},
+      {title:"Р р", body:"Р heißt „эр“ und wird als gerolltes Zungen-R gesprochen, wie im Bairischen. Achtung: Р sieht aus wie ein lateinisches P, klingt aber wie ein gerolltes R – ein weiterer falscher Freund!", example:"рыба", exampleDe:"Fisch"},
+    ],
+    practice: [
+      {prompt:"Welcher Buchstabe sieht aus wie ein lateinisches H, klingt aber wie N?", options:["Н", "П", "Р", "М"], correct:"Н", explain:"Н ist ein falscher Freund: Es sieht aus wie H, klingt aber wie N."},
+      {prompt:"Welcher Buchstabe sieht aus wie ein lateinisches P, klingt aber wie ein gerolltes R?", options:["Р", "П", "Л", "О"], correct:"Р", explain:"Р ist ein weiterer falscher Freund: Es sieht aus wie P, klingt aber wie R."},
+      {prompt:"Wie heißt dieser Buchstabe? М", options:["эм", "эль", "эр", "эн"], correct:"эм", explain:"М heißt „эм“ und klingt wie deutsches M."},
+      {prompt:"Was bedeutet das russische Wort „окно“?", options:["Fenster", "Tür", "Wand", "Park"], correct:"Fenster", explain:"„Окно“ heißt „Fenster“ und beginnt mit dem Buchstaben О."},
+      {prompt:"Wie wird der Buchstabe Л im Vergleich zum deutschen „l“ gesprochen?", options:["dunkler und weiter hinten", "heller und weiter vorne", "wie ein r", "stumm"], correct:"dunkler und weiter hinten", explain:"Л klingt ähnlich wie deutsches L, aber etwas dunkler bzw. velarer."},
+      {prompt:"Was bedeutet das russische Wort „парк“?", options:["Park", "Wald", "Haus", "Himmel"], correct:"Park", explain:"„Парк“ heißt „Park“ – ein einfaches Fremdwort mit dem Buchstaben П."},
+    ]
+  },
+  {
+    id: "a-ru-4", title: "Buchstaben С–Ц", subtitle: "Noch mehr falsche Freunde und neue Laute.", tag: "Teil 4 von 6",
+    icon: "<path d=\"M6 20 12 4l6 16M8 14h8\"/>",
+    rules: [
+      {title:"С с", body:"С heißt „эс“ und klingt wie ein scharfes deutsches „s“ bzw. „ß“ wie in „Straße“. Achtung: С sieht aus wie ein lateinisches C, klingt aber wie S – ein typischer falscher Freund!", example:"солнце", exampleDe:"Sonne"},
+      {title:"Т т", body:"Т heißt „тэ“ und wird wie ein deutsches „t“ ausgesprochen, allerdings ohne den Hauch, den man im Deutschen oft hört.", example:"торт", exampleDe:"Torte"},
+      {title:"У у", body:"У heißt „у“ und klingt wie ein deutsches „u“ in „Mund“. Achtung: У sieht aus wie ein lateinisches Y, klingt aber wie U – wieder ein falscher Freund!", example:"утро", exampleDe:"Morgen"},
+      {title:"Ф ф", body:"Ф heißt „эф“ und wird wie ein deutsches „f“ ausgesprochen.", example:"фото", exampleDe:"Foto"},
+      {title:"Х х", body:"Х heißt „ха“ und klingt wie das deutsche „ch“ in „Bach“. Achtung: Х sieht aus wie ein lateinisches X, klingt aber wie „ch“ – ein weiterer falscher Freund!", example:"хлеб", exampleDe:"Brot"},
+      {title:"Ц ц", body:"Ц heißt „цэ“ und klingt wie das deutsche „z“ in „Zeit“.", example:"цирк", exampleDe:"Zirkus"},
+    ],
+    practice: [
+      {prompt:"Welcher Buchstabe sieht aus wie ein lateinisches C, klingt aber wie S?", options:["С", "Ц", "Т", "Х"], correct:"С", explain:"С ist ein falscher Freund: Es sieht aus wie C, klingt aber wie ein scharfes S."},
+      {prompt:"Welcher Buchstabe sieht aus wie ein lateinisches Y, klingt aber wie U?", options:["У", "Ц", "Ф", "Т"], correct:"У", explain:"У ist ein falscher Freund: Es sieht aus wie Y, klingt aber wie U."},
+      {prompt:"Welcher Buchstabe sieht aus wie ein lateinisches X, klingt aber wie „ch“?", options:["Х", "К", "Ц", "Ф"], correct:"Х", explain:"Х ist ein falscher Freund: Es sieht aus wie X, klingt aber wie deutsches „ch“ in „Bach“."},
+      {prompt:"Wie schreibt man den Laut „z“ wie in „Zeit“ auf Kyrillisch?", options:["Ц", "С", "Т", "Х"], correct:"Ц", explain:"Der Buchstabe Ц steht für den deutschen Laut „z“ wie in „Zeit“."},
+      {prompt:"Was bedeutet das russische Wort „торт“?", options:["Torte", "Brot", "Foto", "Zirkus"], correct:"Torte", explain:"„Торт“ heißt „Torte“ und beginnt mit dem Buchstaben Т."},
+      {prompt:"Wie heißt dieser Buchstabe? Ф", options:["эф", "тэ", "эс", "ха"], correct:"эф", explain:"Ф heißt „эф“ und klingt wie deutsches F."},
+    ]
+  },
+  {
+    id: "a-ru-5", title: "Buchstaben Ч–Ь", subtitle: "Zischlaute und besondere Zeichen ohne eigenen Laut.", tag: "Teil 5 von 6",
+    icon: "<path d=\"M6 20 12 4l6 16M8 14h8\"/>",
+    rules: [
+      {title:"Ч ч", body:"Ч heißt „че“ und klingt wie das deutsche „tsch“ in „Tschüss“.", example:"час", exampleDe:"Stunde"},
+      {title:"Ш ш", body:"Ш heißt „ша“ und klingt wie ein deutsches „sch“, allerdings hart und nicht weich gesprochen.", example:"школа", exampleDe:"Schule"},
+      {title:"Щ щ", body:"Щ heißt „ща“ und klingt wie ein langes, weiches „schtsch“ – länger und weicher als Ш.", example:"щенок", exampleDe:"Welpe"},
+      {title:"Ъ ъ", body:"Ъ heißt „твёрдый знак“ (hartes Zeichen) und hat keinen eigenen Laut. Es zeigt an, dass der Konsonant davor hart bleibt, und trennt ihn vom folgenden Vokal. Ъ steht nie am Wortanfang.", example:"подъезд", exampleDe:"Hauseingang"},
+      {title:"Ы ы", body:"Ы ist ein dunkler, zentraler Vokal ohne deutsche Entsprechung: Die Zunge steht wie bei „u“, die Lippen sind aber ungerundet wie bei „i“. Ы kommt nie am Wortanfang vor.", example:"мы", exampleDe:"wir"},
+      {title:"Ь ь", body:"Ь heißt „мягкий знак“ (weiches Zeichen) und hat keinen eigenen Laut. Es macht den vorangehenden Konsonanten weich. Ь kommt nie am Wortanfang vor.", example:"день", exampleDe:"Tag"},
+    ],
+    practice: [
+      {prompt:"Wie klingt der Buchstabe Ч?", options:["tsch wie in Tschüss", "sch wie in Schule", "z wie in Zeit", "ch wie in Bach"], correct:"tsch wie in Tschüss", explain:"Ч klingt wie das deutsche „tsch“ in „Tschüss“."},
+      {prompt:"Wie klingt der Buchstabe Ш im Vergleich zum deutschen sch?", options:["hart und nicht weich", "weich wie ja", "wie ein z", "wie ein r"], correct:"hart und nicht weich", explain:"Ш klingt wie ein deutsches „sch“, wird aber hart und nicht weich gesprochen."},
+      {prompt:"Worin unterscheidet sich Щ von Ш?", options:["Щ ist länger und weicher", "Щ ist kürzer und härter", "Щ hat gar keinen Laut", "Щ klingt wie z"], correct:"Щ ist länger und weicher", explain:"Щ ist ein langes, weiches „schtsch“ – anders als das harte Ш."},
+      {prompt:"Welche Aufgabe hat das Zeichen Ъ (твёрдый знак)?", options:["Es trennt Konsonant und Vokal", "Es macht den Konsonanten weich", "Es klingt wie ein kurzes e", "Es verdoppelt den Vokal"], correct:"Es trennt Konsonant und Vokal", explain:"Ъ hat keinen eigenen Laut, sondern trennt den harten Konsonanten vom folgenden Vokal."},
+      {prompt:"Welches Zeichen macht den vorangehenden Konsonanten weich?", options:["Ь", "Ъ", "Ы", "Щ"], correct:"Ь", explain:"Ь, das weiche Zeichen (мягкий знак), palatalisiert den Konsonanten davor."},
+      {prompt:"Welcher Vokal kommt nie am Wortanfang vor und hat keine deutsche Entsprechung?", options:["Ы", "Щ", "Ш", "Ч"], correct:"Ы", explain:"Ы ist ein spezieller, dunkler Vokal, der nie am Wortanfang steht."},
+    ]
+  },
+  {
+    id: "a-ru-6", title: "Buchstaben Э–Я", subtitle: "Die letzten drei Buchstaben – geschafft!", tag: "Teil 6 von 6",
+    icon: "<path d=\"M6 20 12 4l6 16M8 14h8\"/>",
+    rules: [
+      {title:"Э э", body:"Э heißt „э“ und klingt wie ein offenes deutsches „e“ wie in „Ärger“. Er kommt am Wortanfang vor allem in Fremdwörtern vor.", example:"этаж", exampleDe:"Stockwerk"},
+      {title:"Ю ю", body:"Ю heißt „ю“ und wird „ju“ ausgesprochen, wie im deutschen Wort „Jubel“.", example:"юг", exampleDe:"Süden"},
+      {title:"Я я", body:"Я heißt „я“ und wird „ja“ ausgesprochen. Praktischer Merktipp: Das Wort „я“ bedeutet auf Russisch „ich“!", example:"яблоко", exampleDe:"Apfel"},
+    ],
+    practice: [
+      {prompt:"Wie klingt der Buchstabe Э?", options:["offenes e wie in Ärger", "ja", "ju", "geschlossenes e wie in Beet"], correct:"offenes e wie in Ärger", explain:"Э klingt wie ein offenes deutsches „e“, ähnlich wie in „Ärger“."},
+      {prompt:"Wie wird der Buchstabe Ю ausgesprochen?", options:["ju", "ja", "jo", "e"], correct:"ju", explain:"Ю wird „ju“ ausgesprochen, wie im deutschen Wort „Jubel“."},
+      {prompt:"Wie wird der Buchstabe Я ausgesprochen?", options:["ja", "ju", "jo", "je"], correct:"ja", explain:"Я wird „ja“ ausgesprochen."},
+      {prompt:"Was bedeutet das russische Wort „я“?", options:["ich", "du", "wir", "er"], correct:"ich", explain:"„Я“ ist das russische Wort für „ich“ und gleichzeitig der Buchstabenname."},
+      {prompt:"Was bedeutet das russische Wort „яблоко“?", options:["Apfel", "Birne", "Süden", "Stockwerk"], correct:"Apfel", explain:"„Яблоко“ heißt „Apfel“ und beginnt mit dem Buchstaben Я."},
+      {prompt:"In welchen Wörtern kommt Э am Wortanfang meist vor?", options:["Fremdwörtern", "Zahlwörtern", "Verben", "Pronomen"], correct:"Fremdwörtern", explain:"Э steht am Wortanfang vor allem in Fremd- und Lehnwörtern, z. B. „этаж“."},
+    ]
+  },
+];
+const ALPHABET_LEVELS_RU = [
+  { id: "a-ru-level", name: "Алфавит", tag: "Vorbereitung · Kyrillische Schrift", accent: "coral",
+    icon: "<path d=\"M12 2v4M12 18v4M4.9 4.9l2.8 2.8M16.3 16.3l2.8 2.8M2 12h4M18 12h4M4.9 19.1l2.8-2.8M16.3 7.7l2.8-2.8\"/><circle cx=\"12\" cy=\"12\" r=\"3\"/>",
+    chapters: ["a-ru-1", "a-ru-2", "a-ru-3", "a-ru-4", "a-ru-5", "a-ru-6"] },
+];
+const ALPHABET_CH_BY_ID_RU = Object.fromEntries(ALPHABET_CHAPTERS_RU.map(c => [c.id, c]));
+const ALPHABET_LEVEL_BY_ID_RU = Object.fromEntries(ALPHABET_LEVELS_RU.map(l => [l.id, l]));
+
+const ALPHABET_CHAPTERS_AR = [
+  {
+    id: "a-ar-1", title: "Einführung und erste Buchstaben", subtitle: "Lerne die Grundlagen der arabischen Schrift und die ersten vier Buchstaben.", tag: "Teil 1 von 6",
+    icon: "<path d=\"M6 20 12 4l6 16M8 14h8\"/>",
+    rules: [
+      {title:"Die arabische Schrift", body:"Arabisch wird von rechts nach links geschrieben und gelesen. Innerhalb eines Wortes verbinden sich die Buchstaben miteinander wie eine Schreibschrift, und die meisten Buchstaben ändern dabei leicht ihre Form, je nachdem ob sie allein stehen oder sich mit dem Buchstaben davor und/oder danach verbinden. Es gibt keine Groß- und Kleinschreibung. Kurze Vokale werden im Alltag meist gar nicht geschrieben — nur in Lehrbüchern und im Koran stehen sie als kleine Zeichen (Harakat) über oder unter den Buchstaben.", example:"", exampleDe:""},
+      {title:"ا", body:"Alif ist kein richtiger Konsonant, sondern meist Träger eines langen 'aa'-Lautes, wie im deutschen Wort 'Bahn'. Verbindet sich nicht mit dem nachfolgenden Buchstaben.", example:"اسم", exampleDe:"Name"},
+      {title:"ب", body:"Bā' entspricht genau dem deutschen 'b', wie in 'Ball'.", example:"بيت", exampleDe:"Haus"},
+      {title:"ت", body:"Tā' entspricht dem deutschen 't', wie in 'Tisch'.", example:"تفاح", exampleDe:"Apfel"},
+      {title:"ث", body:"Thā' ist ein stimmloses 'th' wie im englischen Wort 'think' — dafür gibt es im Deutschen kein Äquivalent. Die Zungenspitze berührt dabei leicht die oberen Schneidezähne, während Luft entweicht.", example:"ثعلب", exampleDe:"Fuchs"},
+    ],
+    practice: [
+      {prompt:"In welche Richtung wird Arabisch geschrieben und gelesen?", options:["Von rechts nach links", "Von links nach rechts", "Von oben nach unten", "Es gibt keine feste Richtung"], correct:"Von rechts nach links", explain:"Arabisch wird immer von rechts nach links geschrieben und gelesen."},
+      {prompt:"Was passiert mit arabischen Buchstaben innerhalb eines Wortes?", options:["Sie verbinden sich wie eine Schreibschrift", "Sie werden immer einzeln geschrieben", "Sie werden groß geschrieben", "Sie ändern ihre Reihenfolge"], correct:"Sie verbinden sich wie eine Schreibschrift", explain:"Die meisten Buchstaben verbinden sich mit ihren Nachbarn und ändern dabei leicht ihre Form."},
+      {prompt:"Wie werden kurze Vokale im arabischen Alltag meistens geschrieben?", options:["Gar nicht", "Immer mit Großbuchstaben", "Als eigene Buchstaben", "Am Wortende"], correct:"Gar nicht", explain:"Kurze Vokale werden im Alltag meist weggelassen und nur in Lehrbüchern als Harakat notiert."},
+      {prompt:"Welcher Buchstabe verbindet sich NICHT mit dem nachfolgenden Buchstaben?", options:["ا", "ب", "ت", "ث"], correct:"ا", explain:"Alif gehört zu den sechs Buchstaben, die sich nie mit dem folgenden Buchstaben verbinden."},
+      {prompt:"Welcher Buchstabe steht für den deutschen Laut 'b'?", options:["ب", "ت", "ث", "ا"], correct:"ب", explain:"Bā' klingt genau wie das deutsche 'b'."},
+      {prompt:"Was bedeutet das Wort 'تفاح'?", options:["Apfel", "Haus", "Fuchs", "Name"], correct:"Apfel", explain:"'تفاح' (tuffāḥ) ist das arabische Wort für Apfel."},
+    ]
+  },
+  {
+    id: "a-ar-2", title: "Neue Laute aus dem Rachen", subtitle: "Fünf neue Buchstaben, darunter drei besondere Rachenlaute.", tag: "Teil 2 von 6",
+    icon: "<path d=\"M6 20 12 4l6 16M8 14h8\"/>",
+    rules: [
+      {title:"ج", body:"Jīm klingt wie das deutsche 'dsch' in 'Dschungel' (ähnlich dem englischen 'j' in 'jam'). In manchen Regionen, etwa in Ägypten, wird er auch wie ein hartes 'g' ausgesprochen.", example:"جمل", exampleDe:"Kamel"},
+      {title:"ح", body:"Ḥā' ist ein gehauchtes 'h', das tief aus dem Rachen kommt und kräftiger klingt als das deutsche 'h' — dafür gibt es im Deutschen kein Äquivalent. Stell dir vor, du hauchst eine Brille an, aber tief aus dem Hals.", example:"حليب", exampleDe:"Milch"},
+      {title:"خ", body:"Khā' klingt wie das deutsche 'ch' in 'Bach' oder 'Buch'.", example:"خبز", exampleDe:"Brot"},
+      {title:"د", body:"Dāl entspricht dem deutschen 'd', wie in 'Dach'. Verbindet sich nicht mit dem nachfolgenden Buchstaben.", example:"دفتر", exampleDe:"Heft"},
+      {title:"ذ", body:"Dhāl ist ein stimmhaftes 'th' wie im englischen Wort 'this' — im Deutschen gibt es dafür kein Äquivalent. Verbindet sich nicht mit dem nachfolgenden Buchstaben.", example:"ذهب", exampleDe:"Gold"},
+    ],
+    practice: [
+      {prompt:"Wie heißt dieser Buchstabe: ح ?", options:["Ḥā'", "Jīm", "Khā'", "Dāl"], correct:"Ḥā'", explain:"ح wird 'Ḥā'' genannt und ist ein kräftiger Rachenlaut."},
+      {prompt:"Welcher Buchstabe macht den Laut 'ch' wie in 'Bach'?", options:["خ", "ج", "ح", "د"], correct:"خ", explain:"Khā' entspricht genau dem deutschen 'ch' in 'Bach'."},
+      {prompt:"Welcher dieser Buchstaben verbindet sich NICHT mit dem nachfolgenden Buchstaben?", options:["د", "ج", "ح", "خ"], correct:"د", explain:"Dāl gehört zu den sechs Buchstaben, die sich nie mit dem folgenden Buchstaben verbinden."},
+      {prompt:"Was bedeutet das Wort 'جمل'?", options:["Kamel", "Milch", "Brot", "Gold"], correct:"Kamel", explain:"'جمل' (jamal) bedeutet Kamel."},
+      {prompt:"Welcher Buchstabe klingt wie das stimmhafte 'th' im englischen Wort 'this'?", options:["ذ", "ث", "د", "خ"], correct:"ذ", explain:"Dhāl entspricht dem stimmhaften englischen 'th' in 'this'."},
+      {prompt:"Welcher Buchstabe steht am Anfang des Wortes für 'Brot' (خبز)?", options:["خ", "ح", "ج", "د"], correct:"خ", explain:"Das Wort 'خبز' (Brot) beginnt mit dem Buchstaben Khā'."},
+    ]
+  },
+  {
+    id: "a-ar-3", title: "Zischlaute und das R", subtitle: "Vom gerollten R bis zum dunklen S — fünf neue Buchstaben.", tag: "Teil 3 von 6",
+    icon: "<path d=\"M6 20 12 4l6 16M8 14h8\"/>",
+    rules: [
+      {title:"ر", body:"Rā' ist ein gerolltes Zungen-R, ähnlich dem spanischen oder italienischen R. Verbindet sich nicht mit dem nachfolgenden Buchstaben.", example:"رجل", exampleDe:"Mann"},
+      {title:"ز", body:"Zāy klingt wie ein stimmhaftes deutsches 's', wie in 'Sonne' oder 'Rose'. Verbindet sich nicht mit dem nachfolgenden Buchstaben.", example:"زيت", exampleDe:"Öl"},
+      {title:"س", body:"Sīn ist ein stimmloses deutsches 's' bzw. 'ß', wie in 'Wasser' oder 'Straße'.", example:"سمك", exampleDe:"Fisch"},
+      {title:"ش", body:"Shīn entspricht genau dem deutschen 'sch', wie in 'Schule'.", example:"شمس", exampleDe:"Sonne"},
+      {title:"ص", body:"Ṣād ist ein 'emphatisches', dunkles, velarisiertes 's' — die Zunge wird dabei tief und gespannt im Mund gehalten. Für diesen Laut gibt es im Deutschen kein Äquivalent.", example:"صباح", exampleDe:"Morgen"},
+    ],
+    practice: [
+      {prompt:"Wie heißt dieser Buchstabe: ر ?", options:["Rā'", "Zāy", "Sīn", "Shīn"], correct:"Rā'", explain:"ر heißt 'Rā'' und wird als gerolltes Zungen-R gesprochen."},
+      {prompt:"Welcher Buchstabe klingt wie das deutsche 'sch' in 'Schule'?", options:["ش", "س", "ص", "ز"], correct:"ش", explain:"Shīn entspricht genau dem deutschen 'sch'."},
+      {prompt:"Welcher Buchstabe verbindet sich NICHT mit dem nachfolgenden Buchstaben?", options:["ر", "س", "ش", "ص"], correct:"ر", explain:"Rā' gehört zu den sechs Buchstaben, die sich nie mit dem folgenden Buchstaben verbinden."},
+      {prompt:"Welcher Buchstabe ist ein dunkles, emphatisches 's' ohne deutsches Äquivalent?", options:["ص", "س", "ز", "ش"], correct:"ص", explain:"Ṣād wird mit tiefer, gespannter Zunge gesprochen und klingt dunkler als ein normales 's'."},
+      {prompt:"Was bedeutet das Wort 'شمس'?", options:["Sonne", "Fisch", "Öl", "Mann"], correct:"Sonne", explain:"'شمس' (shams) bedeutet Sonne."},
+      {prompt:"Welcher Buchstabe steht für ein stimmhaftes 's' wie in 'Rose'?", options:["ز", "س", "ص", "ش"], correct:"ز", explain:"Zāy wird stimmhaft gesprochen, wie das deutsche 's' in 'Rose'."},
+    ]
+  },
+  {
+    id: "a-ar-4", title: "Emphatische Laute und die Kehle", subtitle: "Die 'dunklen' Geschwister bekannter Laute und der berühmte Kehllaut ع.", tag: "Teil 4 von 6",
+    icon: "<path d=\"M6 20 12 4l6 16M8 14h8\"/>",
+    rules: [
+      {title:"ض", body:"Ḍād ist das emphatische Gegenstück zu د — ein dunkler, gepresster 'd'-Laut ohne deutsches Äquivalent. Wegen dieses besonderen Buchstabens wird Arabisch manchmal 'die Sprache des Ḍād' genannt.", example:"ضوء", exampleDe:"Licht"},
+      {title:"ط", body:"Ṭā' ist das emphatische Gegenstück zu ت — ein dunkler, gepresster 't'-Laut, gesprochen mit tief liegender, gespannter Zunge.", example:"طالب", exampleDe:"Student"},
+      {title:"ظ", body:"Ẓā' ist das emphatische Gegenstück zu ذ — ein dunkles, gepresstes 'th' wie in 'this', aber mit gespannter Zunge gesprochen. Ein deutsches Äquivalent gibt es nicht.", example:"ظهر", exampleDe:"Mittag"},
+      {title:"ع", body:"ʿAyn ist ein reiner Kehlkopf- bzw. Rachenlaut ganz ohne deutsches Äquivalent: Presse den Rachen zusammen und erzeuge einen Laut, fast wie ein gepresstes Räuspern.", example:"عين", exampleDe:"Auge"},
+      {title:"غ", body:"Ghayn ist ein weiches, gerolltes Rachen-R bzw. -G, ähnlich dem französischen R. Für diesen Laut gibt es im Deutschen kein Äquivalent.", example:"غرفة", exampleDe:"Zimmer"},
+    ],
+    practice: [
+      {prompt:"Welcher Buchstabe gab dem Arabischen den Beinamen 'Sprache des Ḍād'?", options:["ض", "ط", "ظ", "ع"], correct:"ض", explain:"Ḍād gilt als einzigartiger arabischer Laut und gab der Sprache diesen Beinamen."},
+      {prompt:"Wie heißt dieser Buchstabe: ع ?", options:["ʿAyn", "Ghayn", "Ẓā'", "Ṭā'"], correct:"ʿAyn", explain:"ع heißt 'ʿAyn' und ist ein reiner Kehllaut."},
+      {prompt:"Welcher Buchstabe klingt wie ein weiches, gerolltes französisches R?", options:["غ", "ع", "خ", "ح"], correct:"غ", explain:"Ghayn erinnert an das gerollte französische R, aus dem Rachen gesprochen."},
+      {prompt:"Welcher Buchstabe ist das emphatische Gegenstück zu ت?", options:["ط", "ض", "ظ", "غ"], correct:"ط", explain:"Ṭā' ist die 'dunkle' Variante von ت."},
+      {prompt:"Was bedeutet das Wort 'عين'?", options:["Auge", "Zimmer", "Licht", "Student"], correct:"Auge", explain:"'عين' (ʿayn) bedeutet Auge — genau wie der Buchstabe selbst heißt."},
+      {prompt:"Welcher Buchstabe ist das emphatische Gegenstück zu ذ?", options:["ظ", "ض", "ط", "ع"], correct:"ظ", explain:"Ẓā' ist die 'dunkle' Variante von ذ."},
+    ]
+  },
+  {
+    id: "a-ar-5", title: "Vom Zäpfchen-K bis zum M", subtitle: "Fünf gut aussprechbare Buchstaben, darunter ein K tief aus dem Rachen.", tag: "Teil 5 von 6",
+    icon: "<path d=\"M6 20 12 4l6 16M8 14h8\"/>",
+    rules: [
+      {title:"ف", body:"Fā' entspricht genau dem deutschen 'f', wie in 'Fisch'.", example:"فيل", exampleDe:"Elefant"},
+      {title:"ق", body:"Qāf ist ein 'k', das ganz hinten im Rachen am Zäpfchen gebildet wird und tiefer klingt als ein normales 'k'. Ein direktes deutsches Äquivalent gibt es nicht.", example:"قلم", exampleDe:"Stift"},
+      {title:"ك", body:"Kāf entspricht dem deutschen 'k', wie in 'Katze'.", example:"كتاب", exampleDe:"Buch"},
+      {title:"ل", body:"Lām entspricht dem deutschen 'l', wie in 'Lampe'.", example:"ليمون", exampleDe:"Zitrone"},
+      {title:"م", body:"Mīm entspricht dem deutschen 'm', wie in 'Mond'.", example:"مدرسة", exampleDe:"Schule"},
+    ],
+    practice: [
+      {prompt:"Welcher Buchstabe wird tief hinten im Rachen am Zäpfchen gebildet?", options:["ق", "ك", "ف", "ل"], correct:"ق", explain:"Qāf wird ganz hinten im Rachen gebildet und klingt tiefer als ك."},
+      {prompt:"Wie heißt dieser Buchstabe: ل ?", options:["Lām", "Mīm", "Kāf", "Fā'"], correct:"Lām", explain:"ل heißt 'Lām' und klingt wie das deutsche 'l'."},
+      {prompt:"Was bedeutet das Wort 'كتاب'?", options:["Buch", "Stift", "Elefant", "Zitrone"], correct:"Buch", explain:"'كتاب' (kitāb) bedeutet Buch."},
+      {prompt:"Welcher Buchstabe steht für den deutschen Laut 'f'?", options:["ف", "ق", "ك", "م"], correct:"ف", explain:"Fā' klingt genau wie das deutsche 'f'."},
+      {prompt:"Welcher Buchstabe beginnt das Wort für 'Elefant' (فيل)?", options:["ف", "ق", "ل", "م"], correct:"ف", explain:"'فيل' (fīl) beginnt mit dem Buchstaben Fā'."},
+      {prompt:"Welcher Buchstabe entspricht dem deutschen 'm'?", options:["م", "ل", "ك", "ق"], correct:"م", explain:"Mīm klingt genau wie das deutsche 'm'."},
+    ]
+  },
+  {
+    id: "a-ar-6", title: "Die letzten vier Buchstaben", subtitle: "Nūn, Hā', Wāw und Yā' vervollständigen das arabische Alphabet.", tag: "Teil 6 von 6",
+    icon: "<path d=\"M6 20 12 4l6 16M8 14h8\"/>",
+    rules: [
+      {title:"ن", body:"Nūn entspricht dem deutschen 'n', wie in 'Nase'.", example:"نجمة", exampleDe:"Stern"},
+      {title:"ه", body:"Hā' entspricht dem deutschen 'h', wie in 'Haus'.", example:"هدية", exampleDe:"Geschenk"},
+      {title:"و", body:"Als Konsonant klingt Wāw wie das deutsche 'w' bzw. wie das englische 'w' in 'water'; als Vokal steht es für ein langes 'uu'. Verbindet sich nicht mit dem nachfolgenden Buchstaben.", example:"وردة", exampleDe:"Rose"},
+      {title:"ي", body:"Als Konsonant klingt Yā' wie das deutsche 'j', wie im englischen Wort 'yes'; als Vokal steht es für ein langes 'ii'.", example:"يد", exampleDe:"Hand"},
+    ],
+    practice: [
+      {prompt:"Welcher Buchstabe entspricht dem deutschen 'n'?", options:["ن", "ه", "و", "ي"], correct:"ن", explain:"Nūn klingt genau wie das deutsche 'n'."},
+      {prompt:"Welcher Buchstabe verbindet sich NICHT mit dem nachfolgenden Buchstaben?", options:["و", "ن", "ه", "ي"], correct:"و", explain:"Wāw gehört zu den sechs Buchstaben, die sich nie mit dem folgenden Buchstaben verbinden."},
+      {prompt:"Wie heißt dieser Buchstabe: ي ?", options:["Yā'", "Wāw", "Hā'", "Nūn"], correct:"Yā'", explain:"ي heißt 'Yā'' und klingt als Konsonant wie das deutsche 'j'."},
+      {prompt:"Welchen Laut hat و als Vokal?", options:["Ein langes uu", "Ein langes ii", "Ein kurzes a", "Ein langes aa"], correct:"Ein langes uu", explain:"Als Vokal steht Wāw für ein langes 'uu'."},
+      {prompt:"Was bedeutet das Wort 'وردة'?", options:["Rose", "Stern", "Hand", "Geschenk"], correct:"Rose", explain:"'وردة' (warda) bedeutet Rose."},
+      {prompt:"Welcher Buchstabe entspricht dem deutschen 'h'?", options:["ه", "ن", "و", "ي"], correct:"ه", explain:"Hā' klingt genau wie das deutsche 'h'."},
+    ]
+  },
+];
+const ALPHABET_LEVELS_AR = [
+  { id: "a-ar-level", name: "الأبجدية", tag: "Vorbereitung · Arabische Schrift", accent: "coral",
+    icon: "<path d=\"M12 2v4M12 18v4M4.9 4.9l2.8 2.8M16.3 16.3l2.8 2.8M2 12h4M18 12h4M4.9 19.1l2.8-2.8M16.3 7.7l2.8-2.8\"/><circle cx=\"12\" cy=\"12\" r=\"3\"/>",
+    chapters: ["a-ar-1", "a-ar-2", "a-ar-3", "a-ar-4", "a-ar-5", "a-ar-6"] },
+];
+const ALPHABET_CH_BY_ID_AR = Object.fromEntries(ALPHABET_CHAPTERS_AR.map(c => [c.id, c]));
+const ALPHABET_LEVEL_BY_ID_AR = Object.fromEntries(ALPHABET_LEVELS_AR.map(l => [l.id, l]));
+
+const LANG_ALPHABET = {
+  ar: { chapters: ALPHABET_CHAPTERS_AR, chById: ALPHABET_CH_BY_ID_AR, levels: ALPHABET_LEVELS_AR, levelById: ALPHABET_LEVEL_BY_ID_AR },
+  ru: { chapters: ALPHABET_CHAPTERS_RU, chById: ALPHABET_CH_BY_ID_RU, levels: ALPHABET_LEVELS_RU, levelById: ALPHABET_LEVEL_BY_ID_RU },
+};
+
 const LANG_GRAMMAR = {
   es: { chapters: GRAMMAR_CHAPTERS_ES, chById: GRAMMAR_CH_BY_ID_ES, levels: GRAMMAR_LEVELS_ES, levelById: GRAMMAR_LEVEL_BY_ID_ES },
   en: { chapters: GRAMMAR_CHAPTERS_EN, chById: GRAMMAR_CH_BY_ID_EN, levels: GRAMMAR_LEVELS_EN, levelById: GRAMMAR_LEVEL_BY_ID_EN },
@@ -167810,6 +168133,10 @@ let state = {
     es: emptyProgress(GRAMMAR_CHAPTERS_ES), en: emptyProgress(GRAMMAR_CHAPTERS_EN), fr: emptyProgress(GRAMMAR_CHAPTERS_FR), it: emptyProgress(GRAMMAR_CHAPTERS_IT), ar: emptyProgress(GRAMMAR_CHAPTERS_AR), ru: emptyProgress(GRAMMAR_CHAPTERS_RU),
     'de-es': emptyProgress(GRAMMAR_DE_ES), 'de-en': emptyProgress(GRAMMAR_DE_EN), 'de-fr': emptyProgress(GRAMMAR_DE_FR), 'de-it': emptyProgress(GRAMMAR_DE_IT),
   },
+  // Alphabet-Fortschritt: nur fuer Arabisch/Russisch, immer auf Deutsch erklaert (kein Quellsprachen-Bezug)
+  aProgress: {
+    ar: emptyProgress(ALPHABET_CHAPTERS_AR), ru: emptyProgress(ALPHABET_CHAPTERS_RU),
+  },
   // Fortschritt fuer den Koran-Begleiter (nur Arabisch, nach Abschluss aller 4 Vokabel-Niveaus freigeschaltet)
   quranProgress: emptyProgress(QURAN_CHAPTERS),
   quranMode: false,
@@ -167828,12 +168155,34 @@ function activeVocabLangKey() { return state.lang + '-' + state.source; }
 // Grammatik-Schluessel: Deutsch ist von allen 3 Sprachen aus verfuegbar, Spanisch/Englisch/Franzoesisch
 // sind aktuell nur auf Deutsch erklaert (das aendert sich unabhaengig von der gewaehlten Vokabel-Ausgangssprache).
 function activeGrammarLangKey() { return state.lang === 'de' ? 'de-' + state.source : state.lang; }
-function activeLangKey() { return state.mode === 'grammar' ? activeGrammarLangKey() : activeVocabLangKey(); }
+// Alphabet-Modus gibt es nur fuer Arabisch/Russisch als Zielsprache, immer auf Deutsch erklaert -
+// keine Quellsprachen-Varianten noetig, daher einfach state.lang direkt.
+function activeLangKey() {
+  if (state.mode === 'grammar') return activeGrammarLangKey();
+  if (state.mode === 'alphabet') return state.lang;
+  return activeVocabLangKey();
+}
 
-function currentLevels() { return state.mode === "grammar" ? LANG_GRAMMAR[activeLangKey()].levels : LEVELS; }
-function currentLevelById(id) { return state.mode === "grammar" ? LANG_GRAMMAR[activeLangKey()].levelById[id] : LEVEL_BY_ID[id]; }
-function currentChapterById(id) { return state.mode === "grammar" ? LANG_GRAMMAR[activeLangKey()].chById[id] : LANG_VOCAB[activeLangKey()].chById[id]; }
-function currentProgress() { return state.mode === "grammar" ? state.gProgress[activeLangKey()] : state.progress[activeLangKey()]; }
+function currentLevels() {
+  if (state.mode === "grammar") return LANG_GRAMMAR[activeLangKey()].levels;
+  if (state.mode === "alphabet") return LANG_ALPHABET[activeLangKey()].levels;
+  return LEVELS;
+}
+function currentLevelById(id) {
+  if (state.mode === "grammar") return LANG_GRAMMAR[activeLangKey()].levelById[id];
+  if (state.mode === "alphabet") return LANG_ALPHABET[activeLangKey()].levelById[id];
+  return LEVEL_BY_ID[id];
+}
+function currentChapterById(id) {
+  if (state.mode === "grammar") return LANG_GRAMMAR[activeLangKey()].chById[id];
+  if (state.mode === "alphabet") return LANG_ALPHABET[activeLangKey()].chById[id];
+  return LANG_VOCAB[activeLangKey()].chById[id];
+}
+function currentProgress() {
+  if (state.mode === "grammar") return state.gProgress[activeLangKey()];
+  if (state.mode === "alphabet") return state.aProgress[activeLangKey()];
+  return state.progress[activeLangKey()];
+}
 function currentAllWords() { return LANG_VOCAB[activeVocabLangKey()].allWords; }
 function currentCategoryWords() { return LANG_VOCAB[activeVocabLangKey()].categoryWords; }
 
@@ -167940,6 +168289,8 @@ function renderLevels() {
 
     const countLabel = state.mode === "grammar"
       ? `${level.chapters.reduce((sum, id) => sum + LANG_GRAMMAR[activeLangKey()].chById[id].practice.length, 0)} Übungen`
+      : state.mode === "alphabet"
+      ? `${level.chapters.length} Lektionen`
       : `${level.chapters.reduce((sum, id) => sum + LANG_VOCAB[activeLangKey()].chById[id].words.length, 0)} Vokabeln`;
 
     card.innerHTML = `
@@ -167958,6 +168309,42 @@ function renderLevels() {
   });
 }
 function goToLevels() { renderLevels(); if (state.profile) updateProfileBadge(); showScreen('screen-levels'); }
+
+/* ---------------------------------------------------------
+   Sprachwahl-Screen (vor dem Onboarding, fuer neue Profile)
+   Die Oberflaechensprache haengt an state.lang -> wird deshalb hier VOR
+   dem Onboarding explizit abgefragt, statt beim ersten Aufruf einfach
+   den Default ('es') zu benutzen.
+--------------------------------------------------------- */
+function renderLangSelectScreen() {
+  const grid = document.getElementById('lang-select-grid');
+  grid.innerHTML = '';
+  ['es', 'en', 'fr', 'it', 'de', 'ar', 'ru'].forEach(code => {
+    const lang = LANGUAGES[code];
+    const btn = document.createElement('button');
+    btn.className = 'langselect-btn';
+    btn.innerHTML = `<span class="flag">${lang.flag}</span><span>${lang.name}</span>`;
+    btn.onclick = () => chooseInterfaceLang(code);
+    grid.appendChild(btn);
+  });
+}
+
+function chooseInterfaceLang(code) {
+  if (!LANGUAGES[code]) return;
+  state.lang = code;
+  state.source = DEFAULT_SOURCE[code];
+  // Fuer Arabisch/Russisch direkt mit dem Alphabet-Reiter starten, statt mit Vokabeln
+  state.mode = (code === 'ar' || code === 'ru') ? 'alphabet' : 'vocab';
+  document.querySelectorAll('.mode-btn').forEach(b => b.classList.toggle('active', b.dataset.mode === state.mode));
+  applyUILanguage();
+  renderAvatarPicker();
+  showScreen('screen-onboarding');
+}
+
+function backToLangSelect() {
+  renderLangSelectScreen();
+  showScreen('screen-lang-select');
+}
 
 function renderLangSwitch() {
   const wrap = document.getElementById('lang-switch');
@@ -168002,6 +168389,10 @@ function updateLevelsHeaderText() {
     } else {
       document.getElementById('levels-sub').textContent = t('grammarLevelsUnavailableTemplate')(lang.name, src.name);
     }
+  } else if (state.mode === "alphabet") {
+    document.getElementById('levels-eyebrow').textContent = t('alphabetLevelsEyebrowTemplate')(lang.name);
+    document.getElementById('levels-title').textContent = t('alphabetTitle');
+    document.getElementById('levels-sub').textContent = t('alphabetLevelsSubTemplate')(lang.name);
   } else {
     document.getElementById('levels-eyebrow').textContent = t('vocabLevelsEyebrowTemplate')(lang.appName, src.name);
     document.getElementById('levels-title').textContent = t('chooseLevelTitle');
@@ -168024,7 +168415,16 @@ function setLang(code) {
   if (state.source === code) {
     state.source = DEFAULT_SOURCE[code];
   }
+  const hasAlphabet = code === 'ar' || code === 'ru';
+  if (!hasAlphabet && state.mode === 'alphabet') {
+    // Alphabet-Reiter gibt es nur fuer Arabisch/Russisch - bei Sprachwechsel weg davon auf Vokabeln zurueckfallen
+    state.mode = 'vocab';
+  } else if (changed && hasAlphabet) {
+    // Beim Wechsel zu Arabisch/Russisch zuerst das Alphabet vorschlagen, bevor man zu Vokabeln/Grammatik springt
+    state.mode = 'alphabet';
+  }
   if (changed) renderLangSwitch();
+  document.querySelectorAll('.mode-btn').forEach(b => b.classList.toggle('active', b.dataset.mode === state.mode));
   applyUILanguage();
   updateLevelsHeaderText();
   renderLevels();
@@ -168092,6 +168492,9 @@ function renderPath() {
   if (state.mode === "grammar") {
     document.getElementById('path-title').textContent = t('grammarChaptersTitle');
     document.getElementById('path-sub').textContent = t('grammarPathSub');
+  } else if (state.mode === "alphabet") {
+    document.getElementById('path-title').textContent = t('alphabetChaptersTitle');
+    document.getElementById('path-sub').textContent = t('alphabetPathSub');
   } else {
     const routeLangWord = state.lang === 'de' ? (PATH_LANG_ADJECTIVE.de || 'Deutsche') : LANGUAGES[state.lang].name;
     document.getElementById('path-title').textContent = t('routeThroughTemplate')(routeLangWord);
@@ -168116,8 +168519,8 @@ function renderPath() {
       ? `<div class="node-stars">${[0,1,2].map(s => STAR_SVG(s < st.stars)).join('')}</div>`
       : '';
 
-    const openFn = state.mode === "grammar" ? 'openGrammarChapter' : 'openChapter';
-    const metaLabel = state.mode === "grammar" ? ch.tag : ch.stop;
+    const openFn = (state.mode === "grammar" || state.mode === "alphabet") ? 'openGrammarChapter' : 'openChapter';
+    const metaLabel = (state.mode === "grammar" || state.mode === "alphabet") ? ch.tag : ch.stop;
 
     node.innerHTML = `
       <button class="${btnClass}" onclick="${openFn}('${ch.id}')">
@@ -168257,7 +168660,7 @@ function openGrammarChapter(chapterId) {
 }
 
 function renderGrammarCard() {
-  const chapter = LANG_GRAMMAR[activeLangKey()].chById[state.gChapterId];
+  const chapter = currentChapterById(state.gChapterId);
   const rule = chapter.rules[state.gStep];
   const total = chapter.rules.length;
 
@@ -168277,12 +168680,12 @@ function renderGrammarCard() {
 }
 
 function nextGrammarCard() {
-  const chapter = LANG_GRAMMAR[activeLangKey()].chById[state.gChapterId];
+  const chapter = currentChapterById(state.gChapterId);
   if (state.gStep + 1 < chapter.rules.length) {
     state.gStep++;
     renderGrammarCard();
   } else {
-    state.quizMode = 'grammar';
+    state.quizMode = state.mode; // 'grammar' oder 'alphabet'
     state.quiz = buildGrammarQuiz(chapter);
     state.qIndex = 0;
     state.hearts = 3;
@@ -168312,14 +168715,15 @@ function renderQuiz() {
 
   const isType = q.type === 'type';
   const isGrammar = state.quizMode === 'grammar';
+  const isAlphabet = state.quizMode === 'alphabet';
   document.getElementById('quiz-prompt').textContent = isType
-    ? (isGrammar ? t('quizPromptTypeGrammar') : t('quizPromptTypeVocab')(LANGUAGES[state.lang].name))
-    : (isGrammar ? t('quizPromptMCGrammar') : t('quizPromptMCVocab'));
+    ? (isAlphabet ? t('quizPromptTypeAlphabet') : isGrammar ? t('quizPromptTypeGrammar') : t('quizPromptTypeVocab')(LANGUAGES[state.lang].name))
+    : (isAlphabet ? t('quizPromptMCAlphabet') : isGrammar ? t('quizPromptMCGrammar') : t('quizPromptMCVocab'));
   renderHearts();
 
   const wordEl = document.getElementById('quiz-word');
   wordEl.textContent = q.prompt;
-  wordEl.style.fontSize = isGrammar ? '24px' : '32px';
+  wordEl.style.fontSize = (isGrammar || isAlphabet) ? '24px' : '32px';
   wordEl.style.animation = 'none';
   void wordEl.offsetWidth;
   wordEl.style.animation = '';
@@ -168463,6 +168867,8 @@ function finishAnswer(correct, delay) {
       state.lastFailed = false;
       if (state.quizMode === 'grammar') {
         state.gProgress[activeLangKey()][state.gChapterId] = { done: true, stars };
+      } else if (state.quizMode === 'alphabet') {
+        state.aProgress[activeLangKey()][state.gChapterId] = { done: true, stars };
       } else if (state.quizMode === 'quran') {
         state.quranProgress[state.chapterId] = { done: true, stars };
       } else {
@@ -168481,7 +168887,9 @@ function finishAnswer(correct, delay) {
 function renderResult() {
   if (state.quizMode === 'quran') { renderQuranResult(); return; }
   const isGrammar = state.quizMode === 'grammar';
-  const chapter = isGrammar ? LANG_GRAMMAR[activeLangKey()].chById[state.gChapterId] : LANG_VOCAB[activeLangKey()].chById[state.chapterId];
+  const isAlphabet = state.quizMode === 'alphabet';
+  const isLessonLike = isGrammar || isAlphabet; // beide nutzen Regelkarten + gChapterId statt Vokabel-Flashcards
+  const chapter = currentChapterById(isLessonLike ? state.gChapterId : state.chapterId);
   const level = currentLevelById(state.levelId);
   const levels = currentLevels();
   const progress = currentProgress();
@@ -168501,7 +168909,7 @@ function renderResult() {
     title.textContent = t('resultFailTitle');
     text.textContent = t('resultFailText');
     starsEl.innerHTML = '';
-    const retryFn = isGrammar ? 'retryGrammarChapter' : 'retryChapter';
+    const retryFn = isLessonLike ? 'retryGrammarChapter' : 'retryChapter';
     actions.innerHTML = `
       <button class="btn-primary" onclick="${retryFn}()">
         <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="#16323A" stroke-width="2.4"><path d="M1 4v6h6M23 20v-6h-6"/><path d="M20.5 9A9 9 0 0 0 5 5.3L1 10m22 4-4 4.7A9 9 0 0 1 3.5 15"/></svg>
@@ -168531,7 +168939,7 @@ function renderResult() {
           </svg>
         </g>
       </svg>`;
-    title.textContent = isGrammar ? `${chapter.title}${t('masteredSuffix')}` : `${chapter.stop}${t('reachedSuffix')}`;
+    title.textContent = isLessonLike ? `${chapter.title}${t('masteredSuffix')}` : `${chapter.stop}${t('reachedSuffix')}`;
     text.textContent = unlockedNextLevel
       ? t('xpUnlockedTemplate')(chapter.title, state.lastGain, levelDisplayName(nextLevel))
       : t('xpTemplate')(chapter.title, state.lastGain);
@@ -168544,7 +168952,7 @@ function renderResult() {
         ${t('continueRoute')}
         <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="#16323A" stroke-width="2.4"><path d="M5 12h14M13 5l7 7-7 7"/></svg>
       </button>
-      ${levelJustCompleted ? `<button class="btn-primary gold" onclick="showCertificate('${state.mode}','${level.id}')">
+      ${(levelJustCompleted && !isAlphabet) ? `<button class="btn-primary gold" onclick="showCertificate('${state.mode}','${level.id}')">
         <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="#16323A" stroke-width="2.2"><circle cx="12" cy="8" r="5"/><path d="M8.5 12.5 7 22l5-3 5 3-1.5-9.5"/></svg>
         ${t('viewCertificate')}
       </button>` : ''}
@@ -168614,8 +169022,8 @@ function retryChapter() {
 }
 
 function retryGrammarChapter() {
-  const chapter = LANG_GRAMMAR[activeLangKey()].chById[state.gChapterId];
-  state.quizMode = 'grammar';
+  const chapter = currentChapterById(state.gChapterId);
+  state.quizMode = state.mode; // 'grammar' oder 'alphabet'
   state.quiz = buildGrammarQuiz(chapter);
   state.qIndex = 0;
   state.hearts = 3;
@@ -168789,6 +169197,7 @@ function saveProfile() {
       streak: state.streak,
       progress: state.progress,
       gProgress: state.gProgress,
+      aProgress: state.aProgress,
       quranProgress: state.quranProgress,
       syncCode: state.syncCode || null,
     }));
@@ -168896,6 +169305,9 @@ function confirmResetProgress() {
     es: emptyProgress(GRAMMAR_CHAPTERS_ES), en: emptyProgress(GRAMMAR_CHAPTERS_EN), fr: emptyProgress(GRAMMAR_CHAPTERS_FR), it: emptyProgress(GRAMMAR_CHAPTERS_IT), ar: emptyProgress(GRAMMAR_CHAPTERS_AR), ru: emptyProgress(GRAMMAR_CHAPTERS_RU),
     'de-es': emptyProgress(GRAMMAR_DE_ES), 'de-en': emptyProgress(GRAMMAR_DE_EN), 'de-fr': emptyProgress(GRAMMAR_DE_FR), 'de-it': emptyProgress(GRAMMAR_DE_IT),
   };
+  state.aProgress = {
+    ar: emptyProgress(ALPHABET_CHAPTERS_AR), ru: emptyProgress(ALPHABET_CHAPTERS_RU),
+  };
   state.quranProgress = emptyProgress(QURAN_CHAPTERS);
   saveProfile();
   updateProfileBadge();
@@ -168961,6 +169373,7 @@ function initApp() {
     state.streak = saved.streak || 0;
     state.progress = mergeProgress(state.progress, saved.progress);
     state.gProgress = mergeProgress(state.gProgress, saved.gProgress);
+    state.aProgress = mergeProgress(state.aProgress, saved.aProgress);
     state.quranProgress = mergeProgress(state.quranProgress, saved.quranProgress);
     state.syncCode = saved.syncCode || null;
     updateProfileBadge();
@@ -168970,9 +169383,10 @@ function initApp() {
     showScreen('screen-levels');
     trySilentCloudPull();
   } else {
-    applyUILanguage();
-    renderAvatarPicker();
-    showScreen('screen-onboarding');
+    // Neues Profil: erst Sprache explizit auswaehlen lassen, bevor das Onboarding
+    // (und damit auch dessen Oberflaechentext) in irgendeiner Sprache angezeigt wird.
+    renderLangSelectScreen();
+    showScreen('screen-lang-select');
   }
 }
 initApp();
